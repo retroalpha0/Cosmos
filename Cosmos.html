@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Login Blue Command Center</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <!-- Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
     <style>
@@ -44,27 +44,29 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         
-        /* Dashboard Cards - Glassmorphism & Micro-animations */
+        /* Material You Cards - Enhanced */
         .cyber-card {
-            background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 24px;
+            background: linear-gradient(145deg, rgba(39, 39, 42, 0.6), rgba(24, 24, 27, 0.8));
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--card-radius);
             padding: 20px;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             position: relative;
             overflow: hidden;
-            transform: scale(1) translateZ(0); /* Hardware Acceleration */
         }
         .cyber-card::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
-            transform: skewX(-25deg); transition: left 0.7s ease;
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transform: skewX(-25deg);
+            transition: left 0.7s ease;
         }
         .cyber-card:hover::after { left: 150%; }
-        .cyber-card:hover { transform: scale(1.03) translateZ(0); border-color: rgba(255, 255, 255, 0.12); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3); }
-        .cyber-card:active { transform: scale(0.98) translateZ(0); }
+        .cyber-card:hover { transform: translateY(-2px); border-color: rgba(255, 255, 255, 0.15); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3); }
+        .cyber-card:active { transform: scale(0.98); }
 
         /* Accent Elements */
         .text-accent { color: var(--accent-color); }
@@ -144,152 +146,63 @@
         }
         .fab:active { transform: scale(0.9); }
 
-        /* Premium Layout */
-        .app-container { display: flex; height: 100vh; width: 100vw; overflow: hidden; background: var(--bg-color); }
+        /* Layouts (Mobile First) */
+        /* Layouts (Mobile First) */
+        .app-container { display: flex; flex-direction: column; height: 100vh; width: 100vw; padding-bottom: 70px; }
         
-        /* Redesigned Side Drawer */
-        .drawer {
-            position: fixed; inset-y: 0; left: 0; width: 320px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            border-top-right-radius: 25px; border-bottom-right-radius: 25px;
-            z-index: 100;
-            transform: translateX(-100%) translateZ(0);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; flex-direction: column;
-            padding: env(safe-area-inset-top, 24px) 16px env(safe-area-inset-bottom, 24px) 16px;
-            box-shadow: 10px 0 30px rgba(0,0,0,0.3);
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
+            background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(20px);
+            border-top: 1px solid var(--panel-border);
+            display: flex; justify-content: space-around; align-items: center;
+            z-index: 50; padding-bottom: env(safe-area-inset-bottom);
         }
-        .drawer.open { transform: translateX(0) translateZ(0); }
-        .drawer-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
-            opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 90;
-        }
-        .drawer-overlay.open { opacity: 1; pointer-events: auto; }
         
-        .drawer-top-brand {
-            margin-bottom: 24px; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+        
+        .topbar {
+            height: 72px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 16px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px);
+            z-index: 30;
         }
-
-        .shimmer-text {
-            background: linear-gradient(90deg, #FFFFFF, rgba(255,255,255,0.4), #FFFFFF);
-            background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            animation: shimmerTitle 3s linear infinite;
+        
+        .content-area {
+            flex-grow: 1; padding: 16px; padding-bottom: 120px; overflow-y: auto; overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
         }
-
-        /* Drawer Menu Items */
+        .content-area::-webkit-scrollbar { display: none; }
+        
+        /* Nav Items */
         .nav-item {
-            display: flex; align-items: center; gap: 16px;
-            height: 56px; border-radius: 18px; padding: 0 16px;
-            color: #8B949E; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin-bottom: 4px; font-weight: 600; font-size: 15px; font-family: 'Inter', sans-serif;
-            background: transparent; border: 1px solid transparent; transform: translateZ(0);
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            color: #a1a1aa; cursor: pointer; transition: 0.3s;
+            font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+            flex: 1; text-align: center; justify-content: center; height: 100%;
         }
-        .nav-item .material-symbols-rounded { font-size: 24px; transition: all 0.3s ease; }
+        .nav-item .material-symbols-rounded { font-size: 1.5rem; transition: 0.3s; }
+        .nav-item.active { color: var(--accent-color); transform: translateY(-2px); }
+        .nav-item.active .material-symbols-rounded { filter: drop-shadow(0 0 8px var(--accent-color)); }
         
-        .nav-item:hover { transform: translateY(-2px) translateZ(0); color: #C9D1D9; }
-        .nav-item:active { transform: scale(0.96) translateZ(0); }
-        
-        .nav-item.active {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
-            color: #FFFFFF; border: 1px solid rgba(59, 130, 246, 0.2);
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.1), inset 0 1px 0 rgba(255,255,255,0.05);
+        /* Android Toggle Switch */
+        .cyber-switch {
+            position: relative; display: inline-block; width: 52px; height: 32px;
         }
-        .nav-item.active .material-symbols-rounded { filter: drop-shadow(0 0 8px rgba(59,130,246,0.6)); color: var(--accent-color); }
+        .cyber-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255,255,255,0.1); transition: .4s; border-radius: 34px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 24px; width: 24px; left: 4px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--accent-color); }
+        input:checked + .slider:before { transform: translateX(20px); }
 
-        .main-content {
-            flex-grow: 1; display: flex; flex-direction: column; overflow: hidden;
-            position: relative; transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Minimalist Transparent Header */
-        .compact-header {
-            padding-top: env(safe-area-inset-top, 24px);
-            min-height: calc(64px + env(safe-area-inset-top, 24px));
-            background: transparent;
-            display: flex; justify-content: space-between; align-items: center;
-            padding-left: 24px; padding-right: 24px;
-            z-index: 50;
-        }
-
-        .header-title-container {
-            display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; height: 48px;
-        }
-        .header-title {
-            font-family: 'Inter', sans-serif; font-size: 30px; font-weight: 700; color: #FFFFFF;
-            letter-spacing: -0.02em; line-height: 1; margin: 0;
-            background: linear-gradient(90deg, #FFFFFF, rgba(255,255,255,0.6), #FFFFFF);
-            background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            animation: shimmerTitle 8s linear infinite;
-        }
-
-        @keyframes shimmerTitle {
-            0% { background-position: -200% center; }
-            20% { background-position: 200% center; }
-            100% { background-position: 200% center; }
-        }
-
-        /* Glass Icon Buttons (Header Right) */
-        .glass-icon-btn {
-            width: 44px; height: 44px; border-radius: 50%;
-            background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex; align-items: center; justify-content: center;
-            color: #FFFFFF; cursor: pointer; position: relative; overflow: hidden;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            outline: none; transform: translateZ(0);
-        }
-        .glass-icon-btn:hover { background: rgba(255, 255, 255, 0.1); transform: scale(1.10) translateZ(0); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
-        .glass-icon-btn:active { transform: scale(0.95) translateZ(0); }
-
-        /* Title Animations */
-        .title-anim-out { animation: fadeOutSlideUp 220ms cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        .title-anim-in { animation: fadeInSlideUp 220ms cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-
-        @keyframes fadeOutSlideUp {
-            from { opacity: 1; transform: translateY(0) translateZ(0); }
-            to { opacity: 0; transform: translateY(-15px) translateZ(0); }
-        }
-        @keyframes fadeInSlideUp {
-            from { opacity: 0; transform: translateY(15px) translateZ(0); }
-            to { opacity: 1; transform: translateY(0) translateZ(0); }
-        }
-
-        /* Liquid Glass Bottom Navigation */
-        .bottom-nav-glass {
-            position: fixed; bottom: env(safe-area-inset-bottom, 18px); left: 50%; transform: translateX(-50%) translateZ(0);
-            height: 74px; border-radius: 36px;
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(25px) saturate(150%); -webkit-backdrop-filter: blur(25px) saturate(150%);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 16px; z-index: 80;
-            width: calc(100% - 32px); max-width: 420px;
-        }
-        .bnav-item {
-            width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            color: #8B949E; cursor: pointer; position: relative; z-index: 2; transition: color 0.3s ease;
-            -webkit-tap-highlight-color: transparent; outline: none;
-        }
-        .bnav-item .material-symbols-rounded { font-size: 28px; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .bnav-item.active { color: #FFFFFF; }
-        .bnav-item.active .material-symbols-rounded { transform: scale(1.12); filter: drop-shadow(0 0 10px rgba(255,255,255,0.4)); }
-        .bnav-item:active .material-symbols-rounded { transform: scale(0.95); }
-        
-        .bnav-bubble {
-            position: absolute; top: 6px; width: 60px; height: 60px; border-radius: 50%;
-            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 1;
-            transition: left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            left: 16px; /* Default */
-        }
-
-
-
-        /* Loader, Modals & Utility Classes */
+        /* Loader & Modals */
         .loader-overlay, .modal-overlay {
             position: fixed; inset:0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
             z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;
@@ -304,22 +217,42 @@
         
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: none; } }
-        
         .section-hidden { display: none !important; }
 
-        .content-area {
-            flex-grow: 1; padding: 24px 16px 16px 16px; overflow-y: auto; overflow-x: hidden;
-            -webkit-overflow-scrolling: touch;
+        /* Tables for Android - Card style */
+        .mobile-table { display: flex; flex-direction: column; gap: 12px; }
+        .mobile-row { 
+            background: rgba(30, 30, 35, 0.6); border: 1px solid rgba(255,255,255,0.05); 
+            border-radius: 20px; padding: 16px; 
+            display: flex; flex-direction: column; gap: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .content-area::-webkit-scrollbar { display: none; }
+        .mobile-row:hover {
+            background: rgba(40, 40, 45, 0.8);
+            border-color: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        .row-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; margin-bottom: 8px;}
+        
+        .badge { padding: 4px 12px; border-radius: 100px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .badge-green { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .badge-red { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .badge-yellow { background: rgba(234, 179, 8, 0.2); color: #facc15; }
+        .badge-purple { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+
+        ::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.6; cursor: pointer; transition: 0.2s; }
+        ::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
         /* Desktop Adjustments */
         @media (min-width: 1024px) {
-            .drawer { transform: translateX(0) translateZ(0); background: linear-gradient(to bottom, #16181A, #0C0D10); border-right: 1px solid rgba(255,255,255,0.05); border-radius: 0; box-shadow: none; }
-            .drawer-overlay { display: none; }
-            .main-content { margin-left: 320px; }
-            #mobile-menu-btn { display: none; }
-            .bottom-nav-glass { display: none; } /* Hide liquid glass nav on desktop */
+            .app-container { flex-direction: row; padding-bottom: 0; }
+            .bottom-nav { 
+                position: relative; width: 90px; height: 100vh; flex-direction: column; 
+                justify-content: flex-start; padding-top: 24px; border-top: none; border-right: 1px solid var(--panel-border);
+            }
+            .nav-item { flex: none; padding: 20px 0; height: auto; }
+            .fab { bottom: 24px; right: 24px; }
         }
     
         /* glassmorphism login css */
@@ -370,12 +303,6 @@
             <h1 class="login-title-glass">DPMODS</h1>
             <span class="login-sub-glass">ADMINISTRATIVE CONSOLE</span>
 
-            <!-- UI Selector -->
-            <div class="flex gap-2 p-1 mb-4 rounded-xl bg-black/40 border border-white/5 w-full max-w-sm">
-                <button type="button" onclick="window.location.href='./index.html'" class="flex-1 py-2 rounded-lg text-xs font-bold text-zinc-400 hover:text-white transition-colors">Cosmic UI</button>
-                <button type="button" class="flex-1 py-2 rounded-lg text-xs font-bold text-white bg-white/10 border border-white/20 cursor-default shadow-[0_0_10px_rgba(255,255,255,0.05)]">Cosmos UI</button>
-            </div>
-
             <form id="login-form" class="glass-card-login w-full p-6 flex flex-col gap-4">
                 <div class="input-wrapper-login">
                     <input type="url" id="fb-url" class="glass-input-login" placeholder="Firebase Database URL" required>
@@ -406,97 +333,74 @@
     <!-- Main App -->
     <div id="main-app" class="app-container section-hidden">
         
-        <!-- Drawer Overlay -->
-        <div class="drawer-overlay" id="drawer-overlay" onclick="toggleDrawer()"></div>
-
-        <!-- Premium Side Drawer -->
-        <nav class="drawer" id="main-nav">
-            <!-- Top Section -->
-            <div class="drawer-top-brand">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-[14px] bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                        <span class="material-symbols-rounded text-white text-xl">admin_panel_settings</span>
-                    </div>
-                    <div>
-                        <h2 class="text-white font-bold text-[17px] font-['Inter'] tracking-tight shimmer-text">Panel Dev : Alpha</h2>
-                        <p class="text-blue-400 text-[10px] font-semibold uppercase tracking-wider">v3.0 Alpha</p>
-                    </div>
-                </div>
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav" id="main-nav">
+            <div class="nav-item ripple hover-lift" active" data-target="dashboard">
+                <span class="material-symbols-rounded">space_dashboard</span>
+                <span>Dash</span>
             </div>
-
-            <!-- Nav Items -->
-            <div class="flex-1 overflow-y-auto pb-6">
-                <div class="nav-item active" data-target="dashboard">
-                    <span class="material-symbols-rounded">space_dashboard</span><span>Dashboard</span>
-                </div>
-                <div class="nav-item" data-target="devices">
-                    <span class="material-symbols-rounded">devices</span><span>Devices</span>
-                </div>
-                <div class="nav-item" data-target="licenses">
-                    <span class="material-symbols-rounded">vpn_key</span><span>Keys</span>
-                </div>
-                <div class="nav-item" data-target="users">
-                    <span class="material-symbols-rounded">group</span><span>Users</span>
-                </div>
-                <div class="nav-item" data-target="analytics">
-                    <span class="material-symbols-rounded">analytics</span><span>Analytics</span>
-                </div>
-                <div class="nav-item" data-target="security">
-                    <span class="material-symbols-rounded">shield</span><span>Security</span>
-                </div>
-                <div class="nav-item" data-target="logs">
-                    <span class="material-symbols-rounded">article</span><span>Logs</span>
-                </div>
-                <div class="nav-item" data-target="updates">
-                    <span class="material-symbols-rounded">update</span><span>Updates</span>
-                </div>
-                <div class="nav-item" data-target="system">
-                    <span class="material-symbols-rounded">settings</span><span>Settings</span>
-                </div>
-                <div class="nav-item" data-target="dialog">
-                    <span class="material-symbols-rounded">ad_units</span><span>Dialog UI</span>
-                </div>
-                <div class="nav-item" data-target="about">
-                    <span class="material-symbols-rounded">info</span><span>About</span>
-                </div>
+            <div class="nav-item ripple hover-lift"" data-target="licenses">
+                <span class="material-symbols-rounded">vpn_key</span>
+                <span>Keys</span>
             </div>
-            
-            <!-- Bottom Logout -->
-            <div class="pt-4 border-t border-white/5 mt-auto">
-                <div class="nav-item text-red-400 hover:text-red-300 active:bg-red-500/10" id="drawer-logout-btn">
-                    <span class="material-symbols-rounded text-red-500">power_settings_new</span>
-                    <span>Logout</span>
-                </div>
+            <div class="nav-item ripple hover-lift"" data-target="security">
+                <span class="material-symbols-rounded">security</span>
+                <span>Security</span>
+            </div>
+            <div class="nav-item ripple hover-lift"" data-target="logs">
+                <span class="material-symbols-rounded">receipt_long</span>
+                <span>Logs</span>
+            </div>
+            <div class="nav-item ripple hover-lift"" data-target="devices">
+                <span class="material-symbols-rounded">smartphone</span>
+                <span>Devices</span>
+            </div>
+            <div class="nav-item ripple hover-lift"" id="menu-toggle-btn">
+                <span class="material-symbols-rounded">menu</span>
+                <span>Settings</span>
             </div>
         </nav>
 
+        <!-- Side Panel & Overlay -->
+        <div id="side-panel-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] opacity-0 pointer-events-none transition-opacity duration-300"></div>
+        <div id="side-panel" class="fixed inset-y-0 right-0 w-72 bg-[#09090b] border-l border-[rgba(255,255,255,0.08)] shadow-2xl transform translate-x-full transition-transform duration-300 z-[100] flex flex-col">
+            <div class="p-5 border-b border-[rgba(255,255,255,0.05)] flex justify-between items-center bg-black/40 backdrop-blur-md">
+                <h2 class="font-bold text-lg text-accent flex items-center gap-2">
+                    <span class="material-symbols-rounded">settings</span> Settings
+                </h2>
+                <button id="close-panel-btn" class="w-8 h-8 flex items-center justify-center rounded-full active:bg-white/10 text-zinc-400 hover:text-white transition-colors">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-4 space-y-2">
+                <div class="panel-nav-item flex items-center gap-3 p-3.5 rounded-xl active:bg-white/10 cursor-pointer transition-all text-zinc-300 hover:text-white hover:bg-white/5" data-target="dialog">
+                    <div class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent"><span class="material-symbols-rounded text-xl">ad_units</span></div>
+                    <span class="font-semibold text-sm">Dialog Preview</span>
+                </div>
+                <div class="panel-nav-item flex items-center gap-3 p-3.5 rounded-xl active:bg-white/10 cursor-pointer transition-all text-zinc-300 hover:text-white hover:bg-white/5" data-target="system">
+                    <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400"><span class="material-symbols-rounded text-xl">settings_suggest</span></div>
+                    <span class="font-semibold text-sm">System Settings</span>
+                </div>
+            </div>
+        </div>
+
+
         <!-- Main Content -->
         <main class="main-content">
-            
-            <!-- Minimalist Transparent Header -->
-            <header class="compact-header">
-                <div class="flex items-center gap-4">
-                    <button id="mobile-menu-btn" class="glass-icon-btn lg:hidden" onclick="toggleDrawer()">
-                        <span class="material-symbols-rounded text-[28px]">menu</span>
-                    </button>
-                    <div class="header-title-container" id="header-text-container">
-                        <h1 id="topbar-title" class="header-title">Dashboard</h1>
-                    </div>
-                </div>
-                
+            <!-- Topbar -->
+            <header class="topbar">
                 <div class="flex items-center gap-3">
-                    <button class="glass-icon-btn" title="Notifications">
-                        <span class="material-symbols-rounded text-[22px]">notifications</span>
-                        <div class="absolute top-[10px] right-[10px] w-2 h-2 bg-red-500 rounded-full"></div>
-                    </button>
-                    <button class="glass-icon-btn overflow-hidden" title="Profile">
-                        <span class="material-symbols-rounded text-[22px]">account_circle</span>
-                    </button>
-                    <button class="glass-icon-btn" title="Settings" id="menu-toggle-btn">
-                        <span class="material-symbols-rounded text-[22px]">settings</span>
-                    </button>
-                    <button id="logout-btn" class="glass-icon-btn text-red-400 hover:bg-red-500/10 border-red-500/30" title="Disconnect">
-                        <span class="material-symbols-rounded text-[22px] text-red-500">power_settings_new</span>
+                    <div class="w-10 h-10 rounded-[12px] bg-accent/20 flex items-center justify-center border border-accent/30 text-accent lg:hidden">
+                        <span class="material-symbols-rounded text-2xl">admin_panel_settings</span>
+                    </div>
+                    <h1 id="topbar-title" class="text-xl font-semibold">Dashboard</h1>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div id="live-indicator" class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/10 text-green-400 border border-green-500/20 text-xs font-bold tracking-wider hidden sm:flex">
+                        <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div> LIVE
+                    </div>
+                    <button id="logout-btn" class="p-2 -mr-2 rounded-full active:bg-white/10 text-red-400 hover:bg-white/5 transition" title="Disconnect">
+                        <span class="material-symbols-rounded">power_settings_new</span>
                     </button>
                 </div>
             </header>
@@ -878,27 +782,6 @@
                 </section>
                 
             </div>
-            
-            <!-- Liquid Glass Bottom Navigation -->
-            <div class="bottom-nav-glass" id="bottom-nav">
-                <div class="bnav-bubble" id="bnav-bubble"></div>
-                <div class="bnav-item active" data-target="dashboard" onclick="navToBottom('dashboard', this)">
-                    <span class="material-symbols-rounded">space_dashboard</span>
-                </div>
-                <div class="bnav-item" data-target="devices" onclick="navToBottom('devices', this)">
-                    <span class="material-symbols-rounded">devices</span>
-                </div>
-                <div class="bnav-item" data-target="licenses" onclick="navToBottom('licenses', this)">
-                    <span class="material-symbols-rounded">vpn_key</span>
-                </div>
-                <div class="bnav-item" data-target="logs" onclick="navToBottom('logs', this)">
-                    <span class="material-symbols-rounded">article</span>
-                </div>
-                <div class="bnav-item" data-target="system" onclick="navToBottom('system', this)">
-                    <span class="material-symbols-rounded">settings</span>
-                </div>
-            </div>
-            
             <!-- Global FAB for Adding Key -->
             <button id="main-fab" class="fab hidden" onclick="showAddKeyModal()">
                 <span class="material-symbols-rounded text-3xl">add</span>
@@ -1035,7 +918,16 @@
                 });
             });
 
+            document.querySelectorAll('.panel-nav-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    navigateTo(item.getAttribute('data-target'));
+                    closeSidePanel();
+                });
+            });
 
+            document.getElementById('menu-toggle-btn').addEventListener('click', openSidePanel);
+            document.getElementById('close-panel-btn').addEventListener('click', closeSidePanel);
+            document.getElementById('side-panel-overlay').addEventListener('click', closeSidePanel);
 
             // Dialog Editor Inputs
             ['title', 'subtitle', 'btn', 'admin-url', 'hint', 'bg-url', 'icon-type'].forEach(f => {
@@ -1086,19 +978,21 @@
 
         // --- Layout Utilities ---
         
-        window.toggleDrawer = function() {
-            const drawer = document.getElementById('main-nav');
-            const overlay = document.getElementById('drawer-overlay');
-            drawer.classList.toggle('open');
-            overlay.classList.toggle('open');
+        function openSidePanel() {
+            document.getElementById('side-panel').classList.remove('translate-x-full');
+            document.getElementById('side-panel-overlay').classList.remove('opacity-0', 'pointer-events-none');
+            DOM.navItems.forEach(nav => nav.classList.remove('active'));
+            document.getElementById('menu-toggle-btn').classList.add('active');
         }
-
         function closeSidePanel() {
-            const drawer = document.getElementById('main-nav');
-            const overlay = document.getElementById('drawer-overlay');
-            if(drawer.classList.contains('open')) {
-                drawer.classList.remove('open');
-                overlay.classList.remove('open');
+            document.getElementById('side-panel').classList.add('translate-x-full');
+            document.getElementById('side-panel-overlay').classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('menu-toggle-btn').classList.remove('active');
+            const activeSec = document.querySelector('section:not(.section-hidden)');
+            if(activeSec) {
+                const id = activeSec.id.replace('sec-', '');
+                const nav = document.querySelector(`.nav-item[data-target="${id}"]`);
+                if(nav) nav.classList.add('active');
             }
         }
 
@@ -1108,11 +1002,6 @@
         function navigateTo(targetId, navElement) {
             DOM.navItems.forEach(nav => nav.classList.remove('active'));
             if(navElement) navElement.classList.add('active');
-            else {
-                const el = document.querySelector(`.nav-item[data-target="${targetId}"]`);
-                if(el) el.classList.add('active');
-                navElement = el;
-            }
             
             const titles = {
                 'dashboard': 'Dashboard',
@@ -1123,20 +1012,11 @@
                 'logs': 'System Logs',
                 'devices': 'Device Management'
             };
-            
-            let newTitle = titles[targetId] || 'Dashboard';
-
-            const titleEl = document.getElementById('topbar-title');
-            
-            if (titleEl && titleEl.textContent !== newTitle) {
-                titleEl.classList.remove('title-anim-in');
-                titleEl.classList.add('title-anim-out');
-                
-                setTimeout(() => {
-                    titleEl.textContent = newTitle;
-                    titleEl.classList.remove('title-anim-out');
-                    titleEl.classList.add('title-anim-in');
-                }, 250);
+            if(targetId && titles[targetId]) {
+                DOM.topbarTitle.textContent = titles[targetId];
+            } else if(navElement) {
+                const textNode = navElement.querySelector('span:not(.material-symbols-rounded)');
+                if (textNode) DOM.topbarTitle.textContent = textNode.textContent.trim();
             }
 
             DOM.sections.forEach(sec => {
@@ -1149,31 +1029,7 @@
                 if(targetId === 'licenses') fab.classList.remove('hidden');
                 else fab.classList.add('hidden');
             }
-            
-            if(window.innerWidth < 1024) closeSidePanel();
-            
-            // Sync bottom nav
-            const bNavs = document.querySelectorAll('.bnav-item');
-            bNavs.forEach(b => b.classList.remove('active'));
-            const activeBNav = document.querySelector(`.bnav-item[data-target="${targetId}"]`);
-            if(activeBNav) {
-                activeBNav.classList.add('active');
-                updateBNavBubble(activeBNav);
-            }
         }
-        
-        function updateBNavBubble(activeEl) {
-            const bubble = document.getElementById('bnav-bubble');
-            if(!bubble || !activeEl) return;
-            const parentRect = activeEl.parentElement.getBoundingClientRect();
-            const rect = activeEl.getBoundingClientRect();
-            bubble.style.width = `${rect.width}px`;
-            bubble.style.left = `${rect.left - parentRect.left}px`;
-        }
-
-        window.navToBottom = function(targetId, el) {
-            navigateTo(targetId);
-        };
 
         // --- Firebase Core ---
         async function attemptLogin(url, token) {
@@ -1327,9 +1183,27 @@
             applyTheme(); renderSystemUI();
             
             let keys = await fetchFirebase('dp_dialog_controller/keys');
+            if(!keys) {
+                keys = {
+                    "YOUR-LICENSE-KEY": {
+                        "used": false,
+                        "banned": false,
+                        "expiry_date": "2026-12-31 23:59:59",
+                        "bound_hwid": "",
+                        "crash": false
+                    }
+                };
+                await putFirebase('dp_dialog_controller/keys', keys);
+            }
             App.data.keys = keys || {};
             
             let blacklisted_hwids = await fetchFirebase('dp_dialog_controller/blacklisted_hwids');
+            if(!blacklisted_hwids) {
+                blacklisted_hwids = {
+                    "HWID_TO_BLOCK": true
+                };
+                await putFirebase('dp_dialog_controller/blacklisted_hwids', blacklisted_hwids);
+            }
             App.data.blacklisted_hwids = blacklisted_hwids || {};
             
             App.data.security = await fetchFirebase('dp_dialog_controller/security') || {};
@@ -1544,25 +1418,16 @@
 
         function updatePreview() {
             const ui = App.data.system.ui || {};
-            
-            const pTitle = document.getElementById('preview-title');
-            const uiTitle = document.getElementById('ui-title');
-            if(pTitle && uiTitle) pTitle.textContent = uiTitle.value || ui.title || 'Title';
-            
-            const pSub = document.getElementById('preview-sub');
-            const uiSub = document.getElementById('ui-subtitle');
-            if(pSub && uiSub) pSub.textContent = uiSub.value || ui.subtitle || 'Subtitle';
-            
-            const pBtn = document.getElementById('preview-btn');
-            const uiBtn = document.getElementById('ui-btn');
-            if(pBtn && uiBtn) pBtn.textContent = uiBtn.value || ui.btn_text || 'Button';
+            document.getElementById('preview-title').textContent = document.getElementById('ui-title').value || ui.title || 'Title';
+            document.getElementById('preview-sub').textContent = document.getElementById('ui-subtitle').value || ui.subtitle || 'Subtitle';
+            document.getElementById('preview-btn').textContent = document.getElementById('ui-btn').value || ui.btn_text || 'Button';
             
             const hint = document.getElementById('ui-hint');
-            const pHint = document.getElementById('preview-hint');
-            if(hint && pHint) pHint.placeholder = hint.value || ui.hint || 'License Key';
+            if(hint) document.getElementById('preview-hint').placeholder = hint.value || ui.hint || 'License Key';
             
-            const uiBgUrl = document.getElementById('ui-bg-url');
-            const fallbackUrl = (uiBgUrl ? uiBgUrl.value : '') || ui.bg_url || '';
+
+            
+            const fallbackUrl = document.getElementById('ui-bg-url').value || ui.bg_url || '';
             const bgUrlInputs = document.querySelectorAll('.bg-url-input');
             let bgUrls = [];
             if (bgUrlInputs.length > 0) {
@@ -1573,8 +1438,6 @@
             
             const allUrls = bgUrls.length > 0 ? bgUrls : (fallbackUrl ? [fallbackUrl] : []);
             const bgImg = document.getElementById('preview-bg-img');
-            
-            if(!bgImg) return;
             
             if(allUrls.length > 0) {
                 if (window.previewCurrentIndex >= allUrls.length) window.previewCurrentIndex = 0;
@@ -1638,9 +1501,6 @@
             
             // Sort by creation time if available, otherwise fallback
             keys.sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
-            
-            // Filter out placeholder 'your license-key'
-            keys = keys.filter(k => k.id !== 'your license-key');
 
             if (searchTerm) {
                 keys = keys.filter(k => k.id.toLowerCase().includes(searchTerm) || (k.bound_hwid && k.bound_hwid.toLowerCase().includes(searchTerm)));
@@ -1736,8 +1596,7 @@
                 }
             });
 
-            // Filter out placeholder 'your license-key'
-            let devices = Object.values(devicesMap).filter(d => d.id !== 'your license-key');
+            let devices = Object.values(devicesMap);
             
             const searchInput = document.getElementById('search-devices');
             const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
