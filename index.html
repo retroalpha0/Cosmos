@@ -308,6 +308,12 @@
                 Welcome to ALPHA System
             </div>
 
+            <!-- UI Selector -->
+            <div style="display: flex; gap: 10px; background: rgba(0,0,0,0.4); padding: 5px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <button style="flex: 1; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.1); color: #fff; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.2); cursor: default;">Primary UI</button>
+                <button onclick="window.location.href='Cosmos.html'" style="flex: 1; padding: 10px; border-radius: 8px; background: transparent; color: #aaa; font-weight: 600; font-size: 0.85rem; border: 1px solid transparent; cursor: pointer; transition: 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#aaa'">Cosmos UI</button>
+            </div>
+
             <!-- Inputs -->
             <div style="display: flex; flex-direction: column; gap: 15px;">
                 <input type="text" id="auth-url" placeholder="Firebase URL..." tabindex="1" style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 18px 20px; border-radius: 16px; color: #fff; font-size: 0.95rem; font-weight: 600; outline: none; transition: 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); text-shadow: 0 1px 2px rgba(0,0,0,0.8);">
@@ -319,7 +325,7 @@
                 <button id="login-btn" onclick="login()" tabindex="3" style="flex: 1; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 16px; color: #fff; font-size: 1rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
                     LOGIN <i class="fas fa-sign-in-alt" style="color: #f97316;"></i>
                 </button>
-                <button style="width: 65px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                <button onclick="openSessionModal()" style="width: 65px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
                     <i class="fas fa-shield-halved"></i>
                 </button>
             </div>
@@ -599,6 +605,24 @@
         </div>
     </div>
 
+    <!-- Session Manager Modal -->
+    <div class="modal-overlay" id="session-modal">
+        <div class="modal-card">
+            <div class="modal-handle"></div>
+            <div class="modal-title">Session Manager</div>
+            <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <input type="text" id="new-session-name" placeholder="Session Name (e.g. Production)" style="flex: 1;" class="input">
+                <button class="btn btn-primary" onclick="saveCurrentSession()"><i class="fas fa-save"></i> Save</button>
+            </div>
+            <div id="session-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; padding-right: 5px;">
+                <!-- Sessions will be injected here -->
+            </div>
+            <div class="modal-actions mt-4" style="margin-top: 20px;">
+                <button class="btn" style="background: rgba(255,255,255,0.1); width: 100%;" onclick="closeModals()">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- BOTTOM NAVBAR -->
     <div class="bottom-nav" id="bottom-nav" style="display: none;">
         <div class="nav-item" onclick="nav('keys', this, 'Keys', 'License Management')">
@@ -795,7 +819,73 @@
             if(window.datePicker) window.datePicker.setDate(newDateStr);
         }
 
-        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active')); }
+        function closeModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+        }
+
+        function openSessionModal() {
+            document.getElementById('session-modal').classList.add('active');
+            renderSessions();
+        }
+
+        function renderSessions() {
+            const list = document.getElementById('session-list');
+            let sessions = JSON.parse(localStorage.getItem('dp_saved_sessions') || '[]');
+            if (sessions.length === 0) {
+                list.innerHTML = '<div style="text-align:center; color: #888; padding: 20px;">No saved sessions.</div>';
+                return;
+            }
+            list.innerHTML = sessions.map((s, idx) => `
+                <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.4); padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div style="display: flex; flex-direction: column; overflow: hidden; flex: 1; margin-right: 10px;">
+                        <span style="font-weight: 700; color: #fff; font-size: 0.95rem;">${s.name}</span>
+                        <span style="font-size: 0.75rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.url}</span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="useSession(${idx})" class="btn-icon" style="background: rgba(168, 85, 247, 0.2); color: #a855f7; width: 35px; height: 35px;"><i class="fas fa-check"></i></button>
+                        <button onclick="deleteSession(${idx})" class="btn-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; width: 35px; height: 35px;"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function saveCurrentSession() {
+            const name = document.getElementById('new-session-name').value.trim();
+            const url = document.getElementById('auth-url').value.trim();
+            const secret = document.getElementById('auth-secret').value.trim();
+
+            if (!name || !url || !secret) {
+                showIsland("Fill all fields (Name, URL, Token)", "error");
+                return;
+            }
+
+            let sessions = JSON.parse(localStorage.getItem('dp_saved_sessions') || '[]');
+            sessions.push({ name, url, secret });
+            localStorage.setItem('dp_saved_sessions', JSON.stringify(sessions));
+            
+            document.getElementById('new-session-name').value = '';
+            renderSessions();
+            showIsland("Session Saved", "success");
+        }
+
+        function useSession(index) {
+            let sessions = JSON.parse(localStorage.getItem('dp_saved_sessions') || '[]');
+            const s = sessions[index];
+            if (s) {
+                document.getElementById('auth-url').value = s.url;
+                document.getElementById('auth-secret').value = s.secret;
+                closeModals();
+                showIsland("Session Loaded", "success");
+            }
+        }
+
+        function deleteSession(index) {
+            let sessions = JSON.parse(localStorage.getItem('dp_saved_sessions') || '[]');
+            sessions.splice(index, 1);
+            localStorage.setItem('dp_saved_sessions', JSON.stringify(sessions));
+            renderSessions();
+        }
+
         function toggleSwitch(element) { element.classList.toggle('active'); }
         function setToggle(id, state) { const el = document.getElementById(id); if(state) el.classList.add('active'); else el.classList.remove('active'); }
         function getToggle(id) { return document.getElementById(id).classList.contains('active'); }
