@@ -328,8 +328,8 @@
         
         <div class="page-header">
             <div class="header-title-box">
-                <span class="app-main-title" id="page-title-text">Keys</span>
-                <span class="app-sub-title" id="page-subtitle-text">License Management</span>
+                <span class="app-main-title" id="page-title-text">Devices</span>
+                <span class="app-sub-title" id="page-subtitle-text">Device & Hardware Management</span>
             </div>
             <div class="header-actions">
                 <button class="btn-icon" onclick="fetchDatabase()"><i class="fas fa-sync-alt" id="reload-icon"></i></button>
@@ -338,7 +338,7 @@
         </div>
 
         <!-- KEYS VIEW -->
-        <div id="view-keys" class="view active">
+        <div id="view-keys" class="view">
             <div class="search-bar-container">
                 <input type="text" class="search-bar" id="search-keys" placeholder="Search Keys or HWID..." oninput="renderKeys()">
             </div>
@@ -347,7 +347,7 @@
         </div>
 
         <!-- DEVICES VIEW -->
-        <div id="view-devices" class="view">
+        <div id="view-devices" class="view active">
             <div class="sys-tabs" style="margin: 10px 20px 0 20px; padding: 4px; gap: 4px;">
                 <button class="sys-tab dev-filter-tab active" onclick="filterDevices('all', this)">ALL</button>
                 <button class="sys-tab dev-filter-tab" onclick="filterDevices('bound', this)">BOUND</button>
@@ -598,10 +598,10 @@
 
     <!-- BOTTOM NAVBAR -->
     <div class="bottom-nav" id="bottom-nav" style="display: none;">
-        <div class="nav-item active" onclick="nav('keys', this, 'Keys', 'License Management')">
+        <div class="nav-item" onclick="nav('keys', this, 'Keys', 'License Management')">
             <i class="fas fa-key"></i><span>Keys</span>
         </div>
-        <div class="nav-item" onclick="nav('devices', this, 'Devices', 'Device & Hardware Management')">
+        <div class="nav-item active" onclick="nav('devices', this, 'Devices', 'Device & Hardware Management')">
             <i class="fas fa-laptop-code"></i><span>Devices</span>
         </div>
         <div class="nav-item" onclick="nav('system', this, 'System', 'Global Configuration')">
