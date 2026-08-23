@@ -561,8 +561,8 @@
             </div>
 
             <div class="input-group">
-                <label>Expiry Date & Time</label>
-                <input type="datetime-local" id="mod-key-date" placeholder="2026-12-31T23:59">
+                <label>Expiry Date</label>
+                <input type="date" id="mod-key-date" placeholder="2026-12-31">
                 <div class="sys-tabs" style="margin: 12px 0 0 0; padding: 6px; gap: 4px;">
                     <button class="sys-tab time-tab" style="padding: 12px 10px; font-size: 0.8rem;" onclick="addDaysToExpiry(1, this)">+1 DAY</button>
                     <button class="sys-tab time-tab" style="padding: 12px 10px; font-size: 0.8rem;" onclick="addDaysToExpiry(16, this)">+16 DAYS</button>
@@ -675,7 +675,7 @@
             
             const now = new Date();
             const y = now.getFullYear(); const m = String(now.getMonth()+1).padStart(2,'0'); const d = String(now.getDate()).padStart(2,'0');
-            const defaultDateStr = `${y+1}-${m}-${d}T23:59`;
+            const defaultDateStr = `${y+1}-${m}-${d}`;
             document.getElementById('mod-key-date').value = defaultDateStr;
         };
 
@@ -821,10 +821,7 @@
             const y = current.getFullYear();
             const m = String(current.getMonth() + 1).padStart(2, '0');
             const d = String(current.getDate()).padStart(2, '0');
-            const h = String(current.getHours()).padStart(2, '0');
-            const min = String(current.getMinutes()).padStart(2, '0');
-            const s = String(current.getSeconds()).padStart(2, '0');
-            const newDateStr = `${y}-${m}-${d}T${h}:${min}`;
+            const newDateStr = `${y}-${m}-${d}`;
             dateInput.value = newDateStr;
         }
 
@@ -1040,7 +1037,7 @@
             document.getElementById('modal-key-title').innerText = "Edit Configuration";
             document.getElementById('mod-key-id').value = keyId;
             document.getElementById('mod-key-id').readOnly = true;
-            const dateVal = (data.expiry_date || "2026-12-31T23:59").replace(' ', 'T').substring(0, 16);
+            const dateVal = (data.expiry_date || "2026-12-31").split('T')[0];
             document.getElementById('mod-key-date').value = dateVal;
             document.getElementById('mod-key-notes').value = data.notes || "";
             setToggle('mod-tog-used', data.used === true);
@@ -1053,7 +1050,8 @@
 
         async function saveKey() {
             const keyId = document.getElementById('mod-key-id').value.trim();
-            const expDate = document.getElementById('mod-key-date').value;
+            const rawDate = document.getElementById('mod-key-date').value;
+            const expDate = rawDate ? rawDate + "T23:59:59" : "";
             const notes = document.getElementById('mod-key-notes').value.trim();
             const isUsed = getToggle('mod-tog-used');
             const isCrash = getToggle('mod-tog-crash');
