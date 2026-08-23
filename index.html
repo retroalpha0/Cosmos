@@ -6,6 +6,9 @@
     <title>DPMods Dialog Console</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/themes/dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
     <script>
         // Random Multi-Color Theme
         const themes = [
@@ -549,7 +552,7 @@
 
             <div class="input-group">
                 <label>Expiry Date & Time</label>
-                <input type="datetime-local" id="mod-key-date" step="1" placeholder="2026-12-31T23:59:59">
+                <input type="text" id="mod-key-date" placeholder="2026-12-31T23:59:59">
                 <div class="sys-tabs" style="margin: 12px 0 0 0; padding: 6px; gap: 4px;">
                     <button class="sys-tab time-tab" style="padding: 12px 10px; font-size: 0.8rem;" onclick="addDaysToExpiry(1, this)">+1 DAY</button>
                     <button class="sys-tab time-tab" style="padding: 12px 10px; font-size: 0.8rem;" onclick="addDaysToExpiry(16, this)">+16 DAYS</button>
@@ -630,7 +633,16 @@
             
             const now = new Date();
             const y = now.getFullYear(); const m = String(now.getMonth()+1).padStart(2,'0'); const d = String(now.getDate()).padStart(2,'0');
-            document.getElementById('mod-key-date').value = `${y+1}-${m}-${d}T23:59:59`;
+            const defaultDateStr = `${y+1}-${m}-${d}T23:59:59`;
+            document.getElementById('mod-key-date').value = defaultDateStr;
+            
+            window.datePicker = flatpickr("#mod-key-date", {
+                enableTime: true,
+                enableSeconds: true,
+                dateFormat: "Y-m-d\\TH:i:S",
+                time_24hr: true,
+                defaultDate: defaultDateStr
+            });
         };
 
         async function login() {
@@ -778,7 +790,9 @@
             const h = String(current.getHours()).padStart(2, '0');
             const min = String(current.getMinutes()).padStart(2, '0');
             const s = String(current.getSeconds()).padStart(2, '0');
-            dateInput.value = `${y}-${m}-${d}T${h}:${min}:${s}`;
+            const newDateStr = `${y}-${m}-${d}T${h}:${min}:${s}`;
+            dateInput.value = newDateStr;
+            if(window.datePicker) window.datePicker.setDate(newDateStr);
         }
 
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active')); }
@@ -927,7 +941,9 @@
             document.getElementById('modal-key-title').innerText = "Edit Configuration";
             document.getElementById('mod-key-id').value = keyId;
             document.getElementById('mod-key-id').readOnly = true;
-            document.getElementById('mod-key-date').value = (data.expiry_date || "2026-12-31T23:59:59").replace(' ', 'T');
+            const dateVal = (data.expiry_date || "2026-12-31T23:59:59").replace(' ', 'T');
+            document.getElementById('mod-key-date').value = dateVal;
+            if(window.datePicker) window.datePicker.setDate(dateVal);
             document.getElementById('mod-key-notes').value = data.notes || "";
             setToggle('mod-tog-used', data.used === true);
             setToggle('mod-tog-crash', data.crash === true);
