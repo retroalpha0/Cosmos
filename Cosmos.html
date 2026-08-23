@@ -440,46 +440,48 @@
                 
                 <!-- Dashboard Section -->
                 <section id="sec-dashboard" class="fade-in section-hidden pb-20">
-                    <!-- Stats Grid -->
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                        <div class="cyber-card">
-                            <div class="text-zinc-400 text-sm font-medium mb-1 flex items-center gap-2">
-                                <span class="material-symbols-rounded text-lg text-accent">vpn_key</span> Total Keys
+                    <div class="glass p-4 md:p-6 mb-4" style="background: rgba(24, 24, 27, 0.25); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 28px;">
+                        <!-- Stats Grid -->
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div class="cyber-card">
+                                <div class="text-zinc-400 text-sm font-medium mb-1 flex items-center gap-2">
+                                    <span class="material-symbols-rounded text-lg text-accent">vpn_key</span> Total Keys
+                                </div>
+                                <div class="text-3xl font-bold" id="stat-total">0</div>
                             </div>
-                            <div class="text-3xl font-bold" id="stat-total">0</div>
-                        </div>
-                        <div class="cyber-card">
-                            <div class="text-zinc-400 text-sm font-medium mb-1 flex items-center gap-2">
-                                <span class="material-symbols-rounded text-lg text-green-400">check_circle</span> Active
+                            <div class="cyber-card">
+                                <div class="text-zinc-400 text-sm font-medium mb-1 flex items-center gap-2">
+                                    <span class="material-symbols-rounded text-lg text-green-400">check_circle</span> Active
+                                </div>
+                                <div class="text-3xl font-bold text-green-400" id="stat-active">0</div>
                             </div>
-                            <div class="text-3xl font-bold text-green-400" id="stat-active">0</div>
-                        </div>
-                        <div class="cyber-card">
-                            <div class="text-zinc-400 text-sm font-medium mb-1 flex items-center gap-2">
-                                <span class="material-symbols-rounded text-lg text-yellow-400">hourglass_empty</span> Unused
+                            <div class="cyber-card">
+                                <div class="text-zinc-400 text-sm font-medium mb-1 flex items-center gap-2">
+                                    <span class="material-symbols-rounded text-lg text-yellow-400">hourglass_empty</span> Unused
+                                </div>
+                                <div class="text-3xl font-bold text-yellow-400" id="stat-unused">0</div>
                             </div>
-                            <div class="text-3xl font-bold text-yellow-400" id="stat-unused">0</div>
-                        </div>
-                        <div class="cyber-card">
-                            <div class="text-zinc-400 text-sm font-medium mb-1 flex items-center gap-2">
-                                <span class="material-symbols-rounded text-lg text-red-400">block</span> Banned
+                            <div class="cyber-card">
+                                <div class="text-zinc-400 text-sm font-medium mb-1 flex items-center gap-2">
+                                    <span class="material-symbols-rounded text-lg text-red-400">block</span> Banned
+                                </div>
+                                <div class="text-3xl font-bold text-red-400" id="stat-banned">0</div>
                             </div>
-                            <div class="text-3xl font-bold text-red-400" id="stat-banned">0</div>
                         </div>
-                    </div>
 
-                    <!-- Chart -->
-                    <div class="cyber-card mb-6">
-                        <h3 class="font-semibold mb-4 text-zinc-300">Activity Overview</h3>
-                        <div class="relative h-48 w-full">
-                            <canvas id="mainChart"></canvas>
+                        <!-- Chart -->
+                        <div class="cyber-card mb-6">
+                            <h3 class="font-semibold mb-4 text-zinc-300">Activity Overview</h3>
+                            <div class="relative h-48 w-full">
+                                <canvas id="mainChart"></canvas>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Recent Logs -->
-                    <h3 class="font-semibold mb-3 text-zinc-300 px-1">Recent Activity</h3>
-                    <div class="mobile-table" id="recent-logs-container">
-                        <div class="text-center p-4 text-zinc-500 text-sm">Waiting for data...</div>
+                        <!-- Recent Logs -->
+                        <h3 class="font-semibold mb-3 text-zinc-300 px-1">Recent Activity</h3>
+                        <div class="mobile-table" id="recent-logs-container">
+                            <div class="text-center p-4 text-zinc-500 text-sm">Waiting for data...</div>
+                        </div>
                     </div>
                 </section>
                 
