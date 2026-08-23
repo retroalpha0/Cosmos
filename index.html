@@ -130,7 +130,7 @@
         /* --- LISTS & CARDS --- */
         #keys-list, #bans-list { padding: 0 20px; display: flex; flex-direction: column; gap: 14px; }
 
-        .list-card { background: rgba(18, 18, 22, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.08); transition: 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);}
+        .list-card { background: rgba(18, 18, 22, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.08); transition: 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);}
         .list-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--primary); border-radius: 4px 0 0 4px; box-shadow: 2px 0 10px var(--purple-shine);}
         .list-card.banned::before { background: var(--danger); box-shadow: 2px 0 10px rgba(239,68,68,0.5);}
         .list-card.expired::before { background: var(--warning); box-shadow: 2px 0 10px rgba(245,158,11,0.5);}
@@ -170,7 +170,7 @@
         /* --- ANDROID BOTTOM SHEET MODALS --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); display: none; justify-content: center; align-items: flex-end; z-index: 1000; opacity: 0; transition: 0.3s ease; }
         .modal-overlay.active { display: flex; opacity: 1; }
-        .modal-card { background: rgba(18, 18, 22, 0.88); width: 100%; max-width: 600px; border-radius: 28px 28px 0 0; padding: 24px 24px 40px; transform: translateY(100%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); border-top: 1px solid var(--border-primary); box-shadow: 0 -10px 40px rgba(0,0,0,0.8), 0 0 30px rgba(168,85,247,0.1); max-height: 90vh; overflow-y: auto; backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);}
+        .modal-card { background: rgba(18, 18, 22, 0.6); width: 100%; max-width: 600px; border-radius: 28px 28px 0 0; padding: 24px 24px 40px; transform: translateY(100%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); border-top: 1px solid var(--border-primary); box-shadow: 0 -10px 40px rgba(0,0,0,0.8), 0 0 30px rgba(168,85,247,0.1); max-height: 90vh; overflow-y: auto; backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);}
         .modal-overlay.active .modal-card { transform: translateY(0); }
         .modal-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: -10px auto 20px; }
         .modal-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-main); text-shadow: 0 0 10px var(--purple-shine);}
@@ -191,7 +191,7 @@
         .pulse-danger { animation: pulse-danger 2s infinite !important; }
 
         /* SYSTEM SECTIONS */
-        .sys-section { background: rgba(18, 18, 22, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border-soft); border-radius: 16px; padding: 16px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .sys-section { background: rgba(18, 18, 22, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border-soft); border-radius: 16px; padding: 16px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         .sys-section-title { color: var(--primary); font-weight: 600; font-size: 0.9rem; text-transform: uppercase; text-shadow: 0 0 10px var(--purple-shine); margin-bottom: 15px; display: flex; align-items: center; gap: 8px;}
 
         /* --- BOTTOM NAV --- */
@@ -325,13 +325,17 @@
             </div>
 
             <!-- Action Buttons -->
-            <div style="display: flex; gap: 15px; margin-top: 5px;">
+            <div style="display: flex; gap: 10px; margin-top: auto;">
                 <button id="login-btn" onclick="login()" tabindex="3" style="flex: 1; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 16px; color: #fff; font-size: 1rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
                     LOGIN <i class="fas fa-sign-in-alt" style="color: #f97316;"></i>
                 </button>
                 <button onclick="openSessionModal()" style="width: 65px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
                     <i class="fas fa-shield-halved"></i>
                 </button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 10px; font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight: 700; letter-spacing: 1px; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">
+                DEVELOPER : 𝐹ᥣᴧ𝚢ℯ𝚁࿐ Λ𝙻𝙿𝙷∆
             </div>
         </div>
     </div>
@@ -625,6 +629,11 @@
                 <button class="btn" style="background: rgba(255,255,255,0.1); width: 100%;" onclick="closeModals()">Close</button>
             </div>
         </div>
+    </div>
+
+    <!-- Developer Section -->
+    <div style="text-align: center; margin-top: 30px; margin-bottom: 20px; font-size: 0.75rem; color: var(--text-dim); font-weight: 700; letter-spacing: 1px; padding-bottom: 70px;">
+        DEVELOPER : 𝐹ᥣᴧ𝚢ℯ𝚁࿐ Λ𝙻𝙿𝙷∆
     </div>
 
     <!-- BOTTOM NAVBAR -->

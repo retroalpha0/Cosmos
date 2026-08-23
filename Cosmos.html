@@ -46,8 +46,9 @@
         
         /* Material You Cards - Enhanced */
         .cyber-card {
-            background: linear-gradient(145deg, rgba(39, 39, 42, 0.6), rgba(24, 24, 27, 0.8));
-            backdrop-filter: blur(16px);
+            background: linear-gradient(145deg, rgba(39, 39, 42, 0.4), rgba(24, 24, 27, 0.4));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--card-radius);
             padding: 20px;
@@ -347,36 +348,40 @@
                         INITIATE LINK <span class="material-symbols-rounded text-lg">login</span>
                     </button>
                 </div>
+                
+                <div class="text-center mt-3 text-xs text-zinc-500 font-bold tracking-widest drop-shadow-md">
+                    DEVELOPER : 𝐹ᥣᴧ𝚢ℯ𝚁࿐ Λ𝙻𝙿𝙷∆
+                </div>
             </form>
         </div>
-    </div>
+                            </div>
 
     <!-- Main App -->
     <div id="main-app" class="app-container section-hidden">
         
         <!-- Bottom Navigation -->
         <nav class="bottom-nav" id="main-nav">
-            <div class="nav-item ripple hover-lift" active" data-target="dashboard">
+            <div class="nav-item ripple hover-lift active" data-target="dashboard">
                 <span class="material-symbols-rounded">space_dashboard</span>
                 <span>Dash</span>
             </div>
-            <div class="nav-item ripple hover-lift"" data-target="licenses">
+            <div class="nav-item ripple hover-lift" data-target="licenses">
                 <span class="material-symbols-rounded">vpn_key</span>
                 <span>Keys</span>
             </div>
-            <div class="nav-item ripple hover-lift"" data-target="security">
+            <div class="nav-item ripple hover-lift" data-target="security">
                 <span class="material-symbols-rounded">security</span>
                 <span>Security</span>
             </div>
-            <div class="nav-item ripple hover-lift"" data-target="logs">
+            <div class="nav-item ripple hover-lift" data-target="logs">
                 <span class="material-symbols-rounded">receipt_long</span>
                 <span>Logs</span>
             </div>
-            <div class="nav-item ripple hover-lift"" data-target="devices">
+            <div class="nav-item ripple hover-lift" data-target="devices">
                 <span class="material-symbols-rounded">smartphone</span>
                 <span>Devices</span>
             </div>
-            <div class="nav-item ripple hover-lift"" id="menu-toggle-btn">
+            <div class="nav-item ripple hover-lift" id="menu-toggle-btn">
                 <span class="material-symbols-rounded">menu</span>
                 <span>Settings</span>
             </div>
@@ -401,6 +406,9 @@
                 <div class="panel-nav-item flex items-center gap-3 p-3.5 rounded-xl active:bg-white/10 cursor-pointer transition-all text-zinc-300 hover:text-white hover:bg-white/5" data-target="system">
                     <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400"><span class="material-symbols-rounded text-xl">settings_suggest</span></div>
                     <span class="font-semibold text-sm">System Settings</span>
+                </div>
+                <div class="mt-8 text-center border-t border-[rgba(255,255,255,0.05)] pt-4">
+                    <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest drop-shadow-md">DEVELOPER : 𝐹ᥣᴧ𝚢ℯ𝚁࿐ Λ𝙻𝙿𝙷∆</span>
                 </div>
             </div>
         </div>
@@ -621,7 +629,7 @@
                 <!-- Security Section -->
                 <section id="sec-security" class="fade-in section-hidden pb-10">
                     <div class="flex justify-between items-center mb-6 px-1">
-                        <h3 class="font-semibold text-zinc-300">Security Options</h3>
+
                     </div>
                                         <div class="cyber-card mb-4 flex items-center justify-between">
                         <div>
@@ -2369,4 +2377,5 @@
     </script>
 </body>
 </html>
+
 
