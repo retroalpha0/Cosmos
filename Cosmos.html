@@ -147,23 +147,22 @@
         .fab:active { transform: scale(0.9); }
 
         /* Layouts (Mobile First) */
-        /* Layouts (Mobile First) */
         .app-container { display: flex; flex-direction: column; height: 100vh; width: 100vw; padding-bottom: 70px; }
         
         /* Bottom Navigation */
         .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
+            position: fixed; bottom: 0; left: 0; right: 0;
             background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(20px);
             border-top: 1px solid var(--panel-border);
             display: flex; justify-content: space-around; align-items: center;
-            z-index: 50; padding-bottom: env(safe-area-inset-bottom);
+            z-index: 50; padding-bottom: max(16px, env(safe-area-inset-bottom));
         }
         
         .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
         
         .topbar {
-            height: 72px; display: flex; align-items: center; justify-content: space-between;
-            padding: 0 16px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            min-height: 72px; display: flex; align-items: center; justify-content: space-between;
+            padding: max(32px, env(safe-area-inset-top)) 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.05);
             background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px);
             z-index: 30;
         }
@@ -293,7 +292,7 @@
     </div>
 
     <!-- Login Screen -->
-    <div id="login-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center p-4 section-hidden" style="background-color: #040406; overflow-y: auto;">
+    <div id="login-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center p-4 section-hidden" style="background-color: #040406; overflow-y: auto; padding-top: max(1rem, env(safe-area-inset-top)); padding-bottom: max(1rem, env(safe-area-inset-bottom));">
         <div class="w-full max-w-sm flex flex-col items-center">
             <div class="avatar-container hover-glow" style="width: 100px; height: 100px; background: #000; box-shadow: inset 0 0 20px rgba(244,63,94,0.1);">
                 <span class="material-symbols-rounded" style="font-size: 3.5rem; color: #F43F5E; filter: drop-shadow(0 0 10px rgba(244,63,94,0.4)); z-index: 2;">security</span>
