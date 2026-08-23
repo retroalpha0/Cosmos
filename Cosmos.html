@@ -305,17 +305,17 @@
 
     <!-- Login Screen -->
     <div id="login-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-start p-4 section-hidden" style="background: transparent; overflow-y: auto; padding-top: max(1rem, env(safe-area-inset-top)); padding-bottom: max(1rem, env(safe-area-inset-bottom));">
-        <div class="w-full max-w-sm flex flex-col items-center my-auto py-8">
-            <div class="avatar-container hover-glow" style="width: 100px; height: 100px; background: #000; box-shadow: inset 0 0 20px rgba(244,63,94,0.1);">
-                <span class="material-symbols-rounded" style="font-size: 3.5rem; color: #F43F5E; filter: drop-shadow(0 0 10px rgba(244,63,94,0.4)); z-index: 2;">security</span>
+        <div class="glass-card-login w-full max-w-sm flex flex-col items-center my-auto p-6 md:p-8 mt-12 mb-12 relative z-10">
+            <div class="avatar-container hover-glow" style="width: 90px; height: 90px; background: #000; box-shadow: inset 0 0 20px rgba(244,63,94,0.1);">
+                <span class="material-symbols-rounded" style="font-size: 3rem; color: #F43F5E; filter: drop-shadow(0 0 10px rgba(244,63,94,0.4)); z-index: 2;">security</span>
             </div>
             
-            <span class="header-jp">SECURE ACCESS // LEVEL 9</span>
-            <h1 class="login-title-glass">DPMODS</h1>
-            <span class="login-sub-glass">ADMINISTRATIVE CONSOLE</span>
+            <span class="header-jp" style="text-shadow: 0 2px 4px rgba(0,0,0,0.8);">SECURE ACCESS // LEVEL 9</span>
+            <h1 class="login-title-glass" style="text-shadow: 0 2px 10px rgba(0,0,0,0.8);">DPMODS</h1>
+            <span class="login-sub-glass" style="text-shadow: 0 2px 4px rgba(0,0,0,0.8);">ADMINISTRATIVE CONSOLE</span>
 
             <!-- UI Selector -->
-            <div class="flex flex-col gap-2 p-2 mb-4 rounded-xl bg-black/40 border border-white/5 w-full max-w-sm">
+            <div class="flex flex-col gap-2 p-3 mb-4 rounded-xl bg-black/60 border border-white/10 w-full shadow-inner">
                 <div class="flex gap-2">
                     <button type="button" onclick="window.location.href='./index.html?switched=true'" class="flex-1 py-2 rounded-lg text-xs font-bold text-zinc-400 hover:text-white transition-colors">Cosmic UI</button>
                     <button type="button" class="flex-1 py-2 rounded-lg text-xs font-bold text-white bg-white/10 border border-white/20 cursor-default shadow-[0_0_10px_rgba(255,255,255,0.05)]">Cosmos UI</button>
@@ -326,7 +326,7 @@
                 </div>
             </div>
 
-            <form id="login-form" class="glass-card-login w-full p-6 flex flex-col gap-4">
+            <form id="login-form" class="w-full flex flex-col gap-4 mt-2">
                 <div class="input-wrapper-login">
                     <input type="url" id="fb-url" class="glass-input-login" placeholder="Firebase Database URL" required>
                     <span class="material-symbols-rounded">database</span>
@@ -350,7 +350,7 @@
                     </button>
                 </div>
                 
-                <div class="text-center mt-3 text-xs text-zinc-500 font-bold tracking-widest drop-shadow-md">
+                <div class="text-center mt-4 text-xs text-zinc-500 font-bold tracking-widest drop-shadow-md">
                     DEVELOPER : 𝐹ᥣᴧ𝚢ℯ𝚁࿐ Λ𝙻𝙿𝙷∆
                 </div>
             </form>
@@ -440,7 +440,7 @@
                 
                 <!-- Dashboard Section -->
                 <section id="sec-dashboard" class="fade-in section-hidden pb-20">
-                    <div class="glass p-4 md:p-6 mb-4" style="background: rgba(24, 24, 27, 0.25); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 28px;">
+                    <div class="glass p-4 md:p-6 mb-4" style="background: rgba(12, 12, 16, 0.75); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);">
                         <!-- Stats Grid -->
                         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                             <div class="cyber-card">
