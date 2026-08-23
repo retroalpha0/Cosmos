@@ -17,7 +17,7 @@
         :root {
             --accent-color: #3b82f6; 
             --bg-color: #09090b; /* Deep OLED Black */
-            --panel-bg: rgba(24, 24, 27, 0.6);
+            --panel-bg: rgba(20, 20, 24, 0.85);
             --panel-border: rgba(255, 255, 255, 0.08);
             --card-radius: 28px;
             --btn-radius: 9999px; /* Pill shape for Material You */
@@ -37,8 +37,8 @@
         /* Glassmorphism Utilities */
         .glass {
             background: var(--panel-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--panel-border);
             border-radius: var(--card-radius);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -46,9 +46,9 @@
         
         /* Material You Cards - Enhanced */
         .cyber-card {
-            background: rgba(18, 18, 22, 0.75);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            background: rgba(18, 18, 22, 0.85);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--card-radius);
             padding: 20px;
@@ -153,7 +153,7 @@
         /* Bottom Navigation */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(10, 10, 15, 0.4); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             border-top: 1px solid var(--panel-border);
             display: flex; justify-content: space-around; align-items: center;
             z-index: 50; padding-top: 12px; padding-bottom: max(16px, env(safe-area-inset-bottom));
@@ -164,7 +164,7 @@
         .topbar {
             min-height: 72px; display: flex; align-items: center; justify-content: space-between;
             padding: max(32px, env(safe-area-inset-top)) 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.05);
-            background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             z-index: 30;
         }
         
@@ -222,16 +222,18 @@
         /* Tables for Android - Card style */
         .mobile-table { display: flex; flex-direction: column; gap: 12px; }
         .mobile-row { 
-            background: rgba(30, 30, 35, 0.6); border: 1px solid rgba(255,255,255,0.05); 
+            background: rgba(18, 18, 22, 0.85); 
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,0.08); 
             border-radius: 20px; padding: 16px; 
             display: flex; flex-direction: column; gap: 8px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .mobile-row:hover {
-            background: rgba(40, 40, 45, 0.8);
-            border-color: rgba(255,255,255,0.1);
+            background: rgba(25, 25, 30, 0.95);
+            border-color: rgba(255,255,255,0.15);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
         .row-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; margin-bottom: 8px;}
         
@@ -440,7 +442,6 @@
                 
                 <!-- Dashboard Section -->
                 <section id="sec-dashboard" class="fade-in section-hidden pb-20">
-                    <div class="glass p-4 md:p-6 mb-4" style="background: rgba(12, 12, 16, 0.75); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);">
                         <!-- Stats Grid -->
                         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                             <div class="cyber-card">
@@ -482,7 +483,6 @@
                         <div class="mobile-table" id="recent-logs-container">
                             <div class="text-center p-4 text-zinc-500 text-sm">Waiting for data...</div>
                         </div>
-                    </div>
                 </section>
                 
                 <!-- Licenses Section -->
@@ -2141,6 +2141,8 @@
                 camControl.distance = 75;
                 camera.position.set(0, 60, 20);
                 controls.target.set(0, -10, 0);
+                controls.autoRotate = true;
+                window.isHomeActive = true;
             });
             diveTl.to(blackout, { opacity: 0, duration: 1.2, delay: 0.1 });
             diveTl.call(() => blackout.remove());
@@ -2172,10 +2174,11 @@
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.03;
-        controls.autoRotate = true;
-        controls.autoRotateSpeed = 0.4;
+        controls.autoRotate = false; // Initially stop rotation
+        controls.autoRotateSpeed = 0.2; // Slow spin speed
         controls.target.set(0, -12, 0);
 
+        // [Shaders and Material definitions omitted for brevity, keeping original]
         const noiseChunk = `
             vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
             vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -2330,30 +2333,11 @@
         }
         scene.add(instancedDisk);
 
-        const config = [
-            { morph: 0.1, compress: 1.0, intensity: 1.0, rotate: 0.4, camY: 25, camDist: 85, orbit: 1.0 },
-            { morph: 4.5, compress: 1.15, intensity: 1.4, rotate: 1.5, camY: 45, camDist: 95, orbit: 1.8 },
-            { morph: 0.8, compress: 0.38, intensity: 3.5, rotate: 5.0, camY: 12, camDist: 55, orbit: 4.5 }
-        ];
+        window.isHomeActive = false; // Flag to enable spinning only after login
 
-        let stateIdx = 0;
         const camControl = { distance: 85 };
 
-        function transition() {
-            stateIdx = (stateIdx + 1) % config.length;
-            const s = config[stateIdx];
-            const tl = gsap.timeline({ defaults: { duration: 4.0, ease: "power2.inOut" } });
-            tl.to(diskMaterial.uniforms.uMorph, { value: s.morph }, 0);
-            tl.to(diskMaterial.uniforms.uCompression, { value: s.compress }, 0);
-            tl.to(diskMaterial.uniforms.uIntensity, { value: s.intensity }, 0);
-            tl.to(diskMaterial.uniforms.uOrbitScale, { value: s.orbit }, 0);
-            tl.to(auraMat.uniforms.uIntensity, { value: s.intensity }, 0);
-            tl.to(controls, { autoRotateSpeed: s.rotate }, 0);
-            tl.to(camera.position, { y: s.camY }, 0);
-            tl.to(camControl, { distance: s.camDist }, 0);
-        }
-
-        setInterval(transition, 10000);
+        // Removed the setInterval transition so the cosmos stays calm.
 
         const clock = new THREE.Clock();
         let animId;
@@ -2361,7 +2345,11 @@
             const time = clock.getElapsedTime();
             diskMaterial.uniforms.uTime.value = time;
             auraMat.uniforms.uTime.value = time;
-            instancedDisk.rotation.y += 0.0005;
+            
+            if (window.isHomeActive) {
+                instancedDisk.rotation.y += 0.0002; // Very slow static rotation
+            }
+            
             const currentDir = new THREE.Vector3().subVectors(camera.position, controls.target).normalize();
             camera.position.x = controls.target.x + currentDir.x * camControl.distance;
             camera.position.z = controls.target.z + currentDir.z * camControl.distance;
