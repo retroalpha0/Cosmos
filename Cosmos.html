@@ -46,9 +46,9 @@
         
         /* Material You Cards - Enhanced */
         .cyber-card {
-            background: linear-gradient(145deg, rgba(39, 39, 42, 0.4), rgba(24, 24, 27, 0.4));
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(18, 18, 22, 0.75);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--card-radius);
             padding: 20px;
@@ -260,7 +260,7 @@
         .hover-lift:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(244,63,94,0.1); z-index: 10; }
         .hover-glow { transition: box-shadow 0.3s; }
         .hover-glow:hover { box-shadow: 0 0 25px rgba(244,63,94,0.4), inset 0 0 10px rgba(244,63,94,0.1); }
-        .glass-card-login { background: rgba(12,12,16,0.5); backdrop-filter: blur(25px) saturate(120%); -webkit-backdrop-filter: blur(25px) saturate(120%); border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1); border-radius: 18px; }
+        .glass-card-login { background: rgba(12,12,16,0.4); backdrop-filter: blur(20px) saturate(120%); -webkit-backdrop-filter: blur(20px) saturate(120%); border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1); border-radius: 18px; }
         .glass-input-login { background: rgba(8,8,12,0.8); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; color: #fff; width: 100%; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); outline: none; }
         .glass-input-login:focus { border-color: #F43F5E; box-shadow: inset 0 2px 8px rgba(0,0,0,0.6), 0 0 15px rgba(244,63,94,0.4); background: rgba(0,0,0,0.4); }
         .btn-primary-login { background: transparent; color: #fff; border: 1px solid #F43F5E; border-radius: 12px; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: inset 0 0 10px rgba(244,63,94,0.1); text-transform: uppercase; letter-spacing: 1px; }
@@ -389,7 +389,7 @@
 
         <!-- Side Panel & Overlay -->
         <div id="side-panel-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] opacity-0 pointer-events-none transition-opacity duration-300"></div>
-        <div id="side-panel" class="fixed inset-y-0 right-0 w-72 bg-[#09090b] border-l border-[rgba(255,255,255,0.08)] shadow-2xl transform translate-x-full transition-transform duration-300 z-[100] flex flex-col">
+        <div id="side-panel" class="fixed inset-y-0 right-0 w-72 bg-[#09090b]/80 backdrop-blur-xl border-l border-[rgba(255,255,255,0.08)] shadow-2xl transform translate-x-full transition-transform duration-300 z-[100] flex flex-col">
             <div class="p-5 border-b border-[rgba(255,255,255,0.05)] flex justify-between items-center bg-black/40 backdrop-blur-md">
                 <h2 class="font-bold text-lg text-accent flex items-center gap-2">
                     <span class="material-symbols-rounded">settings</span> Settings
@@ -506,7 +506,7 @@
                     <div class="lg:flex lg:gap-6 lg:items-start relative">
                         <!-- Left/Top side: Preview -->
                         <div class="lg:w-[350px] lg:sticky lg:top-4 lg:z-40 lg:flex-shrink-0">
-                            <div class="cyber-card mb-6 bg-black border-zinc-800">
+                            <div class="cyber-card mb-6 border-zinc-800">
                                 <h3 class="font-semibold mb-4 text-accent flex items-center gap-2">
                                     <span class="material-symbols-rounded">preview</span> Live Preview
                                 </h3>
