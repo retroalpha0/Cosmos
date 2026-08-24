@@ -935,6 +935,14 @@
         // --- Init ---
         function init() {
             
+            const uiPref = localStorage.getItem('dp_preferred_ui');
+            const rememberUiCb = document.getElementById('remember-ui');
+            if (uiPref === 'cosmos') rememberUiCb.checked = true;
+            
+            rememberUiCb.addEventListener('change', (e) => {
+                if (e.target.checked) localStorage.setItem('dp_preferred_ui', 'cosmos');
+                else localStorage.removeItem('dp_preferred_ui');
+            });
             
             const savedUrl = localStorage.getItem('cc_db_url');
             const savedToken = localStorage.getItem('cc_token');
@@ -1105,7 +1113,9 @@
 
         function handleLogout() {
             Object.values(App.listeners).forEach(es => es.close()); App.listeners = {};
-            App.dbUrl = ''; App.token = ''; localStorage.clear();
+            App.dbUrl = ''; App.token = ''; 
+            localStorage.removeItem('cc_db_url'); 
+            localStorage.removeItem('cc_token');
             DOM.mainApp.classList.add('section-hidden'); DOM.loginScreen.classList.remove('section-hidden');
             
             showToast('Disconnected', 'info');

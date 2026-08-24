@@ -54,10 +54,7 @@
         input, textarea, select { user-select: auto; font-family: var(--font-ui); } 
         ::-webkit-scrollbar { display: none; }
         
-        body { 
-            background: transparent; color: var(--text-main); font-family: var(--font-ui);
-            min-height: 100dvh; overflow-x: hidden; overscroll-behavior-y: contain; 
-        }
+        body { font-family: var(--font-ui), sans-serif; background: #000; color: var(--text-main); height: 100dvh; overflow: hidden; position: relative; margin: 0; user-select: none; -webkit-user-select: none; }
 
         :focus-visible { outline: none; }
 
@@ -286,7 +283,6 @@
         <span id="di-msg">Action Successful</span>
     </div>
 
-    <!-- LOGIN SCREEN -->
     <!-- LOGIN SCREEN -->
     <div id="login-screen" style="position: relative; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100dvh; padding: max(32px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom)); animation: fadeIn 0.5s ease; overflow-y: auto;">
         <div class="login-card-glass" style="margin: auto 0; width: 100%; max-width: 380px; padding: 25px; background: rgba(10, 10, 12, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 50px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 20px; position: relative; z-index: 5;">
@@ -667,29 +663,19 @@
         let currentEditKey = null;
 
         window.onload = () => {
-            const uiPref = localStorage.getItem('dp_preferred_ui');
-            const urlParams = new URLSearchParams(window.location.search);
-            if (uiPref === 'cosmos' && !urlParams.get('switched')) {
-                window.location.replace('./Cosmos.html');
-                return;
-            }
-            
-            const rememberUiCb = document.getElementById('remember-ui');
-            if (uiPref === 'index') rememberUiCb.checked = true;
-            rememberUiCb.addEventListener('change', (e) => {
-                if (e.target.checked) localStorage.setItem('dp_preferred_ui', 'index');
-                else localStorage.removeItem('dp_preferred_ui');
-            });
-
             const savedUrl = localStorage.getItem('dp_dialog_url');
             const savedSecret = localStorage.getItem('dp_dialog_secret');
-            if (savedUrl) document.getElementById('auth-url').value = savedUrl;
-            if (savedSecret) document.getElementById('auth-secret').value = savedSecret;
             
             const now = new Date();
             const y = now.getFullYear(); const m = String(now.getMonth()+1).padStart(2,'0'); const d = String(now.getDate()).padStart(2,'0');
             const defaultDateStr = `${y+1}-${m}-${d}`;
             document.getElementById('mod-key-date').value = defaultDateStr;
+
+            if (savedUrl && savedSecret) {
+                document.getElementById('auth-url').value = savedUrl;
+                document.getElementById('auth-secret').value = savedSecret;
+                login();
+            }
         };
 
         async function login() {
@@ -804,7 +790,11 @@
             } catch(e) { showIsland("Sync Error", "error"); }
         }
 
-        function logout() { location.reload(); }
+        function logout() { 
+            localStorage.removeItem('dp_dialog_url');
+            localStorage.removeItem('dp_dialog_secret');
+            location.href = location.pathname;
+        }
 
         function nav(viewId, el, title, subtitle) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -1470,9 +1460,10 @@
         const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(60, 30, 60);
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance", alpha: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "high-performance", alpha: false });
+        renderer.setClearColor(0x000000, 1);
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.6;
 
@@ -1485,6 +1476,7 @@
         canvasContainer.style.height = '100vh';
         canvasContainer.style.zIndex = '-1';
         canvasContainer.style.pointerEvents = 'none';
+        canvasContainer.style.backgroundColor = '#000000';
         
         document.body.appendChild(canvasContainer);
         canvasContainer.appendChild(renderer.domElement);
@@ -1492,8 +1484,8 @@
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.03;
-        controls.autoRotate = true;
-        controls.autoRotateSpeed = 0.4;
+        controls.autoRotate = false;
+        controls.autoRotateSpeed = 0.2;
         controls.target.set(0, -12, 0);
 
         const noiseChunk = `
@@ -1566,15 +1558,15 @@
                 varying vec3 vView;
                 void main() {
                     float rim = pow(1.0 - max(dot(vNormal, vView), 0.0), 4.0);
-                    gl_FragColor = vec4(vec3(1.0, 0.45, 0.1) * rim * uIntensity * 5.0, 1.0);
+                    gl_FragColor = vec4(vec3(1.0, 0.7, 0.1) * rim * uIntensity * 5.0, 1.0);
                 }
             `,
             side: THREE.BackSide, transparent: true, blending: THREE.AdditiveBlending
         });
         coreGroup.add(new THREE.Mesh(new THREE.SphereGeometry(4.25, 64, 64), auraMat));
 
-        const instanceCount = 5000;
-        const streakGeo = new THREE.CylinderGeometry(0.01, 0.12, 2.2, 3);
+        const instanceCount = 2500;
+        const streakGeo = new THREE.CylinderGeometry(0.015, 0.1, 2.2, 3);
         streakGeo.rotateX(Math.PI / 2);
         
         const diskMaterial = new THREE.ShaderMaterial({
@@ -1607,9 +1599,11 @@
                     vec3 viewDir = normalize(cameraPosition - morphedWorldPos);
                     vec3 orbitDir = normalize(vec3(-sin(currentAngle), 0.0, cos(currentAngle)));
                     float doppler = dot(orbitDir, viewDir);
-                    vec3 hot = vec3(1.0, 0.95, 0.9);
-                    vec3 warm = vec3(1.0, 0.45, 0.1);
-                    vec3 cool = vec3(0.1, 0.35, 1.0);
+                    
+                    vec3 hot = vec3(1.0, 0.95, 0.5);
+                    vec3 warm = vec3(1.0, 0.65, 0.1);
+                    vec3 cool = vec3(0.85, 0.35, 0.05);
+                    
                     vec3 color = mix(cool, warm, smoothstep(45.0, 12.0, r));
                     color = mix(color, hot, smoothstep(10.0, 4.0, r));
                     vColor = color * (1.3 + doppler * 0.7) * uIntensity;
