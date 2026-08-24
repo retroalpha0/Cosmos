@@ -55,13 +55,13 @@
         ::-webkit-scrollbar { display: none; }
         
         body { 
-            background: #000; color: var(--text-main); font-family: var(--font-ui);
+            background: transparent; color: var(--text-main); font-family: var(--font-ui);
             min-height: 100dvh; overflow-x: hidden; overscroll-behavior-y: contain; 
         }
 
         :focus-visible { outline: none; }
 
-        .app-container { max-width: 800px; margin: 0 auto; padding-bottom: calc(var(--nav-height) + 20px); display: flex; flex-direction: column; min-height: 100dvh;}
+        .app-container { max-width: 800px; margin: 0 auto; padding-bottom: calc(var(--nav-height) + 20px); display: flex; flex-direction: column; min-height: 100dvh; }
 
         /* --- ANDROID MATERIAL SNACKBAR --- */
         #dynamic-island {
@@ -133,12 +133,13 @@
         /* --- LISTS & CARDS --- */
         #keys-list, #bans-list { padding: 0 20px; display: flex; flex-direction: column; gap: 14px; }
 
-        .list-card { background: rgba(18, 18, 22, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.08); transition: 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);}
+        .list-card { background: rgba(18, 18, 22, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.08); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer;}
+        .list-card:active { transform: scale(0.97); background: rgba(25, 25, 30, 0.6); }
         .list-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--primary); border-radius: 4px 0 0 4px; box-shadow: 2px 0 10px var(--purple-shine);}
         .list-card.banned::before { background: var(--danger); box-shadow: 2px 0 10px rgba(239,68,68,0.5);}
         .list-card.expired::before { background: var(--warning); box-shadow: 2px 0 10px rgba(245,158,11,0.5);}
         
-        .card-header-main { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .card-header-main { display: flex; justify-content: space-between; align-items: center; user-select: none; }
         .card-header-left { display: flex; flex-direction: column; gap: 6px; }
         .card-header-right { display: flex; align-items: center; gap: 12px; }
 
@@ -207,11 +208,11 @@
         .nav-item i { font-size: 1.4rem; transition: transform 0.2s ease; }
         .nav-item.active i { transform: scale(1.15); text-shadow: 0 0 12px var(--purple-shine); }
 
-        .view { display: none; animation: liquidFade 0.25s ease; }
+        .view { display: none; animation: liquidFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); background: rgba(5, 5, 8, 0.3); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 24px; margin: 10px; padding-bottom: 20px; min-height: calc(100vh - 180px); border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
         .view.active { display: block; }
         @keyframes liquidFade { 
-            0% { transform: translateY(10px) scale(0.98); } 
-            100% { transform: translateY(0) scale(1); } 
+            0% { transform: translateY(20px) scale(0.97); opacity: 0; } 
+            100% { transform: translateY(0) scale(1); opacity: 1; } 
         }
         
         .empty-state { text-align: center; padding: 40px 20px; color: var(--text-dim); font-weight: 600; font-size: 0.95rem; }
