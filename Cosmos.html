@@ -327,15 +327,19 @@
             <span class="login-sub-glass" style="text-shadow: 0 2px 4px rgba(0,0,0,0.8);">ADMINISTRATIVE CONSOLE</span>
 
             <!-- UI Selector -->
-            <div class="flex flex-col gap-2 p-3 mb-4 rounded-xl bg-black/60 border border-white/10 w-full shadow-inner">
-                <div class="flex gap-2">
-                    <button type="button" onclick="window.location.href='./index.html?switched=true'" class="flex-1 py-2 rounded-lg text-xs font-bold text-zinc-400 hover:text-white transition-colors">Cosmic UI</button>
-                    <button type="button" class="flex-1 py-2 rounded-lg text-xs font-bold text-white bg-white/10 border border-white/20 cursor-default shadow-[0_0_10px_rgba(255,255,255,0.05)]">Cosmos UI</button>
+            <div class="flex flex-col gap-3 p-3 mb-4 rounded-2xl bg-black/40 border border-white/5 w-full shadow-[inset_0_2px_10px_rgba(0,0,0,0.3)] backdrop-blur-md">
+                <div class="flex gap-1 p-1 bg-black/50 rounded-xl border border-white/5">
+                    <button type="button" onclick="window.location.href='./index.html?switched=true'" class="flex-1 py-2 rounded-lg text-xs font-bold text-zinc-400 hover:text-white hover:bg-white/5 transition-all uppercase tracking-wider">Cosmic UI</button>
+                    <button type="button" class="flex-1 py-2 rounded-lg text-xs font-bold text-white bg-white/10 border border-white/10 cursor-default shadow-md uppercase tracking-wider">Cosmos UI</button>
                 </div>
-                <div class="flex items-center justify-center gap-2 mt-1">
-                    <input type="checkbox" id="remember-ui" class="w-3.5 h-3.5 rounded bg-black/50 border-zinc-700 text-[#F43F5E] cursor-pointer">
-                    <label for="remember-ui" class="text-[10px] font-bold text-zinc-400 cursor-pointer uppercase tracking-wider">Set as default UI</label>
-                </div>
+                <label class="flex items-center justify-between cursor-pointer group px-1">
+                    <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Set as default UI</span>
+                    <div class="relative w-8 h-4">
+                        <input type="checkbox" id="remember-ui" class="peer sr-only">
+                        <div class="block w-8 h-4 rounded-full bg-white/10 border border-white/10 peer-checked:bg-[#F43F5E] peer-checked:border-[#F43F5E] transition-all"></div>
+                        <div class="absolute left-[2px] top-[2px] w-3 h-3 rounded-full bg-white shadow-sm transition-all peer-checked:translate-x-4"></div>
+                    </div>
+                </label>
             </div>
 
             <form id="login-form" class="w-full flex flex-col gap-4 mt-2">
@@ -1091,7 +1095,7 @@
                 if(DOM.rememberLogin.checked) { localStorage.setItem('cc_db_url', url); localStorage.setItem('cc_token', token); }
                 else { localStorage.removeItem('cc_db_url'); localStorage.removeItem('cc_token'); }
                 
-                                if (window.startSingularityDive) {
+                if (window.startSingularityDive) {
                     window.startSingularityDive(() => {
                         DOM.loginScreen.classList.add('section-hidden'); 
                         DOM.mainApp.classList.remove('section-hidden');
@@ -1103,6 +1107,12 @@
                 
                 await loadInitialData();
                 startListeners();
+                
+                if(window.syncInterval) clearInterval(window.syncInterval);
+                window.syncInterval = setInterval(() => {
+                    if(App.dbUrl && App.token) loadInitialData();
+                }, 15000);
+                
                 initChart();
                 navigateTo('dashboard', document.querySelector('.nav-item[data-target="dashboard"]'));
                 hideLoader(); showToast('Connected Successfully', 'success');
@@ -1112,11 +1122,17 @@
         }
 
         function handleLogout() {
+            if(window.syncInterval) clearInterval(window.syncInterval);
             Object.values(App.listeners).forEach(es => es.close()); App.listeners = {};
             App.dbUrl = ''; App.token = ''; 
             localStorage.removeItem('cc_db_url'); 
             localStorage.removeItem('cc_token');
-            DOM.mainApp.classList.add('section-hidden'); DOM.loginScreen.classList.remove('section-hidden');
+            DOM.mainApp.classList.add('section-hidden'); 
+            DOM.loginScreen.classList.remove('section-hidden');
+            
+            // Reset UI and Camera so they don't get a blank screen
+            gsap.to(DOM.loginScreen, { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" });
+            window.isHomeActive = false;
             
             showToast('Disconnected', 'info');
         }
