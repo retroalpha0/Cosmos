@@ -2141,10 +2141,16 @@
 
         window.startSingularityDive = (onComplete) => {
             const loginUI = document.getElementById('login-screen');
-            gsap.to(loginUI, { opacity: 0, scale: 0.8, duration: 0.6, ease: "power2.inOut" });
+            gsap.to(loginUI, { opacity: 0, scale: 0.8, duration: 0.4, ease: "power2.inOut" });
             
             const diveTl = gsap.timeline();
-            diveTl.to(camControl, { distance: 1.5, duration: 1.5, ease: "power2.in" }, 0);
+            
+            // Move camera in but not excessively deep to avoid extreme overdraw lag on mobile GPUs
+            diveTl.to(camControl, { distance: 15, duration: 0.8, ease: "power2.in" }, 0);
+            
+            // Fade out the additive particles and aura to eliminate GPU fill-rate lag during the dive
+            diveTl.to(diskMaterial.uniforms.uIntensity, { value: 0.0, duration: 0.6, ease: "power2.in" }, 0.2);
+            diveTl.to(auraMat.uniforms.uIntensity, { value: 0.0, duration: 0.6, ease: "power2.in" }, 0.2);
             
             const blackout = document.createElement('div');
             blackout.style.position = 'fixed';
@@ -2155,7 +2161,8 @@
             blackout.style.pointerEvents = 'none';
             document.body.appendChild(blackout);
 
-            diveTl.to(blackout, { opacity: 1, duration: 0.4 }, 1.1);
+            diveTl.to(blackout, { opacity: 1, duration: 0.3 }, 0.5);
+            
             diveTl.call(() => {
                 onComplete();
                 camControl.distance = 75;
@@ -2164,7 +2171,12 @@
                 controls.autoRotate = true;
                 window.isHomeActive = true;
             });
-            diveTl.to(blackout, { opacity: 0, duration: 1.2, delay: 0.1 });
+            
+            // Fade back in the particles seamlessly
+            diveTl.to(diskMaterial.uniforms.uIntensity, { value: 1.0, duration: 0.8, ease: "power2.out" }, 1.0);
+            diveTl.to(auraMat.uniforms.uIntensity, { value: 1.0, duration: 0.8, ease: "power2.out" }, 1.0);
+            diveTl.to(blackout, { opacity: 0, duration: 0.8 }, 0.8);
+            
             diveTl.call(() => blackout.remove());
         };
 
