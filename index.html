@@ -672,6 +672,24 @@
         let currentEditKey = null;
 
         window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const uiPref = localStorage.getItem('dp_preferred_ui');
+            
+            if (uiPref === 'cosmos' && !urlParams.get('switched')) {
+                window.location.href = './Cosmos.html';
+                return;
+            }
+            
+            const rememberUiCb = document.getElementById('remember-ui');
+            if (rememberUiCb) {
+                if (uiPref === 'cosmic' || !uiPref) rememberUiCb.checked = true;
+                
+                rememberUiCb.addEventListener('change', (e) => {
+                    if (e.target.checked) localStorage.setItem('dp_preferred_ui', 'cosmic');
+                    else localStorage.removeItem('dp_preferred_ui');
+                });
+            }
+
             const savedUrl = localStorage.getItem('dp_dialog_url');
             const savedSecret = localStorage.getItem('dp_dialog_secret');
             

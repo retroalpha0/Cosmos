@@ -938,15 +938,23 @@
 
         // --- Init ---
         function init() {
-            
+            const urlParams = new URLSearchParams(window.location.search);
             const uiPref = localStorage.getItem('dp_preferred_ui');
-            const rememberUiCb = document.getElementById('remember-ui');
-            if (uiPref === 'cosmos') rememberUiCb.checked = true;
             
-            rememberUiCb.addEventListener('change', (e) => {
-                if (e.target.checked) localStorage.setItem('dp_preferred_ui', 'cosmos');
-                else localStorage.removeItem('dp_preferred_ui');
-            });
+            if (uiPref === 'cosmic' && !urlParams.get('switched')) {
+                window.location.href = './index.html';
+                return;
+            }
+            
+            const rememberUiCb = document.getElementById('remember-ui');
+            if (rememberUiCb) {
+                if (uiPref === 'cosmos') rememberUiCb.checked = true;
+                
+                rememberUiCb.addEventListener('change', (e) => {
+                    if (e.target.checked) localStorage.setItem('dp_preferred_ui', 'cosmos');
+                    else localStorage.removeItem('dp_preferred_ui');
+                });
+            }
             
             const savedUrl = localStorage.getItem('cc_db_url');
             const savedToken = localStorage.getItem('cc_token');
