@@ -667,8 +667,60 @@
 
         let DB_URL = "";
         let DB_SECRET = "";
-        // Updated to match dp_dialog_controller schema exactly
-        let DB = { keys: {}, blacklisted_hwids: {}, system: {}, security: {} }; 
+        let DB = {
+            system: {
+                version: "1.0",
+                signature_verification: true,
+                valid_signatures: [
+                    "61c026c5896ac9f9daecbd4bbd1a9abb075e1c8a105b3b633b47c510bedbc443"
+                ],
+                maintenance: false,
+                maintenance_url: "https://t.me/your_channel",
+                update_required: false,
+                update_url: "https://t.me/your_channel",
+                admin_url: "tg://resolve?domain=retroalpha",
+                remote_kill: false,
+                random_crash_mode: false,
+                random_crash_chance: 5,
+                broadcast_enabled: false,
+                broadcast_title: "NEW ANNOUNCEMENT",
+                broadcast_msg: "System is now optimized for instant startup!",
+                ui: {
+                    title: "Welcome Back",
+                    subtitle: "Premium Access",
+                    btn_text: "SIGN IN",
+                    hint: "Enter Premium Key",
+                    bg_urls: [
+                        "https://example.com/image1.jpg",
+                        "https://example.com/image2.png"
+                    ],
+                    bg_url: "https://example.com/main_image.jpg",
+                    icon_type: "admin"
+                },
+                messages: {
+                    success: "Access Granted",
+                    fail: "Invalid License Key",
+                    banned: "Device is banned",
+                    expired: "Subscription Expired",
+                    mismatch: "Key bound to another device",
+                    maintenance: "Server Maintenance",
+                    offline: "Connection Failed"
+                }
+            },
+            keys: {
+                "YOUR-KEY-HERE": {
+                    used: false,
+                    banned: false,
+                    expiry_date: "2026-12-31 23:59:59",
+                    bound_hwid: "",
+                    crash: false
+                }
+            },
+            blacklisted_hwids: {
+                "DEVICE_ID_HERE": true
+            },
+            security: {}
+        };
         let currentEditKey = null;
 
         window.onload = () => {

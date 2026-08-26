@@ -1231,8 +1231,8 @@
                     random_crash_mode: false,
                     random_crash_chance: 5,
                     broadcast_enabled: false,
-                    broadcast_title: "Update Alert",
-                    broadcast_msg: "New features coming soon!",
+                    broadcast_title: "NEW ANNOUNCEMENT",
+                    broadcast_msg: "System is now optimized for instant startup!",
                     ui: {
                         title: "Welcome Back",
                         subtitle: "Premium Access",
@@ -1240,8 +1240,7 @@
                         hint: "Enter Premium Key",
                         bg_urls: [
                             "https://example.com/image1.jpg",
-                            "https://example.com/image2.png",
-                            "https://github.com/user/repo/blob/main/image3.jpg"
+                            "https://example.com/image2.png"
                         ],
                         bg_url: "https://example.com/main_image.jpg",
                         icon_type: "admin"
@@ -1268,7 +1267,7 @@
             let keys = await fetchFirebase('dp_dialog_controller/keys');
             if(!keys) {
                 keys = {
-                    "YOUR-LICENSE-KEY": {
+                    "YOUR-KEY-HERE": {
                         "used": false,
                         "banned": false,
                         "expiry_date": "2026-12-31 23:59:59",
@@ -1283,7 +1282,7 @@
             let blacklisted_hwids = await fetchFirebase('dp_dialog_controller/blacklisted_hwids');
             if(!blacklisted_hwids) {
                 blacklisted_hwids = {
-                    "HWID_TO_BLOCK": true
+                    "DEVICE_ID_HERE": true
                 };
                 await putFirebase('dp_dialog_controller/blacklisted_hwids', blacklisted_hwids);
             }
