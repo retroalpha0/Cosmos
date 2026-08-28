@@ -58,7 +58,8 @@
 
         :focus-visible { outline: none; }
 
-        .app-container { max-width: 800px; margin: 0 auto; padding-bottom: calc(var(--nav-height) + 20px); display: flex; flex-direction: column; height: 100dvh; overflow-y: auto; overflow-x: hidden; }
+        .app-container { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; height: 100dvh; overflow-y: auto; overflow-x: hidden; }
+        .app-container::after { content: ''; display: block; min-height: calc(var(--nav-height) + 40px); flex-shrink: 0; }
 
         /* --- ANDROID MATERIAL SNACKBAR --- */
         #dynamic-island {
