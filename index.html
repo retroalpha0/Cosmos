@@ -412,7 +412,6 @@
                 <div class="sys-tab" onclick="switchSysTab('msg', this)">Messages</div>
                 <div class="sys-tab" onclick="switchSysTab('ctrl', this)">Controls</div>
                 <div class="sys-tab" onclick="switchSysTab('broadcast', this)">Broadcast</div>
-                <div class="sys-tab" onclick="switchSysTab('sec', this)">Security</div>
             </div>
             <div class="input-wrapper-center" style="margin-top: 15px;">
                 
@@ -503,48 +502,7 @@
                     </div>
                 </div>
 
-                <!-- Security & Advanced -->
-                <div class="sys-tab-content" id="sys-tab-sec">
-                    <!-- DEDICATED FULL BOX: SIGNATURE VERIFICATION -->
-                    <div class="sys-section" style="border-color: rgba(239, 68, 68, 0.3);">
-                        <div class="sys-section-title" style="color:var(--danger); text-shadow:0 0 10px rgba(239,68,68,0.5);"><i class="fas fa-file-signature"></i> Signature Verification</div>
-                        <div class="toggle-wrapper" id="tog-sig" onclick="toggleSwitch(this)">
-                            <div style="font-weight:800; font-size:0.85rem;">Enable Signature Verification</div><div class="toggle-switch"></div>
-                        </div>
-                        <div class="input-group">
-                            <label>Valid App Signatures (One signature per line or comma separated)</label>
-                            <textarea id="sys-sigs" rows="6" placeholder="28A4B67...9F2B&#10;7B1C4D2...3E4A" style="font-family:var(--font-code); font-size:0.75rem; line-height:1.5; letter-spacing:0.5px;"></textarea>
-                            <div style="font-size:0.7rem; color:var(--text-dim); margin-top:4px;"><i class="fas fa-shield-alt"></i> Enter SHA-256 or MD5 hashes for signature anti-tamper validation.</div>
-                        </div>
-                    </div>
 
-                    <!-- NEW TELEMETRY / LOGS SECTION -->
-                    <div class="sys-section" style="border-color: rgba(245, 158, 11, 0.3);">
-                        <div class="sys-section-title" style="color:var(--warning); text-shadow:0 0 10px rgba(245,158,11,0.5);"><i class="fas fa-satellite-dish"></i> Telemetry & Logs</div>
-                        <div id="telemetry-logs-list" style="max-height: 400px; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 10px;">
-                            <div style="text-align:center; color:var(--text-dim); padding: 20px;">No telemetry logs available.</div>
-                        </div>
-                        <button class="btn btn-xs" onclick="renderLogs()" style="margin-top: 15px; background: rgba(245,158,11,0.1); color: var(--warning);"><i class="fas fa-sync-alt"></i> Refresh Logs</button>
-                    </div>
-
-                    <!-- DEDICATED FULL BOX: KILL SWITCH & OTHERS -->
-                    <div class="sys-section" style="border-color: rgba(239, 68, 68, 0.3);">
-                        <div class="sys-section-title" style="color:var(--danger); text-shadow:0 0 10px rgba(239,68,68,0.5);"><i class="fas fa-shield-alt"></i> Advanced Security</div>
-                        <div class="toggle-wrapper" id="tog-kill" onclick="toggleSwitch(this)">
-                            <div style="font-weight:800; font-size:0.85rem;">Remote Kill App</div><div class="toggle-switch"></div>
-                        </div>
-                        <div class="toggle-wrapper" id="tog-telemetry" onclick="toggleSwitch(this)">
-                            <div style="font-weight:800; font-size:0.85rem;">Telemetry</div><div class="toggle-switch"></div>
-                        </div>
-                        
-                        <hr style="border:0; height:1px; background:var(--border-soft); margin: 15px 0;">
-                        
-                        <div class="toggle-wrapper" id="tog-crash" onclick="toggleSwitch(this)">
-                            <div style="font-weight:800; font-size:0.85rem;">Random Crash Mode</div><div class="toggle-switch"></div>
-                        </div>
-                        <div class="input-group"><label>Crash Chance (%)</label><input type="number" id="sys-crash-chance" min="0" max="100"></div>
-                    </div>
-                </div>
 
                 <button class="btn btn-primary" onclick="saveSystem()" style="margin-bottom: 120px; margin-top: 15px;"><i class="fas fa-save"></i> Save Global System</button>
             </div>
@@ -552,6 +510,56 @@
         
         <div style="text-align: center; padding: 20px 20px 40px; color: #ffffff; font-size: 0.85rem; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;">
             <i class="fas fa-shield-alt"></i> PANEL BY ALPHA
+        </div>
+
+        <!-- SECURITY VIEW -->
+        <div id="view-security" class="view">
+            <div class="input-wrapper-center" style="margin-top: 15px;">
+                <!-- NEW TELEMETRY / LOGS SECTION -->
+                <div class="sys-section" style="border-color: rgba(245, 158, 11, 0.3);">
+                    <div class="sys-section-title" style="color:var(--warning); text-shadow:0 0 10px rgba(245,158,11,0.5);"><i class="fas fa-satellite-dish"></i> Telemetry & Logs</div>
+                    <div id="telemetry-logs-list" style="max-height: 400px; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="text-align:center; color:var(--text-dim); padding: 20px;">No telemetry logs available.</div>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top: 15px;">
+                        <button class="btn btn-xs" onclick="renderLogs()" style="flex:1; background: rgba(245,158,11,0.1); color: var(--warning);"><i class="fas fa-sync-alt"></i> Refresh Logs</button>
+                        <button class="btn btn-xs" onclick="clearLogs()" style="flex:1; background: rgba(239, 68, 68, 0.1); color: var(--danger); border-color: rgba(239,68,68,0.3);"><i class="fas fa-trash"></i> Clear Logs</button>
+                    </div>
+                </div>
+
+                <!-- DEDICATED FULL BOX: SIGNATURE VERIFICATION -->
+                <div class="sys-section" style="border-color: rgba(239, 68, 68, 0.3);">
+                    <div class="sys-section-title" style="color:var(--danger); text-shadow:0 0 10px rgba(239,68,68,0.5);"><i class="fas fa-file-signature"></i> Signature Verification</div>
+                    <div class="toggle-wrapper" id="tog-sig" onclick="toggleSwitch(this)">
+                        <div style="font-weight:800; font-size:0.85rem;">Enable Signature Verification</div><div class="toggle-switch"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Valid App Signatures (One signature per line or comma separated)</label>
+                        <textarea id="sys-sigs" rows="6" placeholder="28A4B67...9F2B&#10;7B1C4D2...3E4A" style="font-family:var(--font-code); font-size:0.75rem; line-height:1.5; letter-spacing:0.5px;"></textarea>
+                        <div style="font-size:0.7rem; color:var(--text-dim); margin-top:4px;"><i class="fas fa-shield-alt"></i> Enter SHA-256 or MD5 hashes for signature anti-tamper validation.</div>
+                    </div>
+                </div>
+
+                <!-- DEDICATED FULL BOX: KILL SWITCH & OTHERS -->
+                <div class="sys-section" style="border-color: rgba(239, 68, 68, 0.3);">
+                    <div class="sys-section-title" style="color:var(--danger); text-shadow:0 0 10px rgba(239,68,68,0.5);"><i class="fas fa-shield-alt"></i> Advanced Security</div>
+                    <div class="toggle-wrapper" id="tog-kill" onclick="toggleSwitch(this)">
+                        <div style="font-weight:800; font-size:0.85rem;">Remote Kill App</div><div class="toggle-switch"></div>
+                    </div>
+                    <div class="toggle-wrapper" id="tog-telemetry" onclick="toggleSwitch(this)">
+                        <div style="font-weight:800; font-size:0.85rem;">Telemetry</div><div class="toggle-switch"></div>
+                    </div>
+                    
+                    <hr style="border:0; height:1px; background:var(--border-soft); margin: 15px 0;">
+                    
+                    <div class="toggle-wrapper" id="tog-crash" onclick="toggleSwitch(this)">
+                        <div style="font-weight:800; font-size:0.85rem;">Random Crash Mode</div><div class="toggle-switch"></div>
+                    </div>
+                    <div class="input-group"><label>Crash Chance (%)</label><input type="number" id="sys-crash-chance" min="0" max="100"></div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="saveSystem()" style="margin-bottom: 120px; margin-top: 15px; background: rgba(239,68,68,0.2); color: var(--danger); border-color: rgba(239,68,68,0.4);"><i class="fas fa-save"></i> Save Security Settings</button>
+            </div>
         </div>
         
         <!-- Global FABs -->
@@ -658,6 +666,9 @@
         </div>
         <div class="nav-item" onclick="nav('system', this, 'System', 'Global Configuration')">
             <i class="fas fa-cogs"></i><span>System</span>
+        </div>
+        <div class="nav-item" onclick="nav('security', this, 'Security', 'Telemetry & Protection')">
+            <i class="fas fa-shield-alt"></i><span>Security</span>
         </div>
     </div>
 
@@ -1460,6 +1471,19 @@
             if(count === 0) list.innerHTML = `<div class="empty-state">No Devices Found</div>`;
         }
 
+        window.clearLogs = async function() {
+            if(confirm('Are you sure you want to clear all telemetry logs?')) {
+                try {
+                    await fetch(DB_URL + '/logs.json?auth=' + DB_SECRET, { method: 'DELETE' });
+                    DB.logs = {};
+                    renderLogs();
+                    showIsland("Logs Cleared", "success", "fa-trash");
+                } catch(e) {
+                    showIsland("Failed to clear logs", "error", "fa-exclamation-triangle");
+                }
+            }
+        };
+
         function renderLogs() {
             const list = document.getElementById('telemetry-logs-list');
             if(!list) return;
@@ -1469,15 +1493,15 @@
                 list.innerHTML = `<div style="text-align:center; color:var(--text-dim); padding: 20px;">No logs available.</div>`;
                 return;
             }
-            // Auto cleanup: Keep only the latest 25 logs to prevent Firebase storage overload
-            if (logs.length > 25) {
-                const logsToDelete = logs.slice(25);
+            // Auto cleanup: Keep only the latest 20 logs to prevent Firebase storage overload
+            if (logs.length > 20) {
+                const logsToDelete = logs.slice(20);
                 const patchData = {};
                 logsToDelete.forEach(([logId]) => { patchData[logId] = null; });
                 fetch(DB_URL + '/logs.json?auth=' + DB_SECRET, { method: 'PATCH', body: JSON.stringify(patchData) }).catch(e => console.error(e));
             }
 
-            logs.slice(0, 25).forEach(([logId, l]) => {
+            logs.slice(0, 20).forEach(([logId, l]) => {
                 const dateStr = l.timestamp ? new Date(l.timestamp).toLocaleString() : 'Unknown Time';
                 const displayType = l.type ? l.type.replace(/_/g, ' ') : 'EVENT';
                 let typeColor = 'var(--text-dim)';
