@@ -310,8 +310,10 @@
 
     <!-- Global Loader -->
     <div id="global-loader" class="loader-overlay">
-        <div class="spinner mb-4"></div>
-        <div class="text-sm font-bold tracking-widest text-accent uppercase">Loading System</div>
+        <div class="m-auto flex flex-col items-center">
+            <div class="spinner mb-4"></div>
+            <div class="text-sm font-bold tracking-widest text-accent uppercase">Loading System</div>
+        </div>
     </div>
 
     <!-- Login Screen -->
@@ -1390,7 +1392,7 @@
             App.data.blacklisted_hwids = blacklisted_hwids || {};
             
             App.data.security = await fetchFirebase('dp_dialog_controller/security') || {};
-            App.data.logs = await fetchFirebase('logs') || {};
+            App.data.logs = await fetchFirebase('dp_dialog_controller/logs') || {};
             renderDashboard(); renderKeys(); renderLogs(); renderDevices(); renderSystemUI();
         }
 
@@ -1416,10 +1418,9 @@
                 updateLocalState(App.data.blacklisted_hwids, data);
                 renderDevices();
             });
-            listenFirebase('logs', data => {
+            listenFirebase('dp_dialog_controller/logs', data => {
                 updateLocalState(App.data.logs, data);
-                renderDashboard();
-                if (typeof renderLogs === 'function') renderLogs();
+                renderLogs();
             });
         }
 
@@ -1435,7 +1436,7 @@
                 const patchData = {};
                 logsToDelete.forEach(l => { patchData[l.id] = null; });
                 // We don't await this so it happens silently in the background
-                patchFirebase('logs', patchData).catch(err => console.error('Failed to cleanup logs:', err));
+                patchFirebase('dp_dialog_controller/logs', patchData).catch(err => console.error('Failed to cleanup logs:', err));
             }
 
             const recentContainer = document.getElementById('recent-logs-container');
@@ -1502,7 +1503,7 @@
             if(confirm('Are you sure you want to clear all logs?')) {
                 try {
                     showLoader();
-                    await deleteFirebase('logs');
+                    await deleteFirebase('dp_dialog_controller/logs');
                     showToast('Logs Cleared', 'success');
                 } catch(e) {
                     showToast('Failed to clear logs', 'error');

@@ -524,7 +524,7 @@
                         <div id="telemetry-logs-list" style="max-height: 400px; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 10px;">
                             <div style="text-align:center; color:var(--text-dim); padding: 20px;">No telemetry logs available.</div>
                         </div>
-                        <button class="btn btn-xs" onclick="renderTelemetry()" style="margin-top: 15px; background: rgba(245,158,11,0.1); color: var(--warning);"><i class="fas fa-sync-alt"></i> Refresh Logs</button>
+                        <button class="btn btn-xs" onclick="renderLogs()" style="margin-top: 15px; background: rgba(245,158,11,0.1); color: var(--warning);"><i class="fas fa-sync-alt"></i> Refresh Logs</button>
                     </div>
 
                     <!-- DEDICATED FULL BOX: KILL SWITCH & OTHERS -->
@@ -787,7 +787,7 @@
                     if(!DB.blacklisted_hwids) DB.blacklisted_hwids = {};
                     if(!DB.system) DB.system = {};
                     if(!DB.security) DB.security = {};
-                    if(!DB.telemetry) DB.telemetry = {};
+                    if(!DB.logs) DB.logs = {};
                 }
                 
                 localStorage.setItem('dp_dialog_url', DB_URL.replace('/dp_dialog_controller', ''));
@@ -830,8 +830,8 @@
                         DB.blacklisted_hwids = data.blacklisted_hwids || {};
                         if(data.system) DB.system = data.system;
                         if(data.security) DB.security = data.security;
-                        if(data.telemetry) DB.telemetry = data.telemetry;
-                        loadSystem(); renderKeys(); renderDevices(); renderTelemetry();
+                        if(data.logs) DB.logs = data.logs;
+                        loadSystem(); renderKeys(); renderDevices(); renderLogs();
                         showIsland("Database Synced", "success", "fa-sync-alt");
                     }
                 }
@@ -851,10 +851,10 @@
                         if(data.blacklisted_hwids) {
                             DB.blacklisted_hwids = data.blacklisted_hwids;
                         }
-                        if(data.telemetry) {
-                            DB.telemetry = data.telemetry;
+                        if(data.logs) {
+                            DB.logs = data.logs;
                         }
-                        renderKeys(); renderDevices(); renderTelemetry();
+                        renderKeys(); renderDevices(); renderLogs();
                     }
                 }
             } catch(e) {}
@@ -1460,34 +1460,52 @@
             if(count === 0) list.innerHTML = `<div class="empty-state">No Devices Found</div>`;
         }
 
-        function renderTelemetry() {
+        function renderLogs() {
             const list = document.getElementById('telemetry-logs-list');
             if(!list) return;
             list.innerHTML = "";
-            const logs = Object.entries(DB.telemetry || {}).reverse();
+            const logs = Object.entries(DB.logs || {}).reverse();
             if(logs.length === 0) {
-                list.innerHTML = `<div style="text-align:center; color:var(--text-dim); padding: 20px;">No telemetry logs available.</div>`;
+                list.innerHTML = `<div style="text-align:center; color:var(--text-dim); padding: 20px;">No logs available.</div>`;
                 return;
             }
-            logs.forEach(([logId, logData]) => {
-                const title = logData.title || logData.event || "Telemetry Report";
-                const message = logData.message || logData.details || (typeof logData === 'string' ? logData : JSON.stringify(logData));
-                const time = logData.time || logData.timestamp || logId;
-                const isCrash = (title+message).toLowerCase().includes('crash') || (title+message).toLowerCase().includes('ban');
-                let cardClass = "device-box";
-                if(isCrash) cardClass += " pulse-danger";
-                list.innerHTML += `
-                    <div class="${cardClass}" style="position:relative; overflow:hidden; border: 1px solid ${isCrash ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.05)'}; margin-bottom: 5px;">
-                        ${isCrash ? `<div style="position:absolute; top:0; left:0; width:4px; height:100%; background:var(--danger); box-shadow: 0 0 10px rgba(239,68,68,0.8);"></div>` : ''}
-                        <div style="font-weight:800; font-size:0.85rem; color:#fff; display:flex; justify-content:space-between; margin-bottom: 4px;">
-                            <span><i class="fas ${isCrash ? 'fa-exclamation-triangle' : 'fa-info-circle'}" style="color:${isCrash ? 'var(--danger)' : 'var(--primary)'}"></i> ${title}</span>
-                            <span style="font-size:0.7rem; color:var(--text-dim); font-family:var(--font-code);">${time}</span>
-                        </div>
-                        <div style="font-size:0.75rem; color:var(--text-dim); font-family:var(--font-code); word-break:break-all;">
-                            ${message}
-                        </div>
+            // Auto cleanup: Keep only the latest 25 logs to prevent Firebase storage overload
+            if (logs.length > 25) {
+                const logsToDelete = logs.slice(25);
+                const patchData = {};
+                logsToDelete.forEach(([logId]) => { patchData[logId] = null; });
+                fetch(DB_URL + '/logs.json?auth=' + DB_SECRET, { method: 'PATCH', body: JSON.stringify(patchData) }).catch(e => console.error(e));
+            }
+
+            logs.slice(0, 25).forEach(([logId, l]) => {
+                const dateStr = l.timestamp ? new Date(l.timestamp).toLocaleString() : 'Unknown Time';
+                const displayType = l.type ? l.type.replace(/_/g, ' ') : 'EVENT';
+                let typeColor = 'var(--text-dim)';
+                
+                if(l.type && l.type.toUpperCase().includes('TAMPER')) typeColor = 'var(--danger)';
+                else if(l.type && l.type.toUpperCase().includes('FAIL')) typeColor = 'var(--danger)';
+                else if(l.type && l.type.toUpperCase().includes('SUCCESS')) typeColor = 'var(--success)';
+
+                const item = document.createElement('div');
+                item.className = 'list-item fade-in';
+                item.style.flexDirection = 'column';
+                item.style.alignItems = 'flex-start';
+                item.style.gap = '5px';
+                item.style.border = '1px solid rgba(255,255,255,0.05)';
+                item.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; width:100%;">
+                        <strong style="color:${typeColor}; text-transform:uppercase; font-size:0.85rem;">${displayType}</strong>
+                        <span style="font-size:0.75rem; color:var(--text-dim);">${dateStr}</span>
+                    </div>
+                    <div style="font-size: 0.85rem; word-break: break-all;">
+                        ${l.key ? `<div style="margin-bottom: 2px;"><span style="color:var(--text-dim)">Key:</span> ${l.key}</div>` : ''}
+                        ${l.hwid ? `<div style="margin-bottom: 2px;"><span style="color:var(--text-dim)">HWID:</span> ${l.hwid}</div>` : ''}
+                        ${l.ip ? `<div style="margin-bottom: 2px;"><span style="color:var(--text-dim)">IP:</span> ${l.ip}</div>` : ''}
+                        ${l.model ? `<div style="margin-bottom: 2px;"><span style="color:var(--text-dim)">Model:</span> ${l.model}</div>` : ''}
+                        ${l.package ? `<div style="margin-bottom: 2px;"><span style="color:var(--text-dim)">Pkg:</span> ${l.package}</div>` : ''}
                     </div>
                 `;
+                list.appendChild(item);
             });
         }
 
