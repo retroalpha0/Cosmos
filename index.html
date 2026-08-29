@@ -54,12 +54,12 @@
         input, textarea, select { user-select: auto; font-family: var(--font-ui); } 
         ::-webkit-scrollbar { display: none; }
         
-        body { font-family: var(--font-ui), sans-serif; background: #000; color: var(--text-main); height: 100dvh; overflow: hidden; position: relative; margin: 0; user-select: none; -webkit-user-select: none; }
+        body { font-family: var(--font-ui), sans-serif; background: #000; color: var(--text-main); position: relative; margin: 0; user-select: none; -webkit-user-select: none; }
 
         :focus-visible { outline: none; }
 
-        .app-container { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; height: 100dvh; overflow-y: auto; overflow-x: hidden; }
-        .app-container::after { content: ''; display: block; min-height: calc(var(--nav-height) + 40px); flex-shrink: 0; }
+        .app-container { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+        .app-container::after { content: ''; display: block; min-height: calc(var(--nav-height) + 80px); flex-shrink: 0; }
 
         /* --- ANDROID MATERIAL SNACKBAR --- */
         #dynamic-island {
@@ -548,7 +548,7 @@
                     </div>
                 </div>
 
-                <button class="btn btn-primary" onclick="saveSystem()" style="margin-bottom: 30px; margin-top: 15px;"><i class="fas fa-save"></i> Save Global System</button>
+                <button class="btn btn-primary" onclick="saveSystem()" style="margin-bottom: 120px; margin-top: 15px;"><i class="fas fa-save"></i> Save Global System</button>
             </div>
         </div>
         
