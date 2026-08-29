@@ -27,7 +27,6 @@
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-color);
             color: #f8fafc;
-            overflow: hidden; 
             -webkit-tap-highlight-color: transparent;
         }
         
@@ -148,7 +147,7 @@
         .fab:active { transform: scale(0.9); }
 
         /* Layouts (Mobile First) */
-        .app-container { display: flex; flex-direction: column; height: 100vh; width: 100vw; padding-bottom: 70px; }
+        .app-container { display: flex; flex-direction: column; min-height: 100vh; width: 100%; padding-bottom: 70px; }
         
         /* Bottom Navigation */
         .bottom-nav {
@@ -159,9 +158,10 @@
             z-index: 50; padding-top: 12px; padding-bottom: max(16px, env(safe-area-inset-bottom));
         }
         
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; }
         
         .topbar {
+            position: sticky; top: 0;
             min-height: 72px; display: flex; align-items: center; justify-content: space-between;
             padding: max(32px, env(safe-area-inset-top)) 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.05);
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
@@ -169,8 +169,7 @@
         }
         
         .content-area {
-            flex-grow: 1; padding: 16px; padding-bottom: 120px; overflow-y: auto; overflow-x: hidden;
-            -webkit-overflow-scrolling: touch;
+            flex-grow: 1; padding: 16px; padding-bottom: 120px;
             background: rgba(10, 10, 15, 0.2); 
             backdrop-filter: blur(15px); 
             -webkit-backdrop-filter: blur(15px);
@@ -179,7 +178,6 @@
             border: 1px solid rgba(255,255,255,0.05);
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
-        .content-area::-webkit-scrollbar { display: none; }
         
         /* Nav Items */
         .nav-item {
@@ -212,8 +210,9 @@
         /* Loader & Modals */
         .loader-overlay, .modal-overlay {
             position: fixed; inset:0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-            z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;
+            z-index: 9999; display: flex; justify-content: flex-start; align-items: center; flex-direction: column;
             transition: opacity 0.3s ease;
+            overflow-y: auto; padding: 24px 0;
         }
         .spinner {
             width: 48px; height: 48px; border: 4px solid rgba(255,255,255,0.1);
@@ -260,7 +259,7 @@
         @media (min-width: 1024px) {
             .app-container { flex-direction: row; padding-bottom: 0; }
             .bottom-nav { 
-                position: relative; width: 90px; height: 100vh; flex-direction: column; 
+                position: sticky; top: 0; width: 90px; height: 100vh; flex-direction: column; 
                 justify-content: flex-start; padding-top: 24px; border-top: none; border-right: 1px solid var(--panel-border);
             }
             .nav-item { flex: none; padding: 20px 0; height: auto; }
@@ -361,6 +360,9 @@
                 </div>
 
                 <div class="flex gap-3 mt-2">
+                    <button type="button" onclick="openSessionModal()" class="w-14 h-14 rounded-2xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-700/50 transition-colors shrink-0" title="Session Manager">
+                        <span class="material-symbols-rounded">admin_panel_settings</span>
+                    </button>
                     <button type="submit" class="btn-primary-login hover-lift flex-1 py-4 flex items-center justify-center gap-2">
                         INITIATE LINK <span class="material-symbols-rounded text-lg">login</span>
                     </button>
@@ -835,9 +837,36 @@
         </main>
     </div>
     
+    <!-- Session Manager Modal -->
+    <div id="m-session" class="modal-overlay section-hidden">
+        <div class="glass p-6 w-full max-w-sm m-auto relative transition-transform transform scale-95" id="m-session-box">
+            <button class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 active:bg-white/10" onclick="closeSessionModal()">
+                <span class="material-symbols-rounded text-xl">close</span>
+            </button>
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-2xl bg-blue-500/10 text-blue-400 flex items-center justify-center border border-blue-500/20">
+                    <span class="material-symbols-rounded">admin_panel_settings</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold">Session Manager</h2>
+                    <p class="text-xs text-zinc-400">Save and switch configurations</p>
+                </div>
+            </div>
+            <div class="flex gap-2 mb-4">
+                <input type="text" id="new-session-name" class="cyber-input flex-1 py-2 text-sm" placeholder="Session Name (e.g. Production)">
+                <button class="cyber-button px-4" onclick="saveCurrentSession()">
+                    <span class="material-symbols-rounded text-sm">save</span>
+                </button>
+            </div>
+            <div id="session-list" class="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-1 pb-2">
+                <!-- Sessions will be injected here -->
+            </div>
+        </div>
+    </div>
+    
     <!-- Key Editor Modal -->
     <div id="m-key" class="modal-overlay section-hidden">
-        <div class="glass p-6 w-full max-w-sm m-4 relative transition-transform transform scale-95" id="m-key-box">
+        <div class="glass p-6 w-full max-w-sm m-auto relative transition-transform transform scale-95" id="m-key-box">
             <button class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 active:bg-white/10" onclick="closeKeyModal()">
                 <span class="material-symbols-rounded text-xl">close</span>
             </button>
@@ -934,6 +963,78 @@
                 clearTimeout(timeout);
                 timeout = setTimeout(later, wait);
             };
+        }
+
+        // --- Session Manager ---
+        function openSessionModal() {
+            document.getElementById('m-session').classList.remove('section-hidden');
+            renderSessions();
+        }
+
+        function closeSessionModal() {
+            document.getElementById('m-session').classList.add('section-hidden');
+        }
+
+        function renderSessions() {
+            const list = document.getElementById('session-list');
+            let sessions = JSON.parse(localStorage.getItem('dp_saved_sessions') || '[]');
+            if (sessions.length === 0) {
+                list.innerHTML = '<div class="text-center text-zinc-500 py-4 text-sm font-bold">No saved sessions.</div>';
+                return;
+            }
+            list.innerHTML = sessions.map((s, idx) => `
+                <div class="flex flex-col gap-2 p-3 bg-black/40 border border-[rgba(255,255,255,0.05)] rounded-xl mt-2">
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col overflow-hidden mr-2">
+                            <span class="font-bold text-white text-sm">${s.name}</span>
+                            <span class="text-xs text-zinc-500 truncate">${s.url}</span>
+                        </div>
+                        <button onclick="deleteSession(${idx})" class="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 hover:bg-red-500/20">
+                            <span class="material-symbols-rounded text-sm">delete</span>
+                        </button>
+                    </div>
+                    <button onclick="useSession(${idx})" class="w-full py-2 rounded-lg bg-accent/10 border border-accent/20 text-accent font-bold text-xs hover:bg-accent/20 flex items-center justify-center gap-1">
+                        <span class="material-symbols-rounded text-sm">login</span> LOGIN
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function saveCurrentSession() {
+            const name = document.getElementById('new-session-name').value.trim();
+            const url = document.getElementById('fb-url').value.trim();
+            const secret = document.getElementById('fb-token').value.trim();
+
+            if (!name || !url || !secret) {
+                showToast("Fill all fields (Name, URL, Token)", "error");
+                return;
+            }
+
+            let sessions = JSON.parse(localStorage.getItem('dp_saved_sessions') || '[]');
+            sessions.push({ name, url, secret });
+            localStorage.setItem('dp_saved_sessions', JSON.stringify(sessions));
+            
+            document.getElementById('new-session-name').value = '';
+            renderSessions();
+            showToast("Session Saved", "success");
+        }
+
+        function useSession(index) {
+            let sessions = JSON.parse(localStorage.getItem('dp_saved_sessions') || '[]');
+            const s = sessions[index];
+            if (s) {
+                document.getElementById('fb-url').value = s.url;
+                document.getElementById('fb-token').value = s.secret;
+                closeSessionModal();
+                showToast("Session Loaded", "success");
+            }
+        }
+
+        function deleteSession(index) {
+            let sessions = JSON.parse(localStorage.getItem('dp_saved_sessions') || '[]');
+            sessions.splice(index, 1);
+            localStorage.setItem('dp_saved_sessions', JSON.stringify(sessions));
+            renderSessions();
         }
 
         // --- Init ---
