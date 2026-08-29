@@ -370,7 +370,6 @@
                 <input type="text" class="search-bar" id="search-keys" placeholder="Search Keys or HWID..." oninput="renderKeys()">
             </div>
             <div id="keys-list"></div>
-            <button class="fab-btn" onclick="openKeyModal()"><i class="fas fa-plus"></i></button>
         </div>
 
         <!-- DEVICES VIEW -->
@@ -404,7 +403,6 @@
                 <input type="text" class="search-bar" id="search-devices" placeholder="Search HWID, Key or Device Name..." oninput="renderDevices()">
             </div>
             <div id="devices-list" style="padding: 0 20px; display: flex; flex-direction: column; gap: 14px;"></div>
-            <button class="fab-btn" onclick="openBanModal()" style="background:var(--danger); box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);" title="Block HWID"><i class="fas fa-ban"></i></button>
         </div>
 
         <!-- SYSTEM VIEW -->
@@ -552,9 +550,13 @@
             </div>
         </div>
         
-        <div style="text-align: center; padding: 20px 20px 40px; color: var(--primary); font-size: 0.85rem; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <div style="text-align: center; padding: 20px 20px 40px; color: #ffffff; font-size: 0.85rem; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;">
             <i class="fas fa-shield-alt"></i> PANEL BY ALPHA
         </div>
+        
+        <!-- Global FABs -->
+        <button id="fab-keys" class="fab-btn" onclick="openKeyModal()" style="display: none;"><i class="fas fa-plus"></i></button>
+        <button id="fab-devices" class="fab-btn" onclick="openBanModal()" style="background:var(--danger); box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4); display: flex;" title="Block HWID"><i class="fas fa-ban"></i></button>
     </div>
 
     <!-- MODALS -->
@@ -883,6 +885,11 @@
             if(el) el.classList.add('active');
             document.getElementById('page-title-text').innerText = title;
             document.getElementById('page-subtitle-text').innerText = subtitle;
+            
+            const fabKeys = document.getElementById('fab-keys');
+            const fabDevices = document.getElementById('fab-devices');
+            if (fabKeys) fabKeys.style.display = viewId === 'keys' ? 'flex' : 'none';
+            if (fabDevices) fabDevices.style.display = viewId === 'devices' ? 'flex' : 'none';
         }
 
         function switchSysTab(tabId, el) {
