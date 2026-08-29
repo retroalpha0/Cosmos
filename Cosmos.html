@@ -1048,8 +1048,9 @@
             if (s) {
                 document.getElementById('fb-url').value = s.url;
                 document.getElementById('fb-token').value = s.secret;
+                document.getElementById('remember-login').checked = true;
                 closeSessionModal();
-                showToast("Session Loaded", "success");
+                attemptLogin(s.url, s.secret);
             }
         }
 
@@ -1080,8 +1081,8 @@
                 });
             }
             
-            const savedUrl = localStorage.getItem('cc_db_url');
-            const savedToken = localStorage.getItem('cc_token');
+            const savedUrl = localStorage.getItem('dp_dialog_url');
+            const savedToken = localStorage.getItem('dp_dialog_secret');
             if(savedUrl && savedToken) {
                 DOM.fbUrlInput.value = savedUrl; DOM.fbTokenInput.value = savedToken; DOM.rememberLogin.checked = true;
                 attemptLogin(savedUrl, savedToken);
@@ -1224,8 +1225,8 @@
                 if(!res.ok) throw new Error('login failled due to invalid key');
                 App.dbUrl = url; App.token = token;
                 
-                if(DOM.rememberLogin.checked) { localStorage.setItem('cc_db_url', url); localStorage.setItem('cc_token', token); }
-                else { localStorage.removeItem('cc_db_url'); localStorage.removeItem('cc_token'); }
+                if(DOM.rememberLogin.checked) { localStorage.setItem('dp_dialog_url', url); localStorage.setItem('dp_dialog_secret', token); }
+                else { localStorage.removeItem('dp_dialog_url'); localStorage.removeItem('dp_dialog_secret'); }
                 
                 if (window.startSingularityDive) {
                     window.startSingularityDive(() => {
@@ -1257,8 +1258,8 @@
             if(window.syncInterval) clearInterval(window.syncInterval);
             Object.values(App.listeners).forEach(es => es.close()); App.listeners = {};
             App.dbUrl = ''; App.token = ''; 
-            localStorage.removeItem('cc_db_url'); 
-            localStorage.removeItem('cc_token');
+            localStorage.removeItem('dp_dialog_url'); 
+            localStorage.removeItem('dp_dialog_secret');
             DOM.mainApp.classList.add('section-hidden'); 
             DOM.loginScreen.classList.remove('section-hidden');
             
