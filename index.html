@@ -172,10 +172,10 @@
         .btn-xs.del { color: var(--danger); background: rgba(239, 68, 68, 0.1); }
 
         /* --- ANDROID BOTTOM SHEET MODALS --- */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); display: none; justify-content: center; align-items: flex-end; z-index: 1000; opacity: 0; transition: 0.3s ease; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); display: none; justify-content: center; align-items: flex-end; z-index: 1000; opacity: 0; transition: 0.3s ease; transform: translateZ(0); will-change: opacity; backface-visibility: hidden; }
         .modal-overlay.active { display: flex; opacity: 1; }
-        .modal-card { background: rgba(18, 18, 22, 0.6); width: 100%; max-width: 600px; border-radius: 28px 28px 0 0; padding: 24px 24px 40px; transform: translateY(100%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); border-top: 1px solid var(--border-primary); box-shadow: 0 -10px 40px rgba(0,0,0,0.8), 0 0 30px rgba(168,85,247,0.1); max-height: 90vh; overflow-y: auto; backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); will-change: transform;}
-        .modal-overlay.active .modal-card { transform: translateY(0); }
+        .modal-card { background: rgba(18, 18, 22, 0.6); width: 100%; max-width: 600px; border-radius: 28px 28px 0 0; padding: 24px 24px 40px; transform: translateY(100%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); border-top: 1px solid var(--border-primary); box-shadow: 0 -10px 40px rgba(0,0,0,0.8), 0 0 30px rgba(168,85,247,0.1); max-height: 90vh; overflow-y: auto; backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); will-change: transform; backface-visibility: hidden; transform-style: preserve-3d; }
+        .modal-overlay.active .modal-card { transform: translateY(0) translateZ(0); }
         .modal-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: -10px auto 20px; }
         .modal-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-main); text-shadow: 0 0 10px var(--purple-shine);}
 
@@ -364,11 +364,11 @@
             </div>
 
             <!-- Action Buttons -->
-            <div style="display: flex; gap: 10px; margin-top: auto;">
-                <button id="login-btn" onclick="login()" tabindex="3" style="flex: 1; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 16px; color: #fff; font-size: 1rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
-                    LOGIN <i class="fas fa-sign-in-alt" style="color: #f97316;"></i>
+            <div style="display: flex; gap: 12px; margin-top: 10px;">
+                <button id="login-btn" onclick="login()" tabindex="3" class="btn btn-primary" style="flex: 1; padding: 18px; border-radius: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1.05rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;">
+                    LOGIN <i class="fas fa-sign-in-alt"></i>
                 </button>
-                <button onclick="openSessionModal()" style="width: 65px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                <button onclick="openSessionModal()" style="width: 65px; background: rgba(168, 85, 247, 0.1); border: 1px solid var(--border-primary); border-radius: 16px; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--purple-shine);" onmouseover="this.style.background='var(--primary)'; this.style.color='#fff';" onmouseout="this.style.background='rgba(168, 85, 247, 0.1)'; this.style.color='var(--primary)';">
                     <i class="fas fa-shield-halved"></i>
                 </button>
             </div>
@@ -725,9 +725,9 @@
         <div class="modal-card">
             <div class="modal-handle"></div>
             <div class="modal-title">Session Manager</div>
-            <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <input type="text" id="new-session-name" placeholder="Session Name (e.g. Production)" style="flex: 1;" class="input">
-                <button class="btn btn-primary" onclick="saveCurrentSession()"><i class="fas fa-save"></i> Save</button>
+            <div class="form-group" style="display: flex; gap: 12px; margin-bottom: 25px; align-items: stretch;">
+                <input type="text" id="new-session-name" placeholder="Session Name (e.g. Production)" style="flex: 1; background: var(--bg-input); border: 1px solid var(--border-soft); border-radius: 14px; padding: 14px 16px; color: #fff; font-size: 0.95rem; font-weight: 500; outline: none; transition: 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 10px var(--purple-shine), inset 0 2px 5px rgba(0,0,0,0.5)';" onblur="this.style.borderColor='var(--border-soft)'; this.style.boxShadow='inset 0 2px 5px rgba(0,0,0,0.5)';">
+                <button class="btn btn-primary" onclick="saveCurrentSession()" style="width: auto; padding: 0 24px; border-radius: 14px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;"><i class="fas fa-save"></i> Save</button>
             </div>
             <div id="session-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; padding-right: 5px;">
                 <!-- Sessions will be injected here -->

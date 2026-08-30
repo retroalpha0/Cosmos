@@ -207,10 +207,11 @@
 
         /* Loader & Modals */
         .loader-overlay, .modal-overlay {
-            position: fixed; inset:0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+            position: fixed; inset:0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             z-index: 9999; display: flex; justify-content: flex-start; align-items: center; flex-direction: column;
             transition: opacity 0.3s ease;
             overflow-y: auto; padding: 24px 0;
+            transform: translateZ(0); will-change: opacity; backface-visibility: hidden;
         }
         .cyber-loader {
             position: relative; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center;
