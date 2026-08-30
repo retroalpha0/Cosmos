@@ -71,13 +71,14 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(168, 85, 247, 0.2);
             min-width: 200px;
+            will-change: transform, opacity;
         }
         #dynamic-island.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         #dynamic-island i { font-size: 1.2rem; }
 
         /* --- LOGIN SCREEN --- */
         #login-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100dvh; padding: 24px; text-align: center; }
-        .logo-icon { font-size: 4.5rem; color: var(--primary); margin-bottom: 10px; filter: drop-shadow(0 0 25px var(--purple-shine)); }
+        .logo-icon { font-size: 4.5rem; color: var(--primary); margin-bottom: 10px; filter: drop-shadow(0 0 25px var(--purple-shine)); animation: floatEffect 4s ease-in-out infinite; }
         #login-screen h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.1; margin-bottom: 30px; text-transform: uppercase; letter-spacing: -1px; text-shadow: 0 0 15px rgba(168, 85, 247, 0.5);}
         .login-card { background: var(--bg-card); padding: 30px 24px; border-radius: var(--radius); width: 100%; max-width: 360px; border: 1px solid var(--border-soft); box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 30px rgba(168, 85, 247, 0.1); }
         .login-card:focus-within { border-color: var(--border-primary); box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 30px rgba(168, 85, 247, 0.2); }
@@ -121,8 +122,8 @@
         .toggle-wrapper.active .toggle-switch::after { transform: translateX(20px); }
 
         /* BUTTONS */
-        .btn { width: 100%; padding: 16px; border-radius: 16px; border: none; font-size: 1.05rem; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.2s; color: #fff; font-family: var(--font-ui);}
-        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); box-shadow: 0 8px 25px var(--purple-shine); }
+        .btn { width: 100%; padding: 16px; border-radius: 16px; border: none; font-size: 1.05rem; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); color: #fff; font-family: var(--font-ui);}
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark), #9333ea, var(--primary)); background-size: 300% 300%; animation: gradientFlow 5s ease infinite; box-shadow: 0 8px 25px var(--purple-shine); }
         .btn-primary:active { transform: scale(0.97); box-shadow: 0 4px 15px var(--purple-shine);}
         
         .fab-btn { position: fixed; bottom: calc(var(--nav-height) + 20px); right: 20px; width: 60px; height: 60px; border-radius: 30px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; border: none; font-size: 1.5rem; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 25px var(--purple-shine); cursor: pointer; z-index: 90; transition: 0.3s; }
@@ -173,7 +174,7 @@
         /* --- ANDROID BOTTOM SHEET MODALS --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); display: none; justify-content: center; align-items: flex-end; z-index: 1000; opacity: 0; transition: 0.3s ease; }
         .modal-overlay.active { display: flex; opacity: 1; }
-        .modal-card { background: rgba(18, 18, 22, 0.6); width: 100%; max-width: 600px; border-radius: 28px 28px 0 0; padding: 24px 24px 40px; transform: translateY(100%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); border-top: 1px solid var(--border-primary); box-shadow: 0 -10px 40px rgba(0,0,0,0.8), 0 0 30px rgba(168,85,247,0.1); max-height: 90vh; overflow-y: auto; backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);}
+        .modal-card { background: rgba(18, 18, 22, 0.6); width: 100%; max-width: 600px; border-radius: 28px 28px 0 0; padding: 24px 24px 40px; transform: translateY(100%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); border-top: 1px solid var(--border-primary); box-shadow: 0 -10px 40px rgba(0,0,0,0.8), 0 0 30px rgba(168,85,247,0.1); max-height: 90vh; overflow-y: auto; backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); will-change: transform;}
         .modal-overlay.active .modal-card { transform: translateY(0); }
         .modal-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: -10px auto 20px; }
         .modal-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-main); text-shadow: 0 0 10px var(--purple-shine);}
@@ -207,11 +208,38 @@
         .nav-item i { font-size: 1.4rem; transition: transform 0.2s ease; }
         .nav-item.active i { transform: scale(1.15); text-shadow: 0 0 12px var(--purple-shine); }
 
-        .view { display: none; animation: liquidFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); background: rgba(5, 5, 8, 0.3); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 24px; margin: 10px; padding-bottom: 20px; min-height: calc(100vh - 180px); border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .view { display: none; animation: liquidFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); background: rgba(5, 5, 8, 0.3); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 24px; margin: 10px; padding-bottom: 20px; min-height: calc(100vh - 180px); border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.5); will-change: transform, opacity; }
         .view.active { display: block; }
         @keyframes liquidFade { 
             0% { transform: translateY(20px) scale(0.97); opacity: 0; } 
             100% { transform: translateY(0) scale(1); opacity: 1; } 
+        }
+
+        @keyframes slideUpFade {
+            0% { transform: translateY(30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes floatEffect {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .animated-card {
+            animation: slideUpFade 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+            will-change: transform, opacity;
+        }
+
+        @media (hover: hover) {
+            .list-card:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 10px 30px rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.3); z-index: 10; }
+            .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px var(--purple-shine); }
+            .stat-box:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.5); border-color: var(--primary); transition: 0.3s; }
         }
         
         .empty-state { text-align: center; padding: 40px 20px; color: var(--text-dim); font-weight: 600; font-size: 0.95rem; }
@@ -368,7 +396,7 @@
         <!-- KEYS VIEW -->
         <div id="view-keys" class="view">
             <div class="search-bar-container">
-                <input type="text" class="search-bar" id="search-keys" placeholder="Search Keys or HWID..." oninput="renderKeys()">
+                <input type="text" class="search-bar" id="search-keys" placeholder="Search Keys or HWID..." oninput="debouncedRenderKeys()">
             </div>
             <div style="display: flex; gap: 10px; margin: 0 20px 15px 20px;">
                 <button class="btn btn-primary" onclick="openKeyModal()" style="flex: 1;"><i class="fas fa-plus"></i> NEW KEY</button>
@@ -405,7 +433,7 @@
             </div>
 
             <div class="search-bar-container">
-                <input type="text" class="search-bar" id="search-devices" placeholder="Search HWID, Key or Device Name..." oninput="renderDevices()">
+                <input type="text" class="search-bar" id="search-devices" placeholder="Search HWID, Key or Device Name..." oninput="debouncedRenderDevices()">
             </div>
             <div id="devices-list" style="padding: 0 20px; display: flex; flex-direction: column; gap: 14px;"></div>
         </div>
@@ -732,6 +760,16 @@
     </div>
 
     <script>
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+        const debouncedRenderKeys = debounce(() => renderKeys(), 300);
+        const debouncedRenderDevices = debounce(() => renderDevices(), 300);
+
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', (e) => {
                 if(e.target === overlay) closeModals();
@@ -1385,6 +1423,7 @@
             const list = document.getElementById('keys-list');
             const search = document.getElementById('search-keys').value.toLowerCase();
             list.innerHTML = ""; let count = 0;
+            let htmlBuffer = [];
             
             const keyArray = Object.entries(DB.keys || {}).reverse();
 
@@ -1447,8 +1486,8 @@
                 else if (hasCrash) { badgeClass = 'badge warning'; badgeText = 'CRASH'; }
                 else if (isUsed) { badgeClass = 'badge expired'; badgeText = 'USED'; wrapClass += ' expired'; }
 
-                list.innerHTML += `
-                    <div class="${wrapClass}" id="list-card-${keyId}">
+                htmlBuffer.push(`
+                    <div class="${wrapClass} animated-card" id="list-card-${keyId}" style="animation-delay: ${Math.min(count * 0.05, 0.5)}s">
                         <div class="card-header-main" onclick="toggleCard('${keyId}')">
                             <div class="card-header-left">
                                 <div class="card-title interactive-text" onclick="copyToClipboard('${keyId}', 'License Key', event)">
@@ -1478,9 +1517,10 @@
                             </div>
                         </div>
                     </div>
-                `;
+                `);
             });
             if(count === 0) list.innerHTML = `<div class="empty-state">No Licenses Found</div>`;
+            else list.innerHTML = htmlBuffer.join('');
         }
 
         /* --- DEVICES & BANS LOGIC --- */
@@ -1555,6 +1595,7 @@
             const searchInput = document.getElementById('search-devices');
             const search = searchInput ? searchInput.value.toLowerCase() : "";
             list.innerHTML = ""; let count = 0;
+            let htmlBuffer = [];
 
             const deviceMap = new Map();
 
@@ -1633,8 +1674,8 @@
                 if(dev.isHwidBanned || dev.isKeyBanned) statusBadge = `<span class="badge banned">BANNED</span>`;
                 else if(dev.isCrash) statusBadge = `<span class="badge expired" style="color:var(--danger); border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.15);">CRASH</span>`;
 
-                list.innerHTML += `
-                    <div class="${cardClass}">
+                htmlBuffer.push(`
+                    <div class="${cardClass} animated-card" style="animation-delay: ${Math.min(count * 0.05, 0.5)}s">
                         <div class="card-header-main" style="cursor:default;">
                             <div class="card-header-left">
                                 <div class="card-title interactive-text" onclick="copyToClipboard('${dev.hwid}', 'HWID', event)">
@@ -1644,7 +1685,7 @@
                                 </div>
                                 <div class="card-subtitle" style="gap:12px; margin-top:4px;">
                                     <span style="font-family:var(--font-code); color:#a1a1aa;"><i class="fas fa-microchip"></i> ${dev.hwid}</span>
-                                    ${dev.keyId ? `<span><i class="fas fa-key" style="color:var(--primary);"></i> <strong>${dev.keyId}</strong></span>` : `<span style="color:var(--text-dim);"><i class="fas fa-unlink"></i> No Key</span>`}
+                                    ${dev.keyId ? `<span><i class="fas fa-key" style="color:var(--primary);"></i> <strong>${dev.keyId}</strong></span>` : `<span style="color:var(--text-dim)"><i class="fas fa-unlink"></i> No Key</span>`}
                                 </div>
                             </div>
                             <div class="card-header-right">
@@ -1667,10 +1708,11 @@
                             </button>
                         </div>
                     </div>
-                `;
+                `);
             });
 
             if(count === 0) list.innerHTML = `<div class="empty-state">No Devices Found</div>`;
+            else list.innerHTML = htmlBuffer.join('');
         }
 
         window.clearLogs = async function() {
