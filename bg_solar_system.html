@@ -19,6 +19,8 @@
             text-decoration: none;
             font-family: 'Raleway', sans-serif;
             color:#fff;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
         /* ---------------MAIN--------------- */
         body{
@@ -398,8 +400,8 @@
         }
         /* ---------------ANIMATIONS--------------- */
         @keyframes turning {
-            0%	{transform: rotateZ(0deg);}
-            100%{transform: rotateZ(360deg);}
+            0%	{transform: rotateZ(0deg) translateZ(0);}
+            100%{transform: rotateZ(360deg) translateZ(0);}
         }
 
         @keyframes blinka {
