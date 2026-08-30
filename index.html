@@ -725,9 +725,9 @@
         <div class="modal-card">
             <div class="modal-handle"></div>
             <div class="modal-title">Session Manager</div>
-            <div class="form-group" style="display: flex; gap: 12px; margin-bottom: 25px; align-items: stretch;">
-                <input type="text" id="new-session-name" placeholder="Session Name (e.g. Production)" style="flex: 1; background: var(--bg-input); border: 1px solid var(--border-soft); border-radius: 14px; padding: 14px 16px; color: #fff; font-size: 0.95rem; font-weight: 500; outline: none; transition: 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 10px var(--purple-shine), inset 0 2px 5px rgba(0,0,0,0.5)';" onblur="this.style.borderColor='var(--border-soft)'; this.style.boxShadow='inset 0 2px 5px rgba(0,0,0,0.5)';">
-                <button class="btn btn-primary" onclick="saveCurrentSession()" style="flex-shrink: 0; width: auto; padding: 0 24px; border-radius: 14px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;"><i class="fas fa-save"></i> Save</button>
+            <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 25px; align-items: center;">
+                <input type="text" id="new-session-name" placeholder="Session Name" style="flex: 1; min-width: 0; background: var(--bg-input); border: 1px solid var(--border-soft); border-radius: 12px; padding: 14px 16px; color: #fff; font-size: 0.95rem; font-weight: 500; outline: none; transition: 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 10px var(--purple-shine), inset 0 2px 5px rgba(0,0,0,0.5)';" onblur="this.style.borderColor='var(--border-soft)'; this.style.boxShadow='inset 0 2px 5px rgba(0,0,0,0.5)';">
+                <button class="btn btn-primary" onclick="saveCurrentSession()" style="flex-shrink: 0; width: auto; padding: 14px 20px; border-radius: 12px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;"><i class="fas fa-save"></i> Save</button>
             </div>
             <div id="session-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; padding-right: 5px;">
                 <!-- Sessions will be injected here -->
@@ -1060,13 +1060,15 @@
                 return;
             }
             list.innerHTML = sessions.map((s, idx) => `
-                <div class="list-card" style="cursor: default;">
-                    <div class="card-header-main">
-                        <div class="card-header-left">
-                            <div class="card-title">${s.name}</div>
-                            <div class="card-subtitle"><span class="badge active" style="text-transform: none; font-family: monospace;">${s.url}</span></div>
+                <div class="list-card" style="cursor: default; flex-shrink: 0;">
+                    <div class="card-header-main" style="gap: 10px;">
+                        <div class="card-header-left" style="flex: 1; min-width: 0; overflow: hidden;">
+                            <div class="card-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">${s.name}</div>
+                            <div class="card-subtitle" style="display: block; margin-top: 4px;">
+                                <span class="badge active" style="text-transform: none; font-family: monospace; display: inline-block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: top;">${s.url}</span>
+                            </div>
                         </div>
-                        <div class="card-header-right">
+                        <div class="card-header-right" style="flex-shrink: 0;">
                             <button class="btn-icon" style="color: var(--danger);" onclick="deleteSession(${idx})" title="Delete"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
