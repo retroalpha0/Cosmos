@@ -261,7 +261,6 @@
             animation:none;
         }
 
-        /* ---------------SUN--------------- */
         .sun{
             width: 20px;
             height: 20px;
@@ -273,6 +272,8 @@
             margin: auto;
             animation: turning 40s infinite linear, sun 2s infinite alternate cubic-bezier(.1,.71,.26,.99);
             cursor: pointer;
+            will-change: box-shadow, transform;
+            transform: translateZ(0);
         }
 
         /* --------------shootingStar-------------- */
@@ -303,6 +304,8 @@
             background:rgba(0,0,0,.3);
             box-shadow: 0 0 150px 150px rgba(0,0,0,.3);
             animation: turning 350s infinite linear;
+            will-change: transform;
+            transform: translateZ(0);
         }
 
         .star{
@@ -403,8 +406,8 @@
         }
         /* ---------------ANIMATIONS--------------- */
         @keyframes turning {
-            0%	{transform: rotateZ(0deg);}
-            100%{transform: rotateZ(360deg);}
+            0%	{transform: rotateZ(0deg) translateZ(0);}
+            100%{transform: rotateZ(360deg) translateZ(0);}
         }
 
         @keyframes blinka {
@@ -418,8 +421,8 @@
         }
 
         @keyframes jumpa{
-            0%  {transform:scale(.95);}
-            100%{transform:scale(1.03);}
+            0%  {transform:scale(.95) translateZ(0);}
+            100%{transform:scale(1.03) translateZ(0);}
         }
 
         @keyframes sun {
@@ -429,18 +432,18 @@
         }
 
         @keyframes float {
-            0%	{transform:translate(600px, 450px) rotateZ(0deg);}
-            20% {transform:translate(500px, 600px) rotateZ(90deg);}
-            40% {transform:translate(400px, 650px) rotateZ(180deg);}
-            60% {transform:translate(300px, 600px) rotateZ(270deg);}
-            80% {transform:translate(200px, 550px) rotateZ(180deg);}
-            100%{transform:translate(0px, 500px) rotateZ(90deg);}
+            0%	{transform:translate(600px, 450px) rotateZ(0deg) translateZ(0);}
+            20% {transform:translate(500px, 600px) rotateZ(90deg) translateZ(0);}
+            40% {transform:translate(400px, 650px) rotateZ(180deg) translateZ(0);}
+            60% {transform:translate(300px, 600px) rotateZ(270deg) translateZ(0);}
+            80% {transform:translate(200px, 550px) rotateZ(180deg) translateZ(0);}
+            100%{transform:translate(0px, 500px) rotateZ(90deg) translateZ(0);}
         }
 
         @keyframes shooting {
             0%	{opacity: 0;}
             50% {opacity:1;}
-            100%{transform:translate(-600px,600px) rotateZ(-45deg); opacity:0;}
+            100%{transform:translate(-600px,600px) rotateZ(-45deg) translateZ(0); opacity:0;}
         }
     </style>
 </head>
