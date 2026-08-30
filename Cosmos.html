@@ -28,11 +28,9 @@
             background-color: var(--bg-color);
             color: #f8fafc;
             -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
         
-        /* Particle Background */
-        #canvas-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background-color: #000; overflow: hidden; }
-
         /* Glassmorphism Utilities */
         .glass {
             background: var(--panel-bg);
@@ -225,20 +223,22 @@
         }
         .cyber-loader .ring:nth-child(2) {
             width: 70%; height: 70%;
-            border-top-color: rgba(255,255,255,0.5); border-bottom-color: rgba(255,255,255,0.5);
-            animation: spin-reverse 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-            filter: none;
+        /* Sleek Pulse Loader */
+        .cyber-loader { position: relative; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; }
+        .cyber-loader .core { display: none; }
+        .cyber-loader .ring {
+            position: absolute; width: 100%; height: 100%; border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--accent-color);
+            animation: spin 0.8s linear infinite;
+            filter: drop-shadow(0 0 8px var(--accent-color));
         }
-        .cyber-loader .core {
-            width: 20%; height: 20%; background-color: var(--accent-color); border-radius: 50%;
-            box-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--accent-color);
-            animation: pulse-core 1s ease-in-out infinite alternate;
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         }
-        @keyframes spin-reverse { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
         @keyframes pulse-core { 0% { transform: scale(0.8); opacity: 0.5; } 100% { transform: scale(1.2); opacity: 1; } }
-        @keyframes spin { 
-            0% { transform: perspective(500px) rotateX(60deg) rotateZ(0deg); }
-            100% { transform: perspective(500px) rotateX(60deg) rotateZ(360deg); } 
+        @keyframes pulse-ring {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
         }
         
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
@@ -319,17 +319,10 @@
         }
     </script>
 </head>
-<body>
-
-    <!-- Particle Canvas -->
-    <div id="canvas-container"></div>
-    <canvas id="particles-bg" class="fixed inset-0 pointer-events-none" style="z-index: -1;"></canvas>
-
-    <!-- Global Loader -->
+<body ontouchstart="">
     <div id="global-loader" class="loader-overlay">
         <div class="m-auto flex flex-col items-center">
             <div class="cyber-loader mb-6">
-                <div class="ring"></div>
                 <div class="ring"></div>
                 <div class="core"></div>
             </div>
@@ -375,12 +368,6 @@
                     <span class="material-symbols-rounded">key</span>
                 </div>
 
-                <div class="flex items-center mt-2 px-2">
-                    <label class="flex items-center text-xs text-zinc-400 cursor-pointer">
-                        <input type="checkbox" id="remember-login" class="mr-2 w-4 h-4 rounded bg-black/50 border-zinc-700 text-[#F43F5E]">
-                        Remember Connection
-                    </label>
-                </div>
 
                 <div class="flex gap-3 mt-2">
                     <button type="button" onclick="openSessionModal()" class="w-14 h-14 rounded-2xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-700/50 transition-colors shrink-0" title="Session Manager">
@@ -392,7 +379,7 @@
                 </div>
                 
                 <div class="text-center mt-4 text-xs text-zinc-500 font-bold tracking-widest drop-shadow-md">
-                    DEVELOPER : 𝐹ᥣᴧ𝚢ℯ𝚁࿐ Λ𝙻𝙿𝙷∆
+                    DEVELOPER : 𝐹ᥣᴧ𝚢ℯ𝚁࿐ Λ𝙻𝙿𝙷∆ & DPMODS
                 </div>
             </form>
         </div>
@@ -450,7 +437,7 @@
                     <span class="font-semibold text-sm">System Settings</span>
                 </div>
                 <div class="mt-8 text-center border-t border-[rgba(255,255,255,0.05)] pt-4">
-                    <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest drop-shadow-md">DEVELOPER : 𝐹ᥣᴧ𝚢ℯ𝚁࿐ Λ𝙻𝙿𝙷∆</span>
+                    <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest drop-shadow-md">DEVELOPER : 𝐹ᥣᴧ𝚢ℯ𝚁࿐ Λ𝙻𝙿𝙷∆ & DPMODS</span>
                 </div>
             </div>
         </div>
@@ -531,9 +518,10 @@
                             <span class="material-symbols-rounded absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">search</span>
                             <input type="text" id="search-keys" class="cyber-input pl-12 py-3 bg-zinc-900 border-zinc-800 rounded-[20px]" placeholder="Search keys..." oninput="renderKeys()">
                         </div>
-                        <button class="cyber-button w-12 h-12 rounded-[20px] p-0 flex-shrink-0" onclick="alert('Filter coming soon')">
-                            <span class="material-symbols-rounded">filter_list</span>
-                        </button>
+                    </div>
+                    <div class="flex gap-2 mb-6">
+                        <button class="cyber-button flex-1 rounded-[20px] py-3 font-bold" onclick="showAddKeyModal()"><span class="material-symbols-rounded mr-2">add</span> NEW KEY</button>
+                        <button class="cyber-button flex-1 rounded-[20px] py-3 font-bold" onclick="showBulkAddKeyModal()" style="background: rgba(255,255,255,0.1);"><span class="material-symbols-rounded mr-2">library_add</span> BULK GEN</button>
                     </div>
 
                     <div class="mobile-table" id="keys-table-container">
@@ -854,6 +842,9 @@
                 
             </div>
             <!-- Global FAB for Adding Key -->
+            <button id="main-fab-bulk" class="fab hidden" onclick="showBulkAddKeyModal()" style="right: 100px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); color: var(--accent-color);">
+                <span class="material-symbols-rounded text-3xl">library_add</span>
+            </button>
             <button id="main-fab" class="fab hidden" onclick="showAddKeyModal()">
                 <span class="material-symbols-rounded text-3xl">add</span>
             </button>
@@ -915,7 +906,7 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="text-xs text-zinc-400 ml-2 font-bold uppercase tracking-wider">Max Devices</label>
-                        <input type="number" id="mk-max" class="cyber-input py-2.5 mt-1" value="1" min="1">
+                        <input type="number" id="mk-max" class="cyber-input py-2.5 mt-1" value="3" min="1">
                     </div>
                     <div>
                         <label class="text-xs text-zinc-400 ml-2 font-bold uppercase tracking-wider">Expiry Time</label>
@@ -933,10 +924,7 @@
                     </select>
                 </div>
                 
-                <div>
-                    <label class="text-xs text-zinc-400 ml-2 font-bold uppercase tracking-wider">Bound Devices (HWID)</label>
-                    <input type="text" id="mk-hwid" class="cyber-input py-2.5 mt-1 text-sm" placeholder="Leave empty to unbind...">
-                </div>
+
                 
                 <div class="flex gap-2">
                     <button class="flex-1 border border-zinc-700 bg-black/40 active:bg-zinc-800 rounded-lg py-2 text-xs font-bold" onclick="addDays(8)">+8D</button>
@@ -952,12 +940,61 @@
         </div>
     </div>
 
+    <!-- Bulk Key Editor Modal -->
+    <div id="m-bulk-key" class="modal-overlay section-hidden">
+        <div class="glass p-6 w-full max-w-sm m-auto relative transition-transform transform scale-95" id="m-bulk-key-box">
+            <button class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 active:bg-white/10" onclick="closeBulkKeyModal()">
+                <span class="material-symbols-rounded text-xl">close</span>
+            </button>
+            
+            <h3 class="font-bold text-lg mb-4 flex items-center gap-2 text-accent">
+                <span class="material-symbols-rounded">library_add</span> BULK GENERATE
+            </h3>
+            
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-zinc-400 ml-2 font-bold uppercase tracking-wider">Quantity</label>
+                        <input type="number" id="mk-bulk-qty" class="cyber-input py-2.5 mt-1" value="10" min="1" max="100">
+                    </div>
+                    <div>
+                        <label class="text-xs text-zinc-400 ml-2 font-bold uppercase tracking-wider">Max Devices</label>
+                        <input type="number" id="mk-bulk-max" class="cyber-input py-2.5 mt-1" value="3" min="1">
+                    </div>
+                    <div>
+                        <label class="text-xs text-zinc-400 ml-2 font-bold uppercase tracking-wider">Prefix</label>
+                        <input type="text" id="mk-bulk-prefix" class="cyber-input py-2.5 mt-1 text-sm" value="DP-">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="text-xs text-zinc-400 ml-2 font-bold uppercase tracking-wider">Expiry Time</label>
+                    <input type="datetime-local" id="mk-bulk-expiry" class="cyber-input py-2.5 mt-1">
+                </div>
+                
+                <div class="flex gap-2">
+                    <button class="flex-1 border border-zinc-700 bg-black/40 active:bg-zinc-800 rounded-lg py-2 text-xs font-bold" onclick="addBulkDays(8)">+8D</button>
+                    <button class="flex-1 border border-zinc-700 bg-black/40 active:bg-zinc-800 rounded-lg py-2 text-xs font-bold" onclick="addBulkDays(16)">+16D</button>
+                    <button class="flex-1 border border-zinc-700 bg-black/40 active:bg-zinc-800 rounded-lg py-2 text-xs font-bold" onclick="addBulkDays(30)">+30D</button>
+                    <button class="flex-1 border border-accent bg-accent/20 text-accent active:bg-accent/30 rounded-lg py-2 text-xs font-bold" onclick="addBulkDays(999)">LIFE</button>
+                </div>
+                
+                <button class="cyber-button w-full mt-2 py-3" onclick="saveBulkKey()">
+                    <span class="material-symbols-rounded">check_circle</span> GENERATE KEYS
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toasts Container -->
     <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[10000] flex flex-col gap-2 w-[90%] max-w-sm pointer-events-none"></div>
 
     <!-- Scripts -->
     <script>
         // --- State ---
+        const MASTER_FB_URL = "https://reseller-f6ef3-default-rtdb.firebaseio.com";
+        const MASTER_FB_TOKEN = "YOUR_MASTER_FIREBASE_TOKEN";
+
         const App = {
             dbUrl: '', token: '',
             theme: { accentColors: ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#ef4444', '#06b6d4'], randomMode: false, currentAccent: '#3b82f6' },
@@ -969,7 +1006,7 @@
             loader: document.getElementById('global-loader'),
             loginScreen: document.getElementById('login-screen'), mainApp: document.getElementById('main-app'),
             loginForm: document.getElementById('login-form'), fbUrlInput: document.getElementById('fb-url'),
-            fbTokenInput: document.getElementById('fb-token'), rememberLogin: document.getElementById('remember-login'),
+            fbTokenInput: document.getElementById('fb-token'),
             navItems: document.querySelectorAll('.nav-item[data-target]'),
             sections: document.querySelectorAll('section[id^="sec-"]'), topbarTitle: document.getElementById('topbar-title'),
             toastContainer: document.getElementById('toast-container'), logoutBtn: document.getElementById('logout-btn')
@@ -1048,7 +1085,6 @@
             if (s) {
                 document.getElementById('fb-url').value = s.url;
                 document.getElementById('fb-token').value = s.secret;
-                document.getElementById('remember-login').checked = true;
                 closeSessionModal();
                 attemptLogin(s.url, s.secret);
             }
@@ -1084,7 +1120,7 @@
             const savedUrl = localStorage.getItem('dp_dialog_url');
             const savedToken = localStorage.getItem('dp_dialog_secret');
             if(savedUrl && savedToken) {
-                DOM.fbUrlInput.value = savedUrl; DOM.fbTokenInput.value = savedToken; DOM.rememberLogin.checked = true;
+                DOM.fbUrlInput.value = savedUrl; DOM.fbTokenInput.value = savedToken;
                 attemptLogin(savedUrl, savedToken);
             } else {
                 hideLoader(); DOM.loginScreen.classList.remove('section-hidden');
@@ -1212,21 +1248,37 @@
                 } else sec.classList.add('section-hidden');
             });
             const fab = document.getElementById('main-fab');
+            const fabBulk = document.getElementById('main-fab-bulk');
             if(fab) {
-                if(targetId === 'licenses') fab.classList.remove('hidden');
-                else fab.classList.add('hidden');
+                if(targetId === 'licenses') { fab.classList.remove('hidden'); if(fabBulk) fabBulk.classList.remove('hidden'); }
+                else { fab.classList.add('hidden'); if(fabBulk) fabBulk.classList.add('hidden'); }
             }
         }
 
         // --- Firebase Core ---
-        async function attemptLogin(url, token) {
+        async function attemptLogin(rawUrl, token) {
             try {
-                const res = await fetch(`${url}/sys.json?auth=${token}&shallow=true`);
+                let url = rawUrl;
+                while(url.endsWith('/')) url = url.slice(0, -1);
+                
+                if (MASTER_FB_URL && MASTER_FB_URL !== "YOUR_MASTER_FIREBASE_URL") {
+                    const b64Url = btoa(url.replace('/dp_dialog_controller', ''));
+                    const masterRes = await fetch(`${MASTER_FB_URL}/authorized_panels/${b64Url}.json`);
+                    if (!masterRes.ok) throw new Error("Master DB Auth Failed");
+                    const panelData = await masterRes.json();
+                    
+                    if (!panelData || panelData.token !== token) {
+                        showToast("Access Denied: Panel not authorized", "error");
+                        return;
+                    }
+                }
+                
+                const res = await fetch(`${url}/dp_dialog_controller.json?auth=${token}&shallow=true`);
                 if(!res.ok) throw new Error('login failled due to invalid key');
                 App.dbUrl = url; App.token = token;
                 
-                if(DOM.rememberLogin.checked) { localStorage.setItem('dp_dialog_url', url); localStorage.setItem('dp_dialog_secret', token); }
-                else { localStorage.removeItem('dp_dialog_url'); localStorage.removeItem('dp_dialog_secret'); }
+                localStorage.setItem('dp_dialog_url', url); 
+                localStorage.setItem('dp_dialog_secret', token);
                 
                 if (window.startSingularityDive) {
                     window.startSingularityDive(() => {
@@ -1260,18 +1312,7 @@
             App.dbUrl = ''; App.token = ''; 
             localStorage.removeItem('dp_dialog_url'); 
             localStorage.removeItem('dp_dialog_secret');
-            DOM.mainApp.classList.add('section-hidden'); 
-            DOM.loginScreen.classList.remove('section-hidden');
-            
-            // Reset UI and Camera so they don't get a blank screen
-            gsap.to(DOM.loginScreen, { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" });
-            window.isHomeActive = false;
-            
-            if (window.resetSingularityDive) {
-                window.resetSingularityDive();
-            }
-            
-            showToast('Disconnected', 'info');
+            location.reload();
         }
 
         async function fetchFirebase(path) {
@@ -1349,7 +1390,7 @@
                     version: "1.0",
                     signature_verification: true,
                     valid_signatures: [
-                        "61c026c5896ac9f9daecbd4bbd1a9abb075e1c8a105b3b633b47c510bedbc443"
+                        "PASTE_YOUR_SHA256_HASH_HERE"
                     ],
                     maintenance: false,
                     maintenance_url: "https://t.me/your_channel",
@@ -1371,7 +1412,7 @@
                             "https://example.com/image1.jpg",
                             "https://example.com/image2.png"
                         ],
-                        bg_url: "https://example.com/main_image.jpg",
+                        bg_url: "https://example.com/main.jpg",
                         icon_type: "admin"
                     },
                     messages: {
@@ -1396,12 +1437,15 @@
             let keys = await fetchFirebase('dp_dialog_controller/keys');
             if(!keys) {
                 keys = {
-                    "YOUR-KEY-HERE": {
+                    "PREMIUM-3-DEVICE-KEY": {
                         "used": false,
                         "banned": false,
                         "expiry_date": "2026-12-31 23:59:59",
-                        "bound_hwid": "",
-                        "crash": false
+                        "max_devices": 3,
+                        "crash": false,
+                        "devices": {
+                            "PLACEHOLDER": true
+                        }
                     }
                 };
                 await putFirebase('dp_dialog_controller/keys', keys);
@@ -1411,7 +1455,7 @@
             let blacklisted_hwids = await fetchFirebase('dp_dialog_controller/blacklisted_hwids');
             if(!blacklisted_hwids) {
                 blacklisted_hwids = {
-                    "DEVICE_ID_HERE": true
+                    "BANNED_ID_HERE": true
                 };
                 await putFirebase('dp_dialog_controller/blacklisted_hwids', blacklisted_hwids);
             }
@@ -1686,7 +1730,7 @@
         function renderDashboard() {
             const keys = Object.values(App.data.keys || {});
             const total = keys.length;
-            const active = keys.filter(k => (k.used || k.bound_hwid) && !k.banned && !k.crash).length;
+            const active = keys.filter(k => (k.used || (k.devices && Object.keys(k.devices).length > 0) || (k.bound_hwid && k.bound_hwid.trim() !== "")) && !k.banned && !k.crash).length;
             const banned = keys.filter(k => k.banned || k.crash).length; // Group banned and crash for stats
             const unused = total - active - banned;
 
@@ -1713,7 +1757,7 @@
             keys.sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
 
             if (searchTerm) {
-                keys = keys.filter(k => k.id.toLowerCase().includes(searchTerm) || (k.bound_hwid && k.bound_hwid.toLowerCase().includes(searchTerm)));
+                keys = keys.filter(k => k.id.toLowerCase().includes(searchTerm) || (k.devices && Object.keys(k.devices).some(d => d.toLowerCase().includes(searchTerm))) || (k.bound_hwid && k.bound_hwid.toLowerCase().includes(searchTerm)));
             }
 
             if(keys.length === 0) {
@@ -1723,11 +1767,26 @@
 
             // Optimize DOM rendering by displaying a maximum of 100 recent keys to prevent browser freeze
             container.innerHTML = keys.slice(0, 100).map(k => {
+                let validDevices = [];
+                if (k.devices) {
+                    validDevices = Object.keys(k.devices).filter(d => d !== "PLACEHOLDER");
+                }
+                if (k.bound_hwid && k.bound_hwid.trim() !== "") {
+                    validDevices.push(k.bound_hwid);
+                }
+                
+                let isExpired = false;
+                if (k.expiry_date && k.expiry_date !== "lifetime") {
+                    const expTime = new Date(k.expiry_date.replace(' ', 'T')).getTime();
+                    if (Date.now() > expTime) isExpired = true;
+                }
+
                 let badgeClass = 'badge-yellow';
                 let statusText = 'Unused';
                 if(k.banned) { badgeClass = 'badge-red'; statusText = 'Banned'; }
+                else if(isExpired) { badgeClass = 'badge-red'; statusText = 'Expired'; }
                 else if(k.crash) { badgeClass = 'badge-purple'; statusText = 'Crash'; }
-                else if(k.used || k.bound_hwid) { badgeClass = 'badge-green'; statusText = 'Active'; }
+                else if(k.used || validDevices.length > 0) { badgeClass = 'badge-green'; statusText = 'Active'; }
                 
                 return `
                 <div class="mobile-row">
@@ -1739,7 +1798,7 @@
                         <span class="badge ${badgeClass}">${statusText}</span>
                     </div>
                     <div class="flex justify-between text-sm text-zinc-400">
-                        <span>HWID: ${k.bound_hwid || 'None'}</span>
+                        <span>Devices: ${validDevices.length}/${k.max_devices || 3}</span>
                         <span>Exp: ${k.expiry_date}</span>
                     </div>
                     <div class="flex gap-2 mt-2">
@@ -1782,9 +1841,17 @@
             
             const devicesMap = {};
             Object.entries(keysObj).forEach(([id, k]) => {
-                if(k.bound_hwid) {
-                    if (!devicesMap[k.bound_hwid] || !devicesMap[k.bound_hwid].banned) {
-                        devicesMap[k.bound_hwid] = { id, ...k };
+                if(k.devices) {
+                    Object.keys(k.devices).forEach(hwid => {
+                        if (!devicesMap[hwid] || !devicesMap[hwid].banned) {
+                            devicesMap[hwid] = { id, hwid, ...k };
+                        }
+                    });
+                }
+                if(k.bound_hwid && k.bound_hwid.trim() !== "") {
+                    const hwid = k.bound_hwid;
+                    if (!devicesMap[hwid] || !devicesMap[hwid].banned) {
+                        devicesMap[hwid] = { id, hwid, ...k };
                     }
                 }
             });
@@ -1795,7 +1862,7 @@
                     if (!devicesMap[hwid]) {
                         devicesMap[hwid] = {
                             id: 'N/A (Key Deleted)',
-                            bound_hwid: hwid,
+                            hwid: hwid,
                             banned: true,
                             used: false,
                             crash: false
@@ -1813,8 +1880,8 @@
             
             if (searchTerm) {
                 devices = devices.filter(d => 
-                    (d.bound_hwid && d.bound_hwid.toLowerCase().includes(searchTerm)) || 
-                    (hwidToName[d.bound_hwid] && hwidToName[d.bound_hwid].toLowerCase().includes(searchTerm))
+                    (d.hwid && d.hwid.toLowerCase().includes(searchTerm)) || 
+                    (hwidToName[d.hwid] && hwidToName[d.hwid].toLowerCase().includes(searchTerm))
                 );
             }
             
@@ -1824,7 +1891,7 @@
             }
 
             container.innerHTML = devices.map(d => {
-                const isBanned = blacklisted[d.bound_hwid] === true || d.banned;
+                const isBanned = blacklisted[d.hwid] === true || d.banned;
                 const isCrashed = d.crash;
                 
                 let badgeClass = 'badge-green';
@@ -1832,7 +1899,7 @@
                 if(isBanned) { badgeClass = 'badge-red'; statusText = 'Banned'; }
                 else if(isCrashed) { badgeClass = 'badge-purple'; statusText = 'Crashed'; }
                 
-                const deviceName = hwidToName[d.bound_hwid] || 'Unknown Device';
+                const deviceName = hwidToName[d.hwid] || 'Unknown Device';
                 const rowStyle = isBanned ? 'style="background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.2);"' : '';
 
                 return `
@@ -1843,8 +1910,8 @@
                                 <span class="material-symbols-rounded text-sm ${isBanned ? 'text-red-400' : 'text-accent'}">smartphone</span>
                                 ${deviceName}
                             </span>
-                            <span class="font-mono text-zinc-400 text-xs flex items-center gap-2 cursor-pointer hover:text-white transition-colors" onclick="copyText('${d.bound_hwid}')" title="Copy HWID">
-                                HWID: ${d.bound_hwid}
+                            <span class="font-mono text-zinc-400 text-xs flex items-center gap-2 cursor-pointer hover:text-white transition-colors" onclick="copyText('${d.hwid}')" title="Copy HWID">
+                                HWID: ${d.hwid}
                                 <span class="material-symbols-rounded text-[12px]">content_copy</span>
                             </span>
                         </div>
@@ -1861,8 +1928,8 @@
                         </div>
                     </div>
                     <div class="flex flex-wrap gap-2 mt-2">
-                        ${!isBanned ? `<button class="flex-1 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl py-3 text-xs font-bold active:bg-red-500/30 transition hover:bg-red-500/20" onclick="banHWID('${d.bound_hwid}', '${d.id}')">BAN DEVICE</button>` : ''}
-                        ${isBanned ? `<button class="flex-1 bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl py-3 text-xs font-bold active:bg-green-500/30 transition hover:bg-green-500/20" onclick="unbanHWID('${d.bound_hwid}', '${d.id}')">RESTORE DEVICE</button>` : ''}
+                        ${!isBanned ? `<button class="flex-1 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl py-3 text-xs font-bold active:bg-red-500/30 transition hover:bg-red-500/20" onclick="banHWID('${d.hwid}', '${d.id}')">BAN DEVICE</button>` : ''}
+                        ${isBanned ? `<button class="flex-1 bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl py-3 text-xs font-bold active:bg-green-500/30 transition hover:bg-green-500/20" onclick="unbanHWID('${d.hwid}', '${d.id}')">RESTORE DEVICE</button>` : ''}
                     </div>
                 </div>
             `}).join('');
@@ -1901,7 +1968,7 @@
                     await putFirebase(`dp_dialog_controller/blacklisted_hwids/${hwid}`, true);
                     
                     const keysObj = App.data.keys || {};
-                    const keyToBan = Object.entries(keysObj).find(([id, k]) => k.bound_hwid === hwid);
+                    const keyToBan = Object.entries(keysObj).find(([id, k]) => (k.devices && k.devices[hwid]) || (k.bound_hwid === hwid));
                     if (keyToBan) {
                         await patchFirebase(`dp_dialog_controller/keys/${keyToBan[0]}`, { banned: true, used: false });
                     }
@@ -1911,7 +1978,7 @@
             } else if (action === 'crash') {
                 if (confirm(`Crash HWID: ${hwid}?`)) {
                     const keysObj = App.data.keys || {};
-                    const keyToCrash = Object.entries(keysObj).find(([id, k]) => k.bound_hwid === hwid);
+                    const keyToCrash = Object.entries(keysObj).find(([id, k]) => (k.devices && k.devices[hwid]) || (k.bound_hwid === hwid));
                     if (keyToCrash) {
                         await patchFirebase(`dp_dialog_controller/keys/${keyToCrash[0]}`, { crash: true });
                         input.value = '';
@@ -1944,7 +2011,7 @@
             document.getElementById('mk-expiry').value = localISOTime;
             
             document.getElementById('mk-status').value = "Unused";
-            document.getElementById('mk-hwid').value = "";
+            document.getElementById('mk-max').value = "3";
             
             const modal = document.getElementById('m-key');
             modal.classList.remove('section-hidden');
@@ -1980,7 +2047,7 @@
             else if(data.used) stat = "Active";
             
             document.getElementById('mk-status').value = stat;
-            document.getElementById('mk-hwid').value = data.bound_hwid || "";
+            document.getElementById('mk-max').value = data.max_devices || 3;
             
             const modal = document.getElementById('m-key');
             modal.classList.remove('section-hidden');
@@ -2025,7 +2092,8 @@
                 used: status === 'Active',
                 banned: status === 'Banned',
                 crash: status === 'Crash',
-                bound_hwid: document.getElementById('mk-hwid').value.trim(),
+                max_devices: parseInt(document.getElementById('mk-max').value) || 3,
+                devices: existingData.devices || { "PLACEHOLDER": true },
                 expiry_date: expiry,
                 notes: "",
                 created_at: createdAt
@@ -2036,6 +2104,82 @@
             closeKeyModal();
             hideLoader();
             showToast('Key Saved Successfully', 'success');
+        };
+
+        window.closeBulkKeyModal = function() {
+            document.getElementById('m-bulk-key').classList.add('section-hidden');
+        };
+
+        window.showBulkAddKeyModal = function() {
+            document.getElementById('mk-bulk-qty').value = "10";
+            document.getElementById('mk-bulk-prefix').value = "DP-";
+            
+            const d = new Date();
+            d.setDate(d.getDate() + 30);
+            const tzOffset = (new Date()).getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(d - tzOffset)).toISOString().slice(0,16);
+            document.getElementById('mk-bulk-expiry').value = localISOTime;
+            
+            const modal = document.getElementById('m-bulk-key');
+            modal.classList.remove('section-hidden');
+            setTimeout(() => {
+                document.getElementById('m-bulk-key-box').style.transform = 'scale(1)';
+            }, 10);
+        };
+
+        window.addBulkDays = function(d) {
+            if(d === 999) {
+                document.getElementById('mk-bulk-expiry').value = '';
+                showToast("Set to Lifetime", "success");
+            } else {
+                const dt = new Date();
+                dt.setDate(dt.getDate() + d);
+                const tzOffset = (new Date()).getTimezoneOffset() * 60000;
+                document.getElementById('mk-bulk-expiry').value = (new Date(dt - tzOffset)).toISOString().slice(0,16);
+            }
+        };
+
+        window.saveBulkKey = async function() {
+            const qty = parseInt(document.getElementById('mk-bulk-qty').value) || 0;
+            const prefix = document.getElementById('mk-bulk-prefix').value.trim();
+            const maxDevices = parseInt(document.getElementById('mk-bulk-max').value) || 3;
+            const expiryVal = document.getElementById('mk-bulk-expiry').value;
+            
+            if(qty < 1 || qty > 100) return showToast("Quantity must be between 1 and 100", "error");
+            
+            let expiry = "lifetime";
+            if(expiryVal) {
+                expiry = expiryVal.replace('T', ' ') + ':00';
+            }
+            
+            showLoader();
+            let generated = 0;
+            for(let i=0; i<qty; i++) {
+                const randomStr = Math.random().toString(36).substring(2, 10).toUpperCase();
+                const keyStr = (prefix || '') + randomStr;
+                
+                if(App.data.keys && App.data.keys[keyStr]) continue;
+                
+                const payload = {
+                    used: false,
+                    banned: false,
+                    crash: false,
+                    max_devices: maxDevices,
+                    devices: { "PLACEHOLDER": true },
+                    expiry_date: expiry,
+                    notes: "",
+                    created_at: Date.now()
+                };
+                
+                if (!App.data.keys) App.data.keys = {};
+                App.data.keys[keyStr] = payload;
+                await putFirebase(`dp_dialog_controller/keys/${keyStr}`, payload);
+                generated++;
+            }
+            
+            closeBulkKeyModal();
+            hideLoader();
+            showToast(`Generated ${generated} Keys Successfully`, 'success');
         };
 
         window.updateKeyStatus = async function(id, status) {
@@ -2239,356 +2383,47 @@
             setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        function initParticles() {
-            const canvas = document.getElementById('particles-bg');
-            const ctx = canvas.getContext('2d');
-            let particles = [];
-            function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-            window.addEventListener('resize', resize); resize();
-            class Particle {
-                constructor() {
-                    this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
-                    this.size = Math.random() * 2 + 0.5; this.speedX = Math.random() * 0.5 - 0.25;
-                    this.speedY = Math.random() * 0.5 - 0.25; this.alpha = Math.random() * 0.3 + 0.1;
-                }
-                update() {
-                    this.x += this.speedX; this.y += this.speedY;
-                    if(this.x > canvas.width) this.x = 0; if(this.x < 0) this.x = canvas.width;
-                    if(this.y > canvas.height) this.y = 0; if(this.y < 0) this.y = canvas.height;
-                }
-                draw() {
-                    ctx.fillStyle = `rgba(255, 200, 100, ${this.alpha})`; ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
-                }
-            }
-            for(let i=0; i<60; i++) particles.push(new Particle());
-            
-            // Background Optimization: Expose controls to pause particles when UI is hidden
-            window.particlesPaused = false;
-            window.pauseParticles = () => { window.particlesPaused = true; };
-            window.resumeParticles = () => { 
-                if (window.particlesPaused) { 
-                    window.particlesPaused = false; 
-                    animate(); 
-                } 
-            };
-
-            function animate() {
-                if(window.particlesPaused) return; // Halt loop to save CPU
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                particles.forEach(p => { p.update(); p.draw(); });
-                requestAnimationFrame(animate);
-            }
-            animate();
-        }
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
 
-<script type="module">
-        import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import gsap from 'gsap';
+    <!-- MODULAR BACKGROUND SYSTEM -->
+    <iframe id="bg-iframe" style="position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-1; border:none; background:#02030a;"></iframe>
+    <script>
+        const bgs = ['bg_cosmos.html', 'bg_celestial.html', 'bg_cosmos_text.html', 'bg_solar_system.html', 'bg_wormhole.html'];
+        const randomBg = bgs[Math.floor(Math.random() * bgs.length)];
+        document.getElementById('bg-iframe').src = randomBg;
 
         window.startSingularityDive = (onComplete) => {
             const loginUI = document.getElementById('login-screen');
-            gsap.to(loginUI, { opacity: 0, scale: 0.8, duration: 0.4, ease: "power2.inOut" });
+            loginUI.style.transition = 'opacity 0.4s, transform 0.4s';
+            loginUI.style.opacity = '0';
+            loginUI.style.transform = 'scale(0.8)';
             
-            const diveTl = gsap.timeline();
-            
-            // Move camera in but not excessively deep to avoid extreme overdraw lag on mobile GPUs
-            diveTl.to(camControl, { distance: 15, duration: 0.8, ease: "power2.in" }, 0);
-            
-            // Fade out the additive particles and aura to eliminate GPU fill-rate lag during the dive
-            diveTl.to(diskMaterial.uniforms.uIntensity, { value: 0.0, duration: 0.6, ease: "power2.in" }, 0.2);
-            diveTl.to(auraMat.uniforms.uIntensity, { value: 0.0, duration: 0.6, ease: "power2.in" }, 0.2);
-            
-            const blackout = document.createElement('div');
-            blackout.style.position = 'fixed';
-            blackout.style.inset = '0';
-            blackout.style.background = '#000';
-            blackout.style.zIndex = '9999';
-            blackout.style.opacity = '0';
-            blackout.style.pointerEvents = 'none';
-            document.body.appendChild(blackout);
-
-            diveTl.to(blackout, { opacity: 1, duration: 0.3 }, 0.5);
-            
-            diveTl.call(() => {
-                onComplete();
-                camControl.distance = 75;
-                camera.position.set(0, 60, 20);
-                controls.target.set(0, -10, 0);
-                controls.autoRotate = true;
-                window.isHomeActive = true;
-            });
-            
-            // Fade back in the particles seamlessly
-            diveTl.to(diskMaterial.uniforms.uIntensity, { value: 1.0, duration: 0.8, ease: "power2.out" }, 1.0);
-            diveTl.to(auraMat.uniforms.uIntensity, { value: 1.0, duration: 0.8, ease: "power2.out" }, 1.0);
-            diveTl.to(blackout, { opacity: 0, duration: 0.8 }, 0.8);
-            
-            diveTl.call(() => blackout.remove());
+            const iframe = document.getElementById('bg-iframe');
+            if (iframe.contentWindow && typeof iframe.contentWindow.startDive === 'function') {
+                iframe.contentWindow.startDive(() => {
+                    if (onComplete) onComplete();
+                });
+            } else {
+                // Fallback if iframe takes too long to load
+                setTimeout(() => { if (onComplete) onComplete(); }, 800);
+            }
         };
 
         window.resetSingularityDive = () => {
-            const diveTl = gsap.timeline();
-            
-            // Fade out the additive particles and aura to eliminate GPU fill-rate lag during the dive
-            diveTl.to(diskMaterial.uniforms.uIntensity, { value: 0.0, duration: 0.6, ease: "power2.in" }, 0.2);
-            diveTl.to(auraMat.uniforms.uIntensity, { value: 0.0, duration: 0.6, ease: "power2.in" }, 0.2);
-            
-            const blackout = document.createElement('div');
-            blackout.style.position = 'fixed';
-            blackout.style.inset = '0';
-            blackout.style.background = '#000';
-            blackout.style.zIndex = '9999';
-            blackout.style.opacity = '0';
-            blackout.style.pointerEvents = 'none';
-            document.body.appendChild(blackout);
-
-            diveTl.to(blackout, { opacity: 1, duration: 0.3 }, 0.5);
-            
-            diveTl.call(() => {
-                camControl.distance = 80;
-                camControl.height = 35;
-                camera.position.set(60, 30, 60);
-                controls.target.set(0, -12, 0);
-                controls.autoRotate = false;
-                window.isHomeActive = false;
-            });
-            
-            // Fade back in the particles seamlessly
-            diveTl.to(diskMaterial.uniforms.uIntensity, { value: 1.0, duration: 0.8, ease: "power2.out" }, 1.0);
-            diveTl.to(auraMat.uniforms.uIntensity, { value: 1.0, duration: 0.8, ease: "power2.out" }, 1.0);
-            diveTl.to(blackout, { opacity: 0, duration: 0.8 }, 0.8);
-            
-            diveTl.call(() => blackout.remove());
+            const iframe = document.getElementById('bg-iframe');
+            if (iframe.contentWindow && typeof iframe.contentWindow.resetDive === 'function') {
+                iframe.contentWindow.resetDive();
+            }
         };
-
-
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(60, 30, 60);
-
-        const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "high-performance", alpha: false });
-        renderer.setClearColor(0x000000, 1);
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Optimized pixel ratio
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.6;
-
-        const canvasContainer = document.createElement('div');
-        canvasContainer.id = 'login-bg-canvas';
-        canvasContainer.style.position = 'fixed';
-        canvasContainer.style.top = '0';
-        canvasContainer.style.left = '0';
-        canvasContainer.style.width = '100vw';
-        canvasContainer.style.height = '100vh';
-        canvasContainer.style.zIndex = '-1';
-        canvasContainer.style.pointerEvents = 'none';
-        canvasContainer.style.backgroundColor = '#000000'; // Ensure black background for blending
         
-        document.body.appendChild(canvasContainer);
-        canvasContainer.appendChild(renderer.domElement);
-
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.03;
-        controls.autoRotate = false; // Initially stop rotation
-        controls.autoRotateSpeed = 0.2; // Slow spin speed
-        controls.target.set(0, -12, 0);
-
-        // [Shaders and Material definitions omitted for brevity, keeping original]
-        const noiseChunk = `
-            vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-            vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-            vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
-            vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
-            float snoise(vec3 v) {
-                const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
-                const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
-                vec3 i  = floor(v + dot(v, C.yyy) );
-                vec3 x0 = v - i + dot(i, C.xxx) ;
-                vec3 g = step(x0.yzx, x0.xyz);
-                vec3 l = 1.0 - g;
-                vec3 i1 = min( g.xyz, l.zxy );
-                vec3 i2 = max( g.xyz, l.zxy );
-                vec3 x1 = x0 - i1 + C.xxx;
-                vec3 x2 = x0 - i2 + C.yyy;
-                vec3 x3 = x0 - D.yyy;
-                i = mod289(i);
-                vec4 p = permute( permute( permute( i.z + vec4(0.0, i1.z, i2.z, 1.0 )) + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
-                float n_ = 0.142857142857;
-                vec3  ns = n_ * D.wyz - D.xzx;
-                vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
-                vec4 x_ = floor(j * ns.z);
-                vec4 y_ = floor(j - 7.0 * x_ );
-                vec4 x = x_ *ns.x + ns.yyyy;
-                vec4 y = y_ *ns.x + ns.yyyy;
-                vec4 h = 1.0 - abs(x) - abs(y);
-                vec4 b0 = vec4( x.xy, y.xy );
-                vec4 b1 = vec4( x.zw, y.zw );
-                vec4 s0 = floor(b0)*2.0 + 1.0;
-                vec4 s1 = floor(b1)*2.0 + 1.0;
-                vec4 sh = -step(h, vec4(0.0));
-                vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;
-                vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
-                vec3 p0 = vec3(a0.xy,h.x);
-                vec3 p1 = vec3(a0.zw,h.y);
-                vec3 p2 = vec3(a1.xy,h.z);
-                vec3 p3 = vec3(a1.zw,h.w);
-                vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
-                p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
-                vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
-                m = m * m;
-                return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3) ) );
+        // Global Input Fix for Mobile Keyboard
+        document.addEventListener('focusin', (e) => {
+            if (e.target && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+                setTimeout(() => { e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
             }
-        `;
-
-        const coreGroup = new THREE.Group();
-        scene.add(coreGroup);
-
-        const bhMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
-        const bhGeo = new THREE.SphereGeometry(4, 64, 64);
-        coreGroup.add(new THREE.Mesh(bhGeo, bhMat));
-
-        const auraMat = new THREE.ShaderMaterial({
-            uniforms: { uTime: { value: 0 }, uIntensity: { value: 1.0 } },
-            vertexShader: `
-                varying vec3 vNormal;
-                varying vec3 vView;
-                void main() {
-                    vNormal = normalize(normalMatrix * normal);
-                    vView = normalize(-(modelViewMatrix * vec4(position, 1.0)).xyz);
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-            fragmentShader: `
-                uniform float uIntensity;
-                varying vec3 vNormal;
-                varying vec3 vView;
-                void main() {
-                    float rim = pow(1.0 - max(dot(vNormal, vView), 0.0), 4.0);
-                    gl_FragColor = vec4(vec3(1.0, 0.7, 0.1) * rim * uIntensity * 5.0, 1.0); // Golden aura
-                }
-            `,
-            side: THREE.BackSide, transparent: true, blending: THREE.AdditiveBlending
         });
-        coreGroup.add(new THREE.Mesh(new THREE.SphereGeometry(4.25, 64, 64), auraMat));
-
-        const instanceCount = 2500; // Optimized for mobile
-        const streakGeo = new THREE.CylinderGeometry(0.015, 0.1, 2.2, 3);
-        streakGeo.rotateX(Math.PI / 2);
-        
-        const diskMaterial = new THREE.ShaderMaterial({
-            uniforms: {
-                uTime: { value: 0 },
-                uMorph: { value: 0.1 },
-                uCompression: { value: 1.0 },
-                uIntensity: { value: 1.0 },
-                uOrbitScale: { value: 1.0 }
-            },
-            vertexShader: `
-                ${noiseChunk}
-                uniform float uTime;
-                uniform float uMorph;
-                uniform float uCompression;
-                uniform float uIntensity;
-                uniform float uOrbitScale;
-                varying vec3 vColor;
-                varying float vOpacity;
-                void main() {
-                    vec4 instPos = instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0);
-                    float rOriginal = length(instPos.xz);
-                    float r = rOriginal * uCompression;
-                    float initialAngle = atan(instPos.z, instPos.x);
-                    float orbitalVelocity = (1.5 / sqrt(rOriginal)) * uOrbitScale;
-                    float currentAngle = initialAngle + (uTime * orbitalVelocity);
-                    vec3 morphedWorldPos = vec3(cos(currentAngle) * r, instPos.y, sin(currentAngle) * r);
-                    float noise = snoise(vec3(morphedWorldPos.x * 0.08, morphedWorldPos.z * 0.08, uTime * 0.3));
-                    morphedWorldPos.y += noise * uMorph * 4.0;
-                    vec3 viewDir = normalize(cameraPosition - morphedWorldPos);
-                    vec3 orbitDir = normalize(vec3(-sin(currentAngle), 0.0, cos(currentAngle)));
-                    float doppler = dot(orbitDir, viewDir);
-                    
-                    // Golden / Yellow theme matching the UI screenshot
-                    vec3 hot = vec3(1.0, 0.95, 0.5);
-                    vec3 warm = vec3(1.0, 0.65, 0.1);
-                    vec3 cool = vec3(0.85, 0.35, 0.05);
-                    
-                    vec3 color = mix(cool, warm, smoothstep(45.0, 12.0, r));
-                    color = mix(color, hot, smoothstep(10.0, 4.0, r));
-                    vColor = color * (1.3 + doppler * 0.7) * uIntensity;
-                    vOpacity = (smoothstep(3.8, 5.5, r) * (1.0 - smoothstep(38.0, 48.0, r))) * 0.8;
-                    float deltaAngle = currentAngle - initialAngle;
-                    float c = cos(deltaAngle);
-                    float s = sin(deltaAngle);
-                    mat3 rotY = mat3(
-                        c, 0, s,
-                        0, 1, 0,
-                       -s, 0, c
-                    );
-                    vec3 localPos = (instanceMatrix * vec4(position, 0.0)).xyz;
-                    vec3 rotatedLocalPos = rotY * localPos;
-                    gl_Position = projectionMatrix * viewMatrix * vec4(morphedWorldPos + rotatedLocalPos, 1.0);
-                }
-            `,
-            fragmentShader: `
-                varying vec3 vColor;
-                varying float vOpacity;
-                void main() {
-                    gl_FragColor = vec4(vColor, vOpacity);
-                }
-            `,
-            transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
-        });
-
-        const instancedDisk = new THREE.InstancedMesh(streakGeo, diskMaterial, instanceCount);
-        const dummy = new THREE.Object3D();
-
-        for (let i = 0; i < instanceCount; i++) {
-            const r = 5 + Math.pow(Math.random(), 1.3) * 40;
-            const angle = Math.random() * Math.PI * 2;
-            dummy.position.set(Math.cos(angle) * r, (Math.random() - 0.5) * (8 / r), Math.sin(angle) * r);
-            dummy.lookAt(dummy.position.x + Math.sin(angle), dummy.position.y, dummy.position.z - Math.cos(angle));
-            dummy.updateMatrix();
-            instancedDisk.setMatrixAt(i, dummy.matrix);
-        }
-        scene.add(instancedDisk);
-
-        window.isHomeActive = false; // Flag to enable spinning only after login
-
-        const camControl = { distance: 85 };
-
-        // Removed the setInterval transition so the cosmos stays calm.
-
-        const clock = new THREE.Clock();
-        let animId;
-        function animate() {
-            const time = clock.getElapsedTime();
-            diskMaterial.uniforms.uTime.value = time;
-            auraMat.uniforms.uTime.value = time;
-            
-            if (window.isHomeActive) {
-                instancedDisk.rotation.y += 0.0002; // Very slow static rotation
-            }
-            
-            const currentDir = new THREE.Vector3().subVectors(camera.position, controls.target).normalize();
-            camera.position.x = controls.target.x + currentDir.x * camControl.distance;
-            camera.position.z = controls.target.z + currentDir.z * camControl.distance;
-            controls.update();
-            renderer.render(scene, camera);
-            animId = requestAnimationFrame(animate);
-        }
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        animate();
     </script>
 </body>
 </html>

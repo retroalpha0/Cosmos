@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Warping Wormhole</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000; 
+      overflow: hidden;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <!-- Three.js (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  
+  <script>
+    /***********************************************************************
+     * This demo warps the wormhole tunnel shape under a simple “gravity” 
+     * simulation from stars. Each control point in the Catmull-Rom path 
+     * is treated like a small mass; each star exerts a pull each frame.
+     * 
+     * We then rebuild the TubeGeometry so it physically bends over time.
+     *
+     * WARNING: Rebuilding geometry each frame can be CPU-intensive for 
+     * large tubularSegments or many control points. This is a naive 
+     * demonstration of dynamic geometry + "gravity," not a full physics sim.
+     ************************************************************************/
+
+    let scene, camera, renderer;
+    let tubeMeshWire, tubeMeshFill;
+    let clock;
+
+    // Path control points and velocities for naive “gravity”
+    let curvePoints = [];
+    let curveVelocities = [];
+
+    // The actual CatmullRomCurve3
+    let wormholeCurve;
+
+    // The current parameter (0..1) along the tunnel for the camera
+    let t = 0;
+
+    /** Camera movement speed along the wormhole curve. */
+    const speed = 0.02; 
+
+    /** Number of control points shaping the wormhole path. */
+    const segments = 10;
+
+    /** Distance in Z between consecutive control points. */
+    const segmentLength = 50;
+
+    /** The radius (thickness) of the tunnel. */
+    const radius = 10;
+
+    /** Whether we see the tunnel’s wireframe lines. */
+    const wireframe = true;
+
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+
+    /** Number of stars, star field radius, etc. */
+    const starCount = isMobile ? 200 : 1000;
+    const starRadius = 3000;
+
+    /** How many segments along the tube geometry, around the tube, etc. */
+    const tubularSegments = isMobile ? 50 : 200;
+    const radialSegments = isMobile ? 12 : 32;
+    const closed = false;
+
+    /** 
+     * Approx. star spectral classes with main-sequence radius factors 
+     * (relative to Sun=1.0). Frequency ~ distribution. 
+     */
+    const starClasses = [
+      { name: 'O', color: 0x9bb0ff, radiusFactor: 10.0, frequency: 0.005 },  
+      { name: 'B', color: 0xaabfff, radiusFactor: 5.0,  frequency: 0.01 },
+      { name: 'A', color: 0xcad7ff, radiusFactor: 1.7,  frequency: 0.02 },
+      { name: 'F', color: 0xf8f7ff, radiusFactor: 1.3,  frequency: 0.08 },
+      { name: 'G', color: 0xfff4ea, radiusFactor: 1.0,  frequency: 0.15 },
+      { name: 'K', color: 0xffddb4, radiusFactor: 0.9,  frequency: 0.25 },
+      { name: 'M', color: 0xffbd6f, radiusFactor: 0.5,  frequency: 0.485 }
+    ];
+
+    /** Array to hold the star objects (mesh + color, etc.). */
+    let stars = [];
+
+    /** 
+     * A constant controlling how strong the “gravitational” pull is 
+     * from the stars. Increase for more dramatic warping.
+     */
+    const gravityStrength = 0.5;
+
+    /** 
+     * A simple damping factor to keep control points from flying away. 
+     * Range (0..1): 0 => no velocity persists, 1 => no damping.
+     */
+    const damping = 0.95;
+
+    function init() {
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x000000);
+
+      camera = new THREE.PerspectiveCamera(
+        75, 
+        window.innerWidth / window.innerHeight, 
+        0.1, 
+        2000
+      );
+      camera.position.set(0, 0, 0);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+      window.addEventListener('resize', onWindowResize);
+
+      clock = new THREE.Clock();
+
+      // 1) Create the stars
+      createStars();
+
+      // 2) Initialize random path + velocities
+      createRandomCurvePoints();
+
+      // 3) Build the tube from those points
+      buildWormhole();
+
+      // Start loop
+      animate();
+    }
+
+    /**
+     * Create random star spheres with naive placement in a big radius.
+     */
+    function createStars() {
+      const baseGeometry = new THREE.SphereGeometry(1, 8, 8);
+      
+      let cumulative = 0;
+      const distribution = starClasses.map(starClass => {
+        cumulative += starClass.frequency;
+        return { ...starClass, cumulative };
+      });
+
+      for (let i = 0; i < starCount; i++) {
+        // Pick star class
+        const roll = Math.random();
+        const chosenClass = distribution.find(d => roll <= d.cumulative);
+
+        // Material
+        const starMaterial = new THREE.MeshBasicMaterial({
+          color: chosenClass.color
+        });
+
+        // Sphere
+        const starMesh = new THREE.Mesh(baseGeometry, starMaterial);
+
+        // Position in a sphere of radius starRadius
+        const r = starRadius * Math.random();
+        const theta = 2 * Math.PI * Math.random();
+        const phi = Math.PI * Math.random();
+
+        const x = r * Math.sin(phi) * Math.cos(theta);
+        const y = r * Math.sin(phi) * Math.sin(theta);
+        const z = r * Math.cos(phi);
+        starMesh.position.set(x, y, z);
+
+        // Scale
+        starMesh.scale.setScalar(chosenClass.radiusFactor);
+
+        scene.add(starMesh);
+
+        // Store
+        stars.push({
+          mesh: starMesh,
+          color: new THREE.Color(chosenClass.color),
+          mass: chosenClass.radiusFactor * 20  // Arbitrary mass ~ radius factor
+        });
+      }
+    }
+
+    /**
+     * Generate the initial random control points for the wormhole 
+     * and set velocities = zero.
+     */
+    function createRandomCurvePoints() {
+      curvePoints = [];
+      curveVelocities = [];
+
+      for (let i = 0; i < segments; i++) {
+        const x = (Math.random() - 0.5) * 40;
+        const y = (Math.random() - 0.5) * 40;
+        const z = i * segmentLength;
+        curvePoints.push(new THREE.Vector3(x, y, z));
+        curveVelocities.push(new THREE.Vector3(0, 0, 0));
+      }
+    }
+
+    /**
+     * Builds (or rebuilds) the TubeGeometry from the current `curvePoints`.
+     */
+    function buildWormhole() {
+      // Create a new CatmullRomCurve3 from the (warped) control points
+      wormholeCurve = new THREE.CatmullRomCurve3(curvePoints, false, 'catmullrom', 0.5);
+
+      // Dispose old geometry if it exists
+      if (tubeMeshWire?.geometry) tubeMeshWire.geometry.dispose();
+      if (tubeMeshFill?.geometry) tubeMeshFill.geometry.dispose();
+
+      // Rebuild geometry
+      const tubeGeometry = new THREE.TubeGeometry(
+        wormholeCurve, 
+        tubularSegments, 
+        radius, 
+        radialSegments, 
+        closed
+      );
+
+      // Reassign geometry to the two meshes
+      if (!tubeMeshWire) {
+        // If first time building, create the mesh objects
+        const wireMaterial = new THREE.MeshBasicMaterial({
+          color: 0xffffff,
+          wireframe: wireframe
+        });
+        tubeMeshWire = new THREE.Mesh(tubeGeometry, wireMaterial);
+        scene.add(tubeMeshWire);
+
+        const fillMaterial = new THREE.MeshBasicMaterial({
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0.5,
+          wireframe: false,
+          polygonOffset: true,
+          polygonOffsetFactor: 1,
+          polygonOffsetUnits: 1
+        });
+        tubeMeshFill = new THREE.Mesh(tubeGeometry, fillMaterial);
+        scene.add(tubeMeshFill);
+      } else {
+        // Update existing geometry
+        tubeMeshWire.geometry = tubeGeometry;
+        tubeMeshFill.geometry = tubeGeometry;
+      }
+    }
+
+    /**
+     * Apply a simple gravity-like pull from each star to each control point.
+     * This updates the velocities and positions of curvePoints, 
+     * then rebuilds the tube geometry.
+     */
+    function applyGravity(delta) {
+      // For each control point:
+      for (let i = 0; i < curvePoints.length; i++) {
+        const p = curvePoints[i];
+        const v = curveVelocities[i];
+
+        // Accumulate forces from all stars
+        const force = new THREE.Vector3(0, 0, 0);
+
+        // For performance, you might limit "nearby" stars only
+        for (const star of stars) {
+          const dir = new THREE.Vector3().subVectors(star.mesh.position, p);
+          const distSq = dir.lengthSq();
+          // Avoid zero-dist or extremely large force
+          if (distSq < 1e-4) continue;
+
+          // Basic Newtonian: F = G * (m1*m2)/r^2
+          // We'll treat each control point's mass as 1, star's mass ~ star.mass
+          // G is scaled by `gravityStrength`.
+          const mag = (gravityStrength * star.mass) / distSq;
+          // dir is the direction from p -> star
+          dir.normalize().multiplyScalar(mag);
+
+          force.add(dir);
+        }
+
+        // Update velocity: v += force * delta
+        v.addScaledVector(force, delta);
+
+        // Apply a bit of damping so it doesn't go crazy
+        v.multiplyScalar(damping);
+
+        // Update position
+        p.addScaledVector(v, delta);
+      }
+
+      // Rebuild the tube geometry with the new point positions
+      buildWormhole();
+    }
+
+    /**
+     * Find the two nearest stars (as in previous examples) 
+     * to blend the wormhole color if desired.
+     */
+    function getTwoNearestStars() {
+      const cameraPos = camera.position;
+      if (stars.length < 2) {
+        return {
+          starA: stars[0] || null,
+          distA: stars[0] ? cameraPos.distanceTo(stars[0].mesh.position) : Infinity,
+          starB: null,
+          distB: Infinity
+        };
+      }
+
+      let nearest = null;
+      let secondNearest = null;
+      let nearestDist = Infinity;
+      let secondDist = Infinity;
+
+      for (const star of stars) {
+        const dist = cameraPos.distanceTo(star.mesh.position);
+        if (dist < nearestDist) {
+          secondNearest = nearest;
+          secondDist = nearestDist;
+          nearest = star;
+          nearestDist = dist;
+        } else if (dist < secondDist) {
+          secondNearest = star;
+          secondDist = dist;
+        }
+      }
+
+      return {
+        starA: nearest, distA: nearestDist,
+        starB: secondNearest, distB: secondDist
+      };
+    }
+
+    /**
+     * Blend two colors c1, c2 by ratio [0..1].
+     */
+    function blendColors(c1, c2, ratio) {
+      const result = c1.clone();
+      result.lerp(c2, ratio);
+      return result;
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const delta = clock.getDelta();
+
+      // 1) Warp the tunnel shape each frame under star gravity
+      applyGravity(delta);
+
+      // 2) Move camera forward along the newly warped curve
+      t += speed * delta;
+      t %= 1;
+
+      const position = wormholeCurve.getPointAt(t);
+      camera.position.copy(position);
+
+      const tangent = wormholeCurve.getTangentAt(t).normalize();
+      camera.lookAt(position.clone().add(tangent));
+
+      // 3) Optionally blend the tunnel color based on the two nearest stars
+      const { starA, distA, starB, distB } = getTwoNearestStars();
+      if (starA && starB) {
+        // Weighted ratio
+        const sumDist = distA + distB;
+        let ratio = 0;
+        if (sumDist > 0) {
+          ratio = distB / sumDist;
+        }
+        const colorBlend = blendColors(starA.color, starB.color, ratio);
+
+        tubeMeshWire.material.color.copy(colorBlend);
+        tubeMeshFill.material.color.copy(colorBlend);
+      } else if (starA) {
+        // Only one star
+        tubeMeshWire.material.color.copy(starA.color);
+        tubeMeshFill.material.color.copy(starA.color);
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    // Kick off
+    init();
+  </script>
+</body>
+</html>

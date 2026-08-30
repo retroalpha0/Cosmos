@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar System Animation</title>
+    <style>
+        /* ---------------ATTRIBUTION:--------------- */
+        /* ----All Icons are designed by FreePik:----- */
+        /*http://www.flaticon.com/packs/space-elements*/
+        
+        /* ---------------FONT--------------- */
+        @import url(https://fonts.googleapis.com/css?family=Raleway:400,300);
+        /* ---------------CLEAR--------------- */
+        *{
+            margin: 0;
+            padding: 0;
+            list-style:none;
+            text-decoration: none;
+            font-family: 'Raleway', sans-serif;
+            color:#fff;
+        }
+        /* ---------------MAIN--------------- */
+        body{
+            background:#22313F;
+        }
+
+        .wrap{
+            width: 100%;
+            height: 100%;
+            top: 0;right: 0;bottom: 0;left: 0;
+            margin:auto;
+            position: fixed;
+            overflow: hidden;
+        }
+
+        .box-hidden {display: none;} /*hide checkbox*/
+        /* ----------------CIRCLE MAIN---------------- */
+        .circle {
+            top: 0;right: 0;bottom: 0;left: 0;
+            position: fixed;
+            margin:auto;
+            border: 1px #aaa solid;
+            border-radius: 50%;
+        }
+
+        .circle:hover , .circle:hover .txt{
+            animation-play-state:paused;
+        }
+        /* ------------CIRCLES------------ */
+        .c1{
+            width: 100px;
+            height: 100px;
+            animation: turning 50s infinite linear;
+        }
+        .c2{
+            width: 200px;
+            height: 200px;
+            animation: turning 30s .2s infinite linear;
+        }
+
+        .c3{
+            width: 250px;
+            height: 250px;
+            animation: turning 60s infinite linear;
+        }
+
+        .c4{
+            width: 400px;
+            height: 400px;
+            animation: turning 40s .2s infinite linear;
+        }
+
+        .c5{
+            width: 800px;
+            height: 800px;
+            border:none;
+        }/*for astronaut*/
+
+        /* -----------CIRCLE anti-aliasing----------- */
+        .d1 {width: 100px; height: 100px;}
+
+        .d2 {width: 200px; height: 200px;}
+
+        .d3 {width: 250px; height: 250px;}
+
+        .d4 {width: 400px; height: 400px;}
+
+        /* ------------PLANET_MAIN------------ */
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            transition:.5s;
+            animation: blinka 2s infinite ease alternate;
+            transform:skew(0deg);
+            cursor: pointer;
+        }
+
+        /* ------------PLANET------------ */
+        .s1{
+            width: 10px;
+            height: 10px;
+            top: 10px;
+            left: 10px;
+            background:url('https://i.imgur.com/wLXH8ru.png') no-repeat;
+            background-size:contain;
+        }
+
+        .s2{
+            width: 20px;
+            height: 20px;
+            top: 20px;
+            left: 20px;
+            background:url('https://i.imgur.com/f3RggbP.png') no-repeat;
+            background-size:contain;
+        }
+
+        .s3{
+            width: 15px;
+            height: 15px;
+            top: 30px;
+            left: 30px;
+            background:url('https://i.imgur.com/YkdY6Ae.png') no-repeat;
+            background-size:contain;
+        }
+
+        .s4{
+            width: 30px;
+            height: 30px;
+            top: 45px;
+            left: 45px;
+            background:url('https://i.imgur.com/LfFqwMP.png') no-repeat;
+            background-size:contain;
+        }
+        /* ------------PLANET hover------------ */
+        .planet:hover{
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.7),
+                        0 0 0 1px #fff;
+            transition:.5s;
+            animation: jumpa .8s cubic-bezier(.99,.12,.68,.85) infinite alternate;
+        }
+
+        /* ------------PLANET hover position------------ */
+        .s1:hover{
+            width: 20px;
+            height: 20px;
+            top: 5px;
+            left: 5px;
+        }
+
+        .s2:hover{
+            width: 30px;
+            height: 30px;
+            top: 15px;
+            left: 15px;
+        }
+
+        .s3:hover{
+            width: 25px;
+            height: 25px;
+            top: 25px;
+            left: 25px;
+        }
+
+        .s4:hover{
+            width: 50px;
+            height: 50px;
+            top: 35px;
+            left: 35px;
+        }
+        /* ------------------TXT------------------ */
+        .txt {
+            position: relative;
+            width: 300px;
+            height: 0px;
+            border-bottom:1px solid #aaa;
+            opacity: 0;
+            transition:2s;
+        }
+
+        .txt span{
+            display: block;
+            width: 80px;
+            height: 80px;
+            float: left;
+            animation: turning 50s reverse infinite linear;
+        }
+        
+        .txt h2{
+            display: inline-block;
+            margin: 5px 10px;
+            font-size: 1.2em;
+            float: left;
+        }
+
+        .txt p{
+            display: inline-block;
+            width: 180px;
+            margin-left: 10px;
+            font-size: .8em;
+        }
+
+        .cs1:hover +.txt, #r1:checked ~.t1, #r2:checked ~.t2, #r3:checked ~.t3, #r4:checked ~.t4, #r5:checked ~ .t5{
+            width: 280px;
+            height: 100px;
+            opacity:1;
+            transition:.5s;
+        }
+        /* ------------TXT position------------ */
+        .t1 {
+            top:-180%;
+            left:-310%;
+            animation: turning 50s infinite reverse linear;
+        }
+        .t2 {
+            top:-40%;
+            left:-170%;
+            animation: turning 30s .2s infinite reverse linear;
+        }
+        .t3 {
+            top:-20%;
+            left:-110%;
+            animation: turning 60s infinite reverse linear;
+        }
+        .t4 {
+            top:-30%;
+            left:-50%;
+            animation: turning 40s .2s infinite reverse linear;
+        }
+        .t5 {
+            position: fixed;
+            right:20px;
+            bottom:20px;
+            animation-play-state: pause;
+        }
+
+        .t1 span{
+            background: url('https://i.imgur.com/wLXH8ru.png') no-repeat;
+            background-size: contain;
+        }
+        .t2 span{
+            background: url('https://i.imgur.com/f3RggbP.png') no-repeat;
+            background-size: contain;
+        }
+        .t3 span{
+            background: url('https://i.imgur.com/YkdY6Ae.png') no-repeat;
+            background-size: contain;
+        }
+        .t4 span{
+            background: url('https://i.imgur.com/LfFqwMP.png') no-repeat;
+            background-size: contain;
+        }
+        .t5 span{
+            background: url('https://i.imgur.com/J2DXJgZ.png') no-repeat;
+            background-size: contain;
+            animation:none;
+        }
+
+        /* ---------------SUN--------------- */
+        .sun{
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background:#fff;
+            background-size: contain;
+            position: fixed;
+            top: 0;right: 0;bottom: 0;left: 0;
+            margin: auto;
+            animation: turning 40s infinite linear, sun 2s infinite alternate cubic-bezier(.1,.71,.26,.99);
+            cursor: pointer;
+        }
+
+        /* --------------shootingStar-------------- */
+        .shootingStar{
+            width: 100px;
+            border-bottom: 1px solid #fff;
+            transform: rotateZ(-45deg);
+            box-shadow: 0 0 5px #fff;
+            position: absolute;
+            top:20px;
+            right: 20px;
+            animation: shooting .8s cubic-bezier(.49,.88,.48,1) forwards;
+            display:none;
+        }
+
+        #r0:checked ~ .shootingStar{
+            display:block;
+        }
+
+        /* ------------STAR_DISC & STAR------------ */
+        .star_disc{
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            position: fixed;
+            top: 0;right: 0;bottom: 0;left: 0;
+            margin: auto;
+            background:rgba(0,0,0,.3);
+            box-shadow: 0 0 150px 150px rgba(0,0,0,.3);
+            animation: turning 350s infinite linear;
+        }
+
+        .star{
+            display: block;
+            position: absolute;
+            border-radius: 50%;
+            background: transparent;
+        }
+        
+        /* ---------------STARS--------------- */
+        .star_l{
+            width: 4px;
+            height: 4px;
+            animation: blinkb 2s infinite ease alternate;
+            box-shadow:230px 500px #fff,
+                       300px 500px #fff,
+                       500px 100px #fff,
+                       600px 300px #fff,
+                       300px 400px #fff,
+                       300px 250px #fff,
+                       500px 620px #fff,
+                       200px 140px #fff,
+                       500px 350px #fff,
+                       600px 500px #fff,
+                       700px 300px #fff;
+        }
+        .star_m{
+            width: 2px;
+            height: 2px;
+            animation: blinkb 1s infinite ease alternate;
+            box-shadow:200px 300px #fff,
+                       400px 500px #fff,
+                       500px 200px #fff,
+                       300px 300px #fff,
+                       600px 400px #fff,
+                       400px 550px #fff,
+                       300px 520px #fff,
+                       200px 640px #fff,
+                       400px 650px #fff,
+                       300px 100px #fff,
+                       220px 420px #fff,
+                       270px 340px #fff,
+                       440px 650px #fff,
+                       380px 640px #fff,
+                       600px 350px #fff,
+                       520px 420px #fff,
+                       570px 440px #fff,
+                       410px 350px #fff,
+                       380px 510px #fff,
+                       640px 240px #fff,
+                       600px 100px #fff;
+        }
+
+        .star_s{
+            width: 1px;
+            height: 1px;
+            animation: blinkb .5s infinite ease alternate;
+            box-shadow:120px 330px #fff,
+                       410px 520px #fff,
+                       380px 340px #fff,
+                       300px 440px #fff,
+                       620px 420px #fff,
+                       440px 580px #fff,
+                       330px 310px #fff,
+                       220px 630px #fff,
+                       410px 590px #fff,
+                       350px 120px #fff,
+                       250px 610px #fff,
+                       430px 540px #fff,
+                       350px 320px #fff,
+                       550px 580px #fff,
+                       430px 310px #fff,
+                       320px 130px #fff,
+                       610px 390px #fff,
+                       250px 620px #fff,
+                       350px 610px #fff,
+                       330px 140px #fff,
+                       450px 220px #fff;
+        }
+        
+        /* ---------------ASTRONAUT--------------- */
+        .astronaut{
+            width: 80px;
+            height: 80px;
+            background:url('https://i.imgur.com/hGo4zrG.png') no-repeat;
+            background-size: contain;
+            position: absolute;
+            animation:float 20s infinite alternate linear;
+            transition:.5s;
+            cursor: pointer;
+        }
+
+        .astronaut:hover{
+            animation-play-state:paused;
+            width: 90px;
+            height: 90px;
+            transition:.5s;
+        }
+        /* ---------------ANIMATIONS--------------- */
+        @keyframes turning {
+            0%	{transform: rotateZ(0deg);}
+            100%{transform: rotateZ(360deg);}
+        }
+
+        @keyframes blinka {
+            0% {box-shadow: 0;}
+            100% {box-shadow: 0 0 5px rgba(255, 255, 255, 0.7)}
+        }
+
+        @keyframes blinkb {
+            0% {opacity:.5;}
+            100% {opacity:1;}
+        }
+
+        @keyframes jumpa{
+            0%  {transform:scale(.95);}
+            100%{transform:scale(1.03);}
+        }
+
+        @keyframes sun {
+            0%	{box-shadow: 0 0 200px #fff;}
+            100%{box-shadow: 0 0 10px #fff,
+                             0 0 500px #fff;}
+        }
+
+        @keyframes float {
+            0%	{transform:translate(600px, 450px) rotateZ(0deg);}
+            20% {transform:translate(500px, 600px) rotateZ(90deg);}
+            40% {transform:translate(400px, 650px) rotateZ(180deg);}
+            60% {transform:translate(300px, 600px) rotateZ(270deg);}
+            80% {transform:translate(200px, 550px) rotateZ(180deg);}
+            100%{transform:translate(0px, 500px) rotateZ(90deg);}
+        }
+
+        @keyframes shooting {
+            0%	{opacity: 0;}
+            50% {opacity:1;}
+            100%{transform:translate(-600px,600px) rotateZ(-45deg); opacity:0;}
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <!-- stars-->
+        <ul class="star_disc">
+            <li class="star star_l"></li>
+            <li class="star star_m"></li>
+            <li class="star star_s"></li>
+        </ul>
+
+        <div class="circle d1"></div>
+        <div class="circle d2"></div>
+        <div class="circle d3"></div>
+        <div class="circle d4"></div>
+        
+        <!-- astronaut -->
+        <div class="circle c5">
+            <input type="checkbox" name="ooo" id="r5" class="box-hidden"></input>
+            <label for="r5" class="astronaut"></label>
+            <div class="txt t5">
+                <span></span>
+                <h2>Title5</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Earum, similique.</p>
+            </div>
+        </div>
+
+        <!-- planets -->
+        <div class="circle c4">
+            <input type="radio" name="xxx" id="r4" class="box-hidden"></input>
+            <label for="r4" class="planet s4"></label>
+            <div class="txt t4">
+                <span></span>
+                <h2>Title4</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Earum, similique.</p>
+            </div>
+        </div>
+            
+        <div class="circle c3">
+            <input type="radio" name="xxx" id="r3" class="box-hidden"></input>
+            <label for="r3" class="planet s3"></label>
+            <div class="txt t3">
+                <span></span>
+                <h2>Title3</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Earum, similique.</p>
+            </div>
+        </div>
+
+        <div class="circle c2">
+            <input type="radio" name="xxx" id="r2" class="box-hidden"></input>
+            <label for="r2" class="planet s2"></label>
+            <div class="txt t2">
+                <span></span>
+                <h2>Title2</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Earum, similique.</p>
+            </div>
+        </div>
+
+        <div class="circle c1">
+            <input type="radio" name="xxx" id="r1" class="box-hidden"></input>
+            <label for="r1" class="planet s1"></label>
+            <div class="txt t1">
+                <span></span>
+                <h2>Title</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Earum, similique.</p>
+            </div>
+        </div>
+
+        <!-- Sun & shootingStar -->
+        <input type="radio" name="xxx" id="r0" class="box-hidden"></input>
+        <label for="r0" class="sun"></label>
+        <div class="shootingStar"></div>
+    </div>
+</body>
+</html>
