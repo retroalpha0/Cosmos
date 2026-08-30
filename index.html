@@ -333,7 +333,7 @@
 
             <!-- Welcome Text -->
             <div style="text-align: center; font-weight: 600; font-size: 0.95rem; color: #fff; letter-spacing: 0.5px; margin-top: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8);">
-                Welcome to DPMODS System
+                Welcome to Λ𝙻𝙿𝙷∆ System
             </div>
 
             <!-- UI Selector -->
@@ -374,7 +374,7 @@
             </div>
             
             <div style="text-align: center; margin-top: 10px; font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight: 700; letter-spacing: 1px; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">
-                DEVELOPER : 𝐹ᥣᴧ𝚢ℯ𝚁࿐ Λ𝙻𝙿𝙷∆ & DPMODS
+                DEVELOPER : 𝐹ᥣᴧ𝚢ℯ𝚁࿐ Λ𝙻𝙿𝙷∆
             </div>
         </div>
     </div>
@@ -727,7 +727,7 @@
             <div class="modal-title">Session Manager</div>
             <div class="form-group" style="display: flex; gap: 12px; margin-bottom: 25px; align-items: stretch;">
                 <input type="text" id="new-session-name" placeholder="Session Name (e.g. Production)" style="flex: 1; background: var(--bg-input); border: 1px solid var(--border-soft); border-radius: 14px; padding: 14px 16px; color: #fff; font-size: 0.95rem; font-weight: 500; outline: none; transition: 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 10px var(--purple-shine), inset 0 2px 5px rgba(0,0,0,0.5)';" onblur="this.style.borderColor='var(--border-soft)'; this.style.boxShadow='inset 0 2px 5px rgba(0,0,0,0.5)';">
-                <button class="btn btn-primary" onclick="saveCurrentSession()" style="width: auto; padding: 0 24px; border-radius: 14px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;"><i class="fas fa-save"></i> Save</button>
+                <button class="btn btn-primary" onclick="saveCurrentSession()" style="flex-shrink: 0; width: auto; padding: 0 24px; border-radius: 14px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;"><i class="fas fa-save"></i> Save</button>
             </div>
             <div id="session-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; padding-right: 5px;">
                 <!-- Sessions will be injected here -->
@@ -740,7 +740,7 @@
 
     <!-- Developer Section -->
     <div style="text-align: center; margin-top: 30px; margin-bottom: 20px; font-size: 0.75rem; color: var(--text-dim); font-weight: 700; letter-spacing: 1px; padding-bottom: 70px;">
-        DEVELOPER : 𝐹ᥣᴧ𝚢ℯ𝚁࿐ Λ𝙻𝙿𝙷∆ & DPMODS
+        DEVELOPER : 𝐹ᥣᴧ𝚢ℯ𝚁࿐ Λ𝙻𝙿𝙷∆
     </div>
 
     <!-- BOTTOM NAVBAR -->
@@ -1060,15 +1060,19 @@
                 return;
             }
             list.innerHTML = sessions.map((s, idx) => `
-                <div style="display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.4); padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                    <div style="display: flex; align-items: flex-start; justify-content: space-between;">
-                        <div style="display: flex; flex-direction: column; overflow: hidden; flex: 1; margin-right: 10px;">
-                            <span style="font-weight: 800; color: #fff; font-size: 0.95rem; margin-bottom: 3px;">${s.name}</span>
-                            <span style="font-size: 0.75rem; color: #888; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.url}</span>
+                <div class="list-card" style="cursor: default;">
+                    <div class="card-header-main">
+                        <div class="card-header-left">
+                            <div class="card-title">${s.name}</div>
+                            <div class="card-subtitle"><span class="badge active" style="text-transform: none; font-family: monospace;">${s.url}</span></div>
                         </div>
-                        <button class="btn-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); border:none;" onclick="deleteSession(${idx})" title="Delete"><i class="fas fa-trash"></i></button>
+                        <div class="card-header-right">
+                            <button class="btn-icon" style="color: var(--danger);" onclick="deleteSession(${idx})" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
                     </div>
-                    <button class="btn-primary" style="width: 100%; padding: 10px; font-size: 0.8rem; border-radius: 8px; margin-top: 5px; background: rgba(var(--primary-rgb), 0.15); color: var(--primary); border: 1px solid rgba(var(--primary-rgb), 0.3);" onclick="useSession(${idx})"><i class="fas fa-sign-in-alt"></i> LOGIN SESSION</button>
+                    <div class="card-actions" style="margin-top: 12px;">
+                        <button class="btn-xs edit" style="width: 100%;" onclick="useSession(${idx})"><i class="fas fa-sign-in-alt"></i> LOGIN SESSION</button>
+                    </div>
                 </div>
             `).join('');
         }
