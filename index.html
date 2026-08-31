@@ -402,7 +402,7 @@
             </div>
             <div style="display: flex; gap: 10px; margin: 0 20px 15px 20px;">
                 <button class="btn btn-primary" onclick="openKeyModal()" style="flex: 1;"><i class="fas fa-plus"></i> NEW KEY</button>
-                <button class="btn btn-primary" onclick="openBulkKeyModal()" style="flex: 1; background: var(--secondary);"><i class="fas fa-layer-group"></i> BULK GEN</button>
+                <button class="btn btn-primary" onclick="openBulkKeyModal()" style="flex: 1;">BULK GEN</button>
             </div>
             <div id="keys-list"></div>
         </div>
@@ -1500,7 +1500,7 @@
                             <div class="card-header-left">
                                 <div class="card-title interactive-text" onclick="copyToClipboard('${keyId}', 'License Key', event)">
                                     <i class="fas fa-key" style="color:var(--primary); margin-right:4px;"></i> 
-                                    ${keyId} <i class="fas fa-copy" style="font-size:0.75rem; color:var(--text-dim); opacity:0.7;"></i>
+                                    ${keyId} <button class="badge" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); margin-left: 8px; padding: 2px 8px; cursor: pointer;">COPY</button>
                                 </div>
                                 <div class="card-subtitle">
                                     <span><i class="far fa-calendar-alt"></i> ${(data.expiry_date || "").replace('T', ' ')}</span>
