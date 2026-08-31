@@ -380,11 +380,8 @@
                 </div>
                 
                 <div class="flex gap-3 mt-2">
-                    <button type="button" onclick="window.setRandomUI()" class="w-1/2 py-3 rounded-2xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center gap-2 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-700/50 transition-colors uppercase tracking-wider">
-                        <span class="material-symbols-rounded text-lg">casino</span> Random UI
-                    </button>
-                    <button type="button" onclick="window.cycleStableTheme()" class="w-1/2 py-3 rounded-2xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center gap-2 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-700/50 transition-colors uppercase tracking-wider">
-                        <span class="material-symbols-rounded text-lg">palette</span> Stable Theme
+                    <button type="button" onclick="window.openThemeModal()" class="w-full py-3 rounded-2xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center gap-2 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-700/50 transition-colors uppercase tracking-wider">
+                        <span class="material-symbols-rounded text-lg">palette</span> PANEL UI
                     </button>
                 </div>
                 
@@ -863,6 +860,29 @@
         </main>
     </div>
     
+    <!-- Theme Selection Modal -->
+    <div id="m-theme" class="modal-overlay section-hidden">
+        <div class="glass p-6 w-full max-w-sm m-auto relative transition-transform transform scale-95" id="m-theme-box">
+            <button class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 active:bg-white/10" onclick="closeThemeModal()">
+                <span class="material-symbols-rounded text-xl">close</span>
+            </button>
+            <h3 class="font-bold text-lg mb-4 flex items-center gap-2 text-accent">
+                <span class="material-symbols-rounded">palette</span> PANEL UI SETTINGS
+            </h3>
+            <div class="space-y-4">
+                <button type="button" onclick="window.setRandomUI()" class="w-full py-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center gap-2 text-sm font-bold text-white hover:bg-zinc-700/50 transition-colors uppercase tracking-wider">
+                    <span class="material-symbols-rounded text-lg">casino</span> RANDOM UI (NEXT LOAD)
+                </button>
+                
+                <div class="text-center text-xs font-bold text-zinc-500 my-4 uppercase tracking-wider">OR CHOOSE A STABLE THEME</div>
+                
+                <div class="grid grid-cols-4 gap-3" id="theme-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Session Manager Modal -->
     <div id="m-session" class="modal-overlay section-hidden">
         <div class="glass p-6 w-full max-w-sm m-auto relative transition-transform transform scale-95" id="m-session-box">
@@ -1731,19 +1751,47 @@
             localStorage.setItem('chosen_theme_accent', 'random');
             if(window.showToast) window.showToast("Random UI Enabled (Next Load)", "success");
             else alert("Random UI Enabled (Next Load)");
+            if(typeof closeThemeModal === 'function') closeThemeModal();
         };
-        window.cycleStableTheme = function() {
-            let currentIdx = App.theme.accentColors.indexOf(App.theme.currentAccent);
-            let nextIdx = (currentIdx + 1) % App.theme.accentColors.length;
-            App.theme.currentAccent = App.theme.accentColors[nextIdx];
-            localStorage.setItem('chosen_theme_accent', App.theme.currentAccent);
-            document.documentElement.style.setProperty('--accent-color', App.theme.currentAccent);
-            if(App.chartInstance) {
-                App.chartInstance.data.datasets[0].borderColor = App.theme.currentAccent;
-                App.chartInstance.data.datasets[0].backgroundColor = App.theme.currentAccent + '20';
-                App.chartInstance.update();
+        window.openThemeModal = function() {
+            const grid = document.getElementById('theme-grid');
+            if (grid && grid.children.length === 0) {
+                App.theme.accentColors.forEach((color, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full h-12 rounded-xl transition-transform active:scale-95";
+                    btn.style.backgroundColor = color;
+                    btn.style.boxShadow = `0 4px 15px ${color}40`;
+                    btn.onclick = () => {
+                        App.theme.currentAccent = color;
+                        localStorage.setItem('chosen_theme_accent', color);
+                        document.documentElement.style.setProperty('--accent-color', color);
+                        if(App.chartInstance) {
+                            App.chartInstance.data.datasets[0].borderColor = color;
+                            App.chartInstance.data.datasets[0].backgroundColor = color + '20';
+                            App.chartInstance.update();
+                        }
+                        if(window.showToast) window.showToast("Theme Updated", "success");
+                        closeThemeModal();
+                    };
+                    grid.appendChild(btn);
+                });
             }
-            if(window.showToast) window.showToast("Theme Updated", "success");
+            const modal = document.getElementById('m-theme');
+            if(modal) {
+                modal.classList.remove('section-hidden');
+                setTimeout(() => {
+                    document.getElementById('m-theme-box').style.transform = 'scale(1)';
+                }, 10);
+            }
+        };
+        window.closeThemeModal = function() {
+            const modal = document.getElementById('m-theme');
+            if(modal) {
+                document.getElementById('m-theme-box').style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    modal.classList.add('section-hidden');
+                }, 300);
+            }
         };
 
         function applyTheme() {

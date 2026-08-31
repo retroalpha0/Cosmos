@@ -32,15 +32,32 @@
             localStorage.setItem('chosen_theme_index', 'random');
             if(window.showIsland) window.showIsland("Random UI Enabled (Next Load)", "success", "fa-dice");
             else alert("Random UI Enabled (Next Load)");
+            if(typeof closeModals === 'function') closeModals();
+            else { const m = document.getElementById('theme-modal'); if(m) m.classList.remove('active'); }
         };
-        window.cycleStableTheme = function() {
-            window.currentThemeIndex = (window.currentThemeIndex + 1) % themes.length;
-            localStorage.setItem('chosen_theme_index', window.currentThemeIndex);
-            const newT = themes[window.currentThemeIndex];
-            document.documentElement.style.setProperty('--primary', newT.p);
-            document.documentElement.style.setProperty('--primary-dark', newT.d);
-            document.documentElement.style.setProperty('--purple-shine', newT.s);
-            if(window.showIsland) window.showIsland("Theme Updated", "success", "fa-palette");
+        window.openThemeModal = function() {
+            const grid = document.getElementById('theme-grid');
+            if (grid && grid.children.length === 0) {
+                themes.forEach((t, index) => {
+                    const btn = document.createElement('button');
+                    btn.style.cssText = `background: ${t.p}; height: 50px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); cursor: pointer; box-shadow: 0 4px 15px ${t.s}; transition: 0.2s;`;
+                    btn.onmouseover = () => btn.style.transform = 'scale(1.05)';
+                    btn.onmouseout = () => btn.style.transform = 'scale(1)';
+                    btn.onclick = () => {
+                        window.currentThemeIndex = index;
+                        localStorage.setItem('chosen_theme_index', index);
+                        document.documentElement.style.setProperty('--primary', t.p);
+                        document.documentElement.style.setProperty('--primary-dark', t.d);
+                        document.documentElement.style.setProperty('--purple-shine', t.s);
+                        if (window.showIsland) window.showIsland("Theme Updated", "success", "fa-palette");
+                        if(typeof closeModals === 'function') closeModals();
+                        else document.getElementById('theme-modal').classList.remove('active');
+                    };
+                    grid.appendChild(btn);
+                });
+            }
+            const modal = document.getElementById('theme-modal');
+            if(modal) modal.classList.add('active');
         };
     </script>
     <style>
@@ -396,11 +413,8 @@
             </div>
             
             <div style="display: flex; gap: 12px; margin-top: 5px;">
-                <button onclick="window.setRandomUI()" style="flex: 1; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff; font-size: 0.8rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; text-transform: uppercase;">
-                    <i class="fas fa-dice"></i> Random UI
-                </button>
-                <button onclick="window.cycleStableTheme()" style="flex: 1; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff; font-size: 0.8rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; text-transform: uppercase;">
-                    <i class="fas fa-palette"></i> Stable Theme
+                <button onclick="window.openThemeModal()" style="flex: 1; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff; font-size: 0.8rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; text-transform: uppercase;">
+                    <i class="fas fa-palette"></i> PANEL UI
                 </button>
             </div>
 
@@ -551,6 +565,23 @@
                         <hr style="border:0; height:1px; background:var(--border-soft); margin: 15px 0;">
                         
                         <div class="input-group"><label>Admin Contact URL</label><input type="text" id="sys-admin-url"></div>
+                    </div>
+                </div>
+
+                <!-- Theme Modal -->
+                <div class="modal-overlay" id="theme-modal">
+                    <div class="modal-card">
+                        <div class="modal-handle"></div>
+                        <div class="modal-title">PANEL UI SETTINGS</div>
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            <button onclick="window.setRandomUI()" class="btn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 1rem; color: #fff; cursor: pointer;">
+                                <i class="fas fa-dice"></i> RANDOM UI (NEXT LOAD)
+                            </button>
+                            <div style="text-align: center; color: var(--text-dim); font-size: 0.85rem; font-weight: bold; margin-top: 5px;">OR CHOOSE A STABLE THEME</div>
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;" id="theme-grid">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
                     </div>
                 </div>
 
