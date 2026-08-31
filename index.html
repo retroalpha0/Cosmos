@@ -138,7 +138,7 @@
         /* --- LISTS & CARDS --- */
         #keys-list, #bans-list { padding: 0 20px; display: flex; flex-direction: column; gap: 14px; }
 
-        .list-card { background: rgba(18, 18, 22, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.08); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s, box-shadow 0.3s, border-color 0.3s; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer; transform: translateZ(0); will-change: transform; }
+        .list-card { background: rgba(18, 18, 22, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.08); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s, box-shadow 0.3s, border-color 0.3s; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer; transform: translateZ(0); will-change: transform; content-visibility: auto; contain-intrinsic-size: 150px; }
         .list-card:active { transform: scale(0.97); background: rgba(25, 25, 30, 0.6); }
         .list-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--primary); border-radius: 4px 0 0 4px; box-shadow: 2px 0 10px var(--purple-shine);}
         .list-card.banned::before { background: var(--danger); box-shadow: 2px 0 10px rgba(239,68,68,0.5);}
@@ -613,6 +613,7 @@
         <!-- Global FABs -->
         <button id="fab-bulk-keys" class="fab-btn" onclick="openBulkKeyModal()" style="display: none; bottom: calc(var(--nav-height) + 90px);"><i class="fas fa-layer-group"></i></button>
         <button id="fab-keys" class="fab-btn" onclick="openKeyModal()" style="display: none;"><i class="fas fa-plus"></i></button>
+        <button id="fab-copy-keys" class="fab-btn fab-left" onclick="copyAllKeys()" style="display: none; bottom: calc(var(--nav-height) + 90px); background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);" title="Copy All Keys"><i class="fas fa-copy"></i></button>
         <button id="fab-devices" class="fab-btn fab-left" onclick="openBanModal()" style="background:var(--danger); box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4); display: none;" title="Block HWID"><i class="fas fa-ban"></i></button>
     </div>
 
@@ -1024,9 +1025,11 @@
             
             const fabKeys = document.getElementById('fab-keys');
             const fabBulkKeys = document.getElementById('fab-bulk-keys');
+            const fabCopyKeys = document.getElementById('fab-copy-keys');
             const fabDevices = document.getElementById('fab-devices');
             if (fabKeys) fabKeys.style.display = viewId === 'keys' ? 'flex' : 'none';
             if (fabBulkKeys) fabBulkKeys.style.display = viewId === 'keys' ? 'flex' : 'none';
+            if (fabCopyKeys) fabCopyKeys.style.display = viewId === 'keys' ? 'flex' : 'none';
             if (fabDevices) fabDevices.style.display = (viewId === 'devices' || viewId === 'keys') ? 'flex' : 'none';
         }
 
@@ -1443,6 +1446,9 @@
             
             const keyArray = Object.entries(DB.keys || {}).reverse();
 
+            let hwidToName = {};
+            try { hwidToName = JSON.parse(localStorage.getItem('dp_hwid_cache')) || {}; } catch(e) {}
+
             keyArray.forEach(([keyId, data]) => {
                 const searchMatch = search === "" || keyId.toLowerCase().includes(search) || 
                                     (data.devices && Object.keys(data.devices).some(d => d.toLowerCase().includes(search))) ||
@@ -1468,9 +1474,6 @@
                     const expTime = new Date(data.expiry_date.replace(' ', 'T')).getTime();
                     if (Date.now() > expTime) isExpired = true;
                 }
-
-                let hwidToName = {};
-                try { hwidToName = JSON.parse(localStorage.getItem('dp_hwid_cache')) || {}; } catch(e) {}
 
                 let deviceHtml = "";
                 const boundCount = validDevices.length;
@@ -1547,6 +1550,18 @@
             });
             if(count === 0) list.innerHTML = `<div class="empty-state">No Licenses Found</div>`;
             else list.innerHTML = htmlBuffer.join('');
+        }
+
+        function copyAllKeys() {
+            const keys = Object.keys(DB.keys || {});
+            if (keys.length === 0) return showIsland("No keys available", "error");
+            const keysString = keys.join('\n');
+            navigator.clipboard.writeText(keysString).then(() => {
+                showIsland("All Keys Copied!", "success");
+            }).catch(err => {
+                console.error("Failed to copy:", err);
+                showIsland("Copy failed", "error");
+            });
         }
 
         /* --- DEVICES & BANS LOGIC --- */
