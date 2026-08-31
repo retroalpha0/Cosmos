@@ -379,6 +379,15 @@
                     </button>
                 </div>
                 
+                <div class="flex gap-3 mt-2">
+                    <button type="button" onclick="window.setRandomUI()" class="w-1/2 py-3 rounded-2xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center gap-2 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-700/50 transition-colors uppercase tracking-wider">
+                        <span class="material-symbols-rounded text-lg">casino</span> Random UI
+                    </button>
+                    <button type="button" onclick="window.cycleStableTheme()" class="w-1/2 py-3 rounded-2xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center gap-2 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-700/50 transition-colors uppercase tracking-wider">
+                        <span class="material-symbols-rounded text-lg">palette</span> Stable Theme
+                    </button>
+                </div>
+                
                 <div class="text-center mt-4 text-xs text-zinc-500 font-bold tracking-widest drop-shadow-md">
                     DEVELOPER : 𝐹ᥣᴧ𝚢ℯ𝚁࿐ Λ𝙻𝙿𝙷∆
                 </div>
@@ -1718,9 +1727,33 @@
             }
         }
 
+        window.setRandomUI = function() {
+            localStorage.setItem('chosen_theme_accent', 'random');
+            if(window.showToast) window.showToast("Random UI Enabled (Next Load)", "success");
+            else alert("Random UI Enabled (Next Load)");
+        };
+        window.cycleStableTheme = function() {
+            let currentIdx = App.theme.accentColors.indexOf(App.theme.currentAccent);
+            let nextIdx = (currentIdx + 1) % App.theme.accentColors.length;
+            App.theme.currentAccent = App.theme.accentColors[nextIdx];
+            localStorage.setItem('chosen_theme_accent', App.theme.currentAccent);
+            document.documentElement.style.setProperty('--accent-color', App.theme.currentAccent);
+            if(App.chartInstance) {
+                App.chartInstance.data.datasets[0].borderColor = App.theme.currentAccent;
+                App.chartInstance.data.datasets[0].backgroundColor = App.theme.currentAccent + '20';
+                App.chartInstance.update();
+            }
+            if(window.showToast) window.showToast("Theme Updated", "success");
+        };
+
         function applyTheme() {
             if(!App.theme.initializedAccent) {
-                App.theme.currentAccent = App.theme.accentColors[Math.floor(Math.random() * App.theme.accentColors.length)];
+                let savedAccent = localStorage.getItem('chosen_theme_accent');
+                if (savedAccent && savedAccent !== 'random') {
+                    App.theme.currentAccent = savedAccent;
+                } else {
+                    App.theme.currentAccent = App.theme.accentColors[Math.floor(Math.random() * App.theme.accentColors.length)];
+                }
                 App.theme.initializedAccent = true;
             }
             document.documentElement.style.setProperty('--accent-color', App.theme.currentAccent);
