@@ -1392,31 +1392,31 @@
                 // Seed default data
                 const defSys = {
                     version: "1.0",
-                    signature_verification: true,
+                    signature_verification: false,
                     valid_signatures: [
                         "PASTE_YOUR_SHA256_HASH_HERE"
                     ],
                     maintenance: false,
-                    maintenance_url: "https://t.me/your_channel",
+                    maintenance_url: "https://t.me/retroalpha",
                     update_required: false,
-                    update_url: "https://t.me/your_channel",
+                    update_url: "https://t.me/retroalpha",
                     admin_url: "tg://resolve?domain=retroalpha",
                     remote_kill: false,
                     random_crash_mode: false,
                     random_crash_chance: 5,
                     broadcast_enabled: false,
-                    broadcast_title: "NEW ANNOUNCEMENT",
-                    broadcast_msg: "System is now optimized for instant startup!",
+                    broadcast_title: "ANNOUNCEMENT",
+                    broadcast_msg: "System operational",
                     ui: {
                         title: "Welcome Back",
-                        subtitle: "Premium Access",
+                        subtitle: "Premium Key",
                         btn_text: "SIGN IN",
                         hint: "Enter Premium Key",
                         bg_urls: [
-                            "https://example.com/image1.jpg",
-                            "https://example.com/image2.png"
+                            "https://example.com/bg1.jpg",
+                            "https://example.com/bg2.jpg"
                         ],
-                        bg_url: "https://example.com/main.jpg",
+                        bg_url: "https://example.com/wallpaper.jpg",
                         icon_type: "admin"
                     },
                     messages: {
@@ -1424,8 +1424,9 @@
                         fail: "Invalid License Key",
                         banned: "Device is banned",
                         expired: "Subscription Expired",
-                        mismatch: "Key bound to another device",
-                        maintenance: "Server Maintenance",
+                        mismatch: "Key bound to other devices",
+                        max_devices_reached: "Max devices limit reached",
+                        maintenance: "Server Maintenance Active",
                         offline: "Connection Failed"
                     }
                 };
@@ -1441,15 +1442,21 @@
             let keys = await fetchFirebase('dp_dialog_controller/keys');
             if(!keys) {
                 keys = {
-                    "PREMIUM-3-DEVICE-KEY": {
+                    "SAMPLE-VIP-KEY-1001": {
+                        "used": false,
+                        "banned": false,
+                        "expiry_date": "lifetime",
+                        "max_devices": 1,
+                        "crash": false,
+                        "devices": {}
+                    },
+                    "SAMPLE-TRIAL-KEY-2002": {
                         "used": false,
                         "banned": false,
                         "expiry_date": "2026-12-31 23:59:59",
-                        "max_devices": 3,
+                        "max_devices": 2,
                         "crash": false,
-                        "devices": {
-                            "PLACEHOLDER": true
-                        }
+                        "devices": {}
                     }
                 };
                 await putFirebase('dp_dialog_controller/keys', keys);
@@ -1459,7 +1466,7 @@
             let blacklisted_hwids = await fetchFirebase('dp_dialog_controller/blacklisted_hwids');
             if(!blacklisted_hwids) {
                 blacklisted_hwids = {
-                    "BANNED_ID_HERE": true
+                    "SAMPLE_BLOCKED_HWID_12345": true
                 };
                 await putFirebase('dp_dialog_controller/blacklisted_hwids', blacklisted_hwids);
             }
