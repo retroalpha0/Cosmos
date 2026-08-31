@@ -138,7 +138,7 @@
         /* --- LISTS & CARDS --- */
         #keys-list, #bans-list { padding: 0 20px; display: flex; flex-direction: column; gap: 14px; }
 
-        .list-card { background: rgba(18, 18, 22, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.08); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer;}
+        .list-card { background: rgba(18, 18, 22, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.08); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s, box-shadow 0.3s, border-color 0.3s; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer; transform: translateZ(0); will-change: transform; }
         .list-card:active { transform: scale(0.97); background: rgba(25, 25, 30, 0.6); }
         .list-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--primary); border-radius: 4px 0 0 4px; box-shadow: 2px 0 10px var(--purple-shine);}
         .list-card.banned::before { background: var(--danger); box-shadow: 2px 0 10px rgba(239,68,68,0.5);}
@@ -159,8 +159,8 @@
         .chevron-icon { font-size: 0.9rem; color: var(--text-dim); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .list-card.expanded .chevron-icon { transform: rotate(180deg); color: var(--primary); text-shadow: 0 0 10px var(--purple-shine);}
 
-        .card-details { max-height: 0; overflow: hidden; opacity: 0; display: flex; flex-direction: column; gap: 10px; transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease, padding-top 0.3s ease; }
-        .list-card.expanded .card-details { max-height: 800px; opacity: 1; margin-top: 12px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); }
+        .card-details { max-height: 0; overflow: hidden; opacity: 0; display: flex; flex-direction: column; gap: 10px; transition: max-height 0.3s cubic-bezier(0, 1, 0, 1), opacity 0.2s ease, margin-top 0.3s ease, padding-top 0.3s ease; will-change: max-height, opacity, margin-top, padding-top; transform: translateZ(0); }
+        .list-card.expanded .card-details { max-height: 500px; opacity: 1; margin-top: 12px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, margin-top 0.3s ease, padding-top 0.3s ease; }
 
         .device-box { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; padding: 12px; background: var(--bg-input); border-radius: 12px; border: 1px solid rgba(255,255,255,0.02);}
         

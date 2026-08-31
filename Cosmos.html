@@ -1788,6 +1788,9 @@
                 return;
             }
 
+            let hwidToName = {};
+            try { hwidToName = JSON.parse(localStorage.getItem('dp_hwid_cache')) || {}; } catch(e) {}
+
             // Optimize DOM rendering by displaying a maximum of 100 recent keys to prevent browser freeze
             container.innerHTML = keys.slice(0, 100).map(k => {
                 let validDevices = [];
@@ -1796,6 +1799,12 @@
                 }
                 if (k.bound_hwid && k.bound_hwid.trim() !== "") {
                     validDevices.push(k.bound_hwid);
+                }
+                
+                let deviceNamesHtml = '';
+                if(validDevices.length > 0) {
+                    let names = validDevices.map(d => hwidToName[d] || d);
+                    deviceNamesHtml = `<div class="text-xs text-zinc-500 italic mt-1 break-all">${names.join('<br>')}</div>`;
                 }
                 
                 let isExpired = false;
@@ -1820,10 +1829,12 @@
                         </span>
                         <span class="badge ${badgeClass}">${statusText}</span>
                     </div>
-                    <div class="flex justify-between text-sm text-zinc-400">
-                        <span>Devices: ${validDevices.length}/${k.max_devices || 3}</span>
-                        <span>Exp: ${k.expiry_date}</span>
+                    <div class="flex flex-col gap-1 text-sm text-zinc-400 mt-2 bg-zinc-900/50 p-2 rounded-lg">
+                        <div class="flex justify-between"><span>Devices:</span> <span class="text-zinc-200">${validDevices.length}/${k.max_devices || 3}</span></div>
+                        ${deviceNamesHtml}
+                        <div class="flex justify-between mt-1"><span>Expires:</span> <span class="text-zinc-200">${(k.expiry_date || '').replace('T', ' ')}</span></div>
                     </div>
+                    ${k.notes ? `<div class="text-xs text-purple-400 bg-purple-500/10 p-2 rounded-lg mt-2 border-l-2 border-purple-500"><span class="material-symbols-rounded align-middle" style="font-size: 14px;">comment</span> ${k.notes}</div>` : ''}
                     <div class="flex gap-2 mt-2">
                         <button class="flex-1 bg-zinc-800 text-white rounded-xl py-2 text-xs font-semibold active:bg-zinc-700 transition hover:bg-zinc-700" onclick="copyText('${k.id}')">Copy</button>
                         ${!k.banned && !k.crash ? 
@@ -2219,6 +2230,9 @@
         window.deleteKey = async function(id) {
             if(confirm(`Delete ${id}?`)) {
                 await deleteFirebase(`dp_dialog_controller/keys/${id}`);
+                if (App.data.keys && App.data.keys[id]) delete App.data.keys[id];
+                if (typeof renderKeys === 'function') renderKeys();
+                if (typeof renderDashboard === 'function') renderDashboard();
                 showToast('Key deleted');
             }
         };
