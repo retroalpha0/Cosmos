@@ -611,9 +611,6 @@
                                     <label class="text-xs text-zinc-400 ml-2">Admin Telegram Link</label>
                                     <input type="url" id="ui-admin-url" class="cyber-input py-3" placeholder="https://t.me/...">
                                 </div>
-                                <div>
-                                    <label class="text-xs text-zinc-400 ml-2">Icon Type</label>
-                                    <input type="text" id="ui-icon-type" class="cyber-input py-3" placeholder="admin">
                                 </div>
                             </div>
 
@@ -640,12 +637,13 @@
                                     <input type="text" id="msg-mismatch" class="cyber-input py-3" placeholder="Key bound to another device">
                                 </div>
                                 <div>
+                                    <label class="text-xs text-zinc-400 ml-2">Max Devices</label>
+                                    <input type="text" id="msg-max-devices" class="cyber-input py-3" placeholder="Max devices limit reached">
+                                </div>
+                                <div>
                                     <label class="text-xs text-zinc-400 ml-2">Maintenance</label>
                                     <input type="text" id="msg-maintenance" class="cyber-input py-3" placeholder="Server Under Maintenance">
                                 </div>
-                                <div>
-                                    <label class="text-xs text-zinc-400 ml-2">Offline</label>
-                                    <input type="text" id="msg-offline" class="cyber-input py-3" placeholder="Server Connection Failed">
                                 </div>
                             </div>
 
@@ -1163,7 +1161,7 @@
             });
 
             // Messages Editor Inputs
-            ['success', 'fail', 'banned', 'expired', 'mismatch', 'maintenance', 'offline'].forEach(f => {
+            ['success', 'fail', 'banned', 'expired', 'mismatch', 'maintenance'].forEach(f => {
                 const el = document.getElementById('msg-'+f);
                 if(el) el.addEventListener('input', updatePreview);
             });
@@ -1416,8 +1414,7 @@
                             "https://example.com/bg1.jpg",
                             "https://example.com/bg2.jpg"
                         ],
-                        bg_url: "https://example.com/wallpaper.jpg",
-                        icon_type: "admin"
+                        bg_url: "https://example.com/wallpaper.jpg"
                     },
                     messages: {
                         success: "Access Granted",
@@ -1426,17 +1423,13 @@
                         expired: "Subscription Expired",
                         mismatch: "Key bound to other devices",
                         max_devices_reached: "Max devices limit reached",
-                        maintenance: "Server Maintenance Active",
-                        offline: "Connection Failed"
+                        maintenance: "Server Maintenance Active"
                     }
                 };
                 await putFirebase('dp_dialog_controller/system', defSys); App.data.system = defSys;
             } else { App.data.system = sys; }
             
-            App.theme.randomMode = App.data.system.random_color_mode || false;
-            if (App.data.system.accent_colors && App.data.system.accent_colors.length > 0) {
-                App.theme.accentColors = App.data.system.accent_colors;
-            }
+
             applyTheme(); renderSystemUI();
             
             let keys = await fetchFirebase('dp_dialog_controller/keys');
@@ -1485,9 +1478,7 @@
             });
             listenFirebase('dp_dialog_controller/system', data => {
                 updateLocalState(App.data.system, data);
-                if (App.data.system.accent_colors && App.data.system.accent_colors.length > 0) {
-                    App.theme.accentColors = App.data.system.accent_colors;
-                }
+
                 applyTheme(); renderSystemUI();
             });
             
@@ -1612,14 +1603,15 @@
 
             setInput('ui-bg-url', ui.bg_url || '');
             renderBgUrlsInputs();
-            setInput('ui-icon-type', ui.icon_type || '');
+
             
             setInput('ui-admin-url', App.data.system.admin_url || '');
             
             // Messages Editor
             const msg = App.data.system.messages || {};
-            ['success', 'fail', 'banned', 'expired', 'mismatch', 'maintenance', 'offline'].forEach(f => {
-                setInput('msg-'+f, msg[f] || '');
+            ['success', 'fail', 'banned', 'expired', 'mismatch', 'max_devices_reached', 'maintenance'].forEach(f => {
+                const domId = f === 'max_devices_reached' ? 'msg-max-devices' : 'msg-' + f;
+                setInput(domId, msg[f] || '');
             });
             updatePreview();
 
@@ -2268,10 +2260,8 @@
                     subtitle: document.getElementById('ui-subtitle').value,
                     btn_text: document.getElementById('ui-btn').value,
                     hint: document.getElementById('ui-hint').value,
-                    footer: document.getElementById('ui-footer').value,
                     bg_url: document.getElementById('ui-bg-url').value,
-                    bg_urls: Array.from(document.querySelectorAll('.bg-url-input')).map(el => el.value.trim()).filter(u => u),
-                    icon_type: document.getElementById('ui-icon-type').value
+                    bg_urls: Array.from(document.querySelectorAll('.bg-url-input')).map(el => el.value.trim()).filter(u => u)
                 };
                 const messages = {
                     success: document.getElementById('msg-success').value,
@@ -2279,8 +2269,8 @@
                     banned: document.getElementById('msg-banned').value,
                     expired: document.getElementById('msg-expired').value,
                     mismatch: document.getElementById('msg-mismatch').value,
-                    maintenance: document.getElementById('msg-maintenance').value,
-                    offline: document.getElementById('msg-offline').value
+                    max_devices_reached: document.getElementById('msg-max-devices').value,
+                    maintenance: document.getElementById('msg-maintenance').value
                 };
                 const admin_url = document.getElementById('ui-admin-url').value;
                 

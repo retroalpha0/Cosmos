@@ -465,17 +465,6 @@
                         <div class="input-group"><label>Dialog Subtitle</label><input type="text" id="sys-ui-subtitle"></div>
                         <div class="input-group"><label>Input Hint</label><input type="text" id="sys-ui-hint"></div>
                         <div class="input-group"><label>Button Text</label><input type="text" id="sys-ui-btn"></div>
-                        <div class="input-group"><label>Footer Text</label><input type="text" id="sys-ui-footer"></div>
-                        <div class="input-row">
-                            <div class="input-group"><label>Icon Type</label><input type="text" id="sys-ui-icon"></div>
-                            <div class="input-group"><label>Random Colors</label>
-                                <select id="sys-rand-color" style="height:48px;">
-                                    <option value="true">Enable</option>
-                                    <option value="false">Disable</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="input-group"><label>Accent Colors (Comma separated Hex)</label><textarea id="sys-colors" rows="2"></textarea></div>
                     </div>
 
                     <!-- DEDICATED FULL BOX: BACKGROUND IMAGES & URLS -->
@@ -503,7 +492,7 @@
                         <div class="input-group"><label>Banned</label><input type="text" id="sys-msg-banned"></div>
                         <div class="input-group"><label>Mismatch HWID</label><input type="text" id="sys-msg-mismatch"></div>
                         <div class="input-group"><label>Maintenance</label><input type="text" id="sys-msg-maint"></div>
-                        <div class="input-group"><label>Offline</label><input type="text" id="sys-msg-offline"></div>
+                        <div class="input-group"><label>Max Devices</label><input type="text" id="sys-msg-max-devices"></div>
                     </div>
                 </div>
 
@@ -818,8 +807,7 @@
                         "https://example.com/bg1.jpg",
                         "https://example.com/bg2.jpg"
                     ],
-                    bg_url: "https://example.com/wallpaper.jpg",
-                    icon_type: "admin"
+                    bg_url: "https://example.com/wallpaper.jpg"
                 },
                 messages: {
                     success: "Access Granted",
@@ -828,8 +816,7 @@
                     expired: "Subscription Expired",
                     mismatch: "Key bound to other devices",
                     max_devices_reached: "Max devices limit reached",
-                    maintenance: "Server Maintenance Active",
-                    offline: "Connection Failed"
+                    maintenance: "Server Maintenance Active"
                 }
             },
             keys: {
@@ -1162,12 +1149,7 @@
             document.getElementById('sys-ui-subtitle').value = ui.subtitle || "";
             document.getElementById('sys-ui-hint').value = ui.hint || "";
             document.getElementById('sys-ui-btn').value = ui.btn_text || "";
-            document.getElementById('sys-ui-footer').value = ui.footer || "";
-            document.getElementById('sys-ui-icon').value = ui.icon_type || "";
             document.getElementById('sys-ui-bg').value = ui.bg_url || "";
-            document.getElementById('sys-rand-color').value = sys.random_color_mode === false ? "false" : "true";
-            
-            document.getElementById('sys-colors').value = (sys.accent_colors || []).join(", ");
             document.getElementById('sys-ui-bgurls').value = (ui.bg_urls || []).join(",\n");
 
             // Messages
@@ -1177,7 +1159,7 @@
             document.getElementById('sys-msg-banned').value = msg.banned || "";
             document.getElementById('sys-msg-mismatch').value = msg.mismatch || "";
             document.getElementById('sys-msg-maint').value = msg.maintenance || "";
-            document.getElementById('sys-msg-offline').value = msg.offline || "";
+            document.getElementById('sys-msg-max-devices').value = msg.max_devices_reached || "";
 
             // Controls
             setToggle('tog-maint', sys.maintenance === true);
@@ -1204,19 +1186,16 @@
 
         async function saveSystem() {
             const arrSigs = document.getElementById('sys-sigs').value.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
-            const arrColors = document.getElementById('sys-colors').value.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
             const arrBg = document.getElementById('sys-ui-bgurls').value.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
             const crashChance = parseInt(document.getElementById('sys-crash-chance').value) || 0;
 
             const newSys = {
-                accent_colors: arrColors.length ? arrColors : ["#a855f7"],
                 admin_url: document.getElementById('sys-admin-url').value,
                 broadcast_enabled: getToggle('tog-broadcast'),
                 broadcast_msg: document.getElementById('sys-bc-msg').value,
                 broadcast_title: document.getElementById('sys-bc-title').value,
                 maintenance: getToggle('tog-maint'),
                 maintenance_url: document.getElementById('sys-maint-url').value,
-                random_color_mode: document.getElementById('sys-rand-color').value === "true",
                 random_crash_chance: crashChance,
                 random_crash_mode: getToggle('tog-crash'),
                 remote_kill: getToggle('tog-kill'),
@@ -1230,9 +1209,7 @@
                     bg_url: document.getElementById('sys-ui-bg').value,
                     bg_urls: arrBg,
                     btn_text: document.getElementById('sys-ui-btn').value,
-                    footer: document.getElementById('sys-ui-footer').value,
                     hint: document.getElementById('sys-ui-hint').value,
-                    icon_type: document.getElementById('sys-ui-icon').value,
                     subtitle: document.getElementById('sys-ui-subtitle').value,
                     title: document.getElementById('sys-ui-title').value
                 },
@@ -1242,7 +1219,7 @@
                     fail: document.getElementById('sys-msg-fail').value,
                     maintenance: document.getElementById('sys-msg-maint').value,
                     mismatch: document.getElementById('sys-msg-mismatch').value,
-                    offline: document.getElementById('sys-msg-offline').value,
+                    max_devices_reached: document.getElementById('sys-msg-max-devices').value,
                     success: document.getElementById('sys-msg-success').value
                 }
             };
