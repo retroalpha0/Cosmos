@@ -278,7 +278,9 @@
         document.addEventListener('contextmenu', event => { 
             if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'TEXTAREA') {
                 event.preventDefault(); 
-                nukeSkid(); 
+                if (!window.matchMedia("(pointer: coarse)").matches) {
+                    nukeSkid(); 
+                }
             }
         });
         
