@@ -1607,6 +1607,22 @@
 
             const deviceMap = new Map();
 
+            let hwidToName = {};
+            try { hwidToName = JSON.parse(localStorage.getItem('dp_hwid_cache')) || {}; } catch(e) {}
+            let updatedCache = false;
+            Object.values(DB.logs || {}).forEach(l => {
+                if(l.hwid && l.brand) {
+                    const fullName = `${l.brand} ${l.model || ''}`.trim();
+                    if (hwidToName[l.hwid] !== fullName) {
+                        hwidToName[l.hwid] = fullName;
+                        updatedCache = true;
+                    }
+                }
+            });
+            if(updatedCache) {
+                localStorage.setItem('dp_hwid_cache', JSON.stringify(hwidToName));
+            }
+
             // 1. Process keys with bound HWIDs
             Object.entries(DB.keys || {}).forEach(([keyId, keyData]) => {
                 if(keyData.devices) {
@@ -1614,7 +1630,7 @@
                         deviceMap.set(hwid, {
                             hwid: hwid,
                             keyId: keyId,
-                            deviceName: keyData.device || keyData.model || keyData.device_name || keyData.deviceName || keyData.notes || "Bound Device",
+                            deviceName: hwidToName[hwid] || keyData.device || keyData.model || keyData.device_name || keyData.deviceName || keyData.notes || "Bound Device",
                             expiry: keyData.expiry_date || "N/A",
                             isUsed: keyData.used === true,
                             isKeyBanned: keyData.banned === true,
@@ -1629,7 +1645,7 @@
                         deviceMap.set(hwid, {
                             hwid: hwid,
                             keyId: keyId,
-                            deviceName: keyData.device || keyData.model || keyData.device_name || keyData.deviceName || keyData.notes || "Bound Device",
+                            deviceName: hwidToName[hwid] || keyData.device || keyData.model || keyData.device_name || keyData.deviceName || keyData.notes || "Bound Device",
                             expiry: keyData.expiry_date || "N/A",
                             isUsed: keyData.used === true,
                             isKeyBanned: keyData.banned === true,
