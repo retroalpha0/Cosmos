@@ -544,7 +544,7 @@
                                     <span class="material-symbols-rounded">preview</span> Live Preview
                                 </h3>
                                 <!-- Android Dialog Mockup -->
-                                <div class="bg-[rgba(30,30,35,0.4)] backdrop-blur-xl rounded-full w-[280px] h-[280px] mx-auto shadow-2xl border border-[rgba(255,255,255,0.15)] relative overflow-hidden flex flex-col items-center justify-center p-6">
+                                <div class="bg-[rgba(30,30,35,0.4)] backdrop-blur-xl rounded-full w-[280px] h-[280px] mx-auto shadow-2xl border border-[rgba(255,255,255,0.15)] relative overflow-hidden flex flex-col items-center justify-center p-6 lg:-translate-x-1">
                                     <img id="preview-bg-img" src="" class="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none transition-opacity duration-500">
                                     
                                     <!-- Bottom right glow -->
@@ -1811,7 +1811,7 @@
                 let deviceNamesHtml = '';
                 if(validDevices.length > 0) {
                     let names = validDevices.map(d => hwidToName[d] || d);
-                    deviceNamesHtml = `<div class="text-xs text-zinc-500 italic mt-1 break-all">${names.join('<br>')}</div>`;
+                    deviceNamesHtml = `<div class="text-[13px] font-bold text-red-500 mt-1 break-all">${names.join('<br>')}</div>`;
                 }
                 
                 let isExpired = false;
@@ -1965,7 +1965,11 @@
                         </div>
                         <div class="flex justify-between items-center bg-black/20 p-2.5 rounded-lg border border-[rgba(255,255,255,0.02)]">
                             <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Expires</span>
-                            <span class="text-white text-xs">${d.expiry_date || 'N/A'}</span>
+                            <span class="text-white text-xs flex gap-2">
+                                ${d.expiry_date && d.expiry_date !== 'lifetime' && d.expiry_date !== 'N/A' && d.expiry_date.includes(' ') 
+                                    ? `<span>${d.expiry_date.split(' ')[0]}</span><span class="text-zinc-500 font-mono">${d.expiry_date.split(' ')[1]}</span>` 
+                                    : d.expiry_date || 'N/A'}
+                            </span>
                         </div>
                     </div>
                     <div class="flex flex-wrap gap-2 mt-2">
