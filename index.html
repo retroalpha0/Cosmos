@@ -1490,6 +1490,9 @@
                     if (Date.now() > expTime) isExpired = true;
                 }
 
+                let hwidToName = {};
+                try { hwidToName = JSON.parse(localStorage.getItem('dp_hwid_cache')) || {}; } catch(e) {}
+
                 let deviceHtml = "";
                 const boundCount = validDevices.length;
                 const maxCount = data.max_devices || 3;
@@ -1499,14 +1502,20 @@
                                     <div style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 8px; font-weight: bold;">DEVICES (${boundCount}/${maxCount})</div>`;
                     
                     validDevices.forEach(hwid => {
+                        const dName = hwidToName[hwid] || data.device || data.model || data.device_name || data.deviceName || data.notes || "Bound Device";
                         deviceHtml += `
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                                <div class="interactive-text device-hwid" style="font-size:0.85rem;" onclick="copyToClipboard('${hwid}', 'HWID', event)">
-                                    ${hwid} <i class="fas fa-copy" style="font-size:0.7rem; color:var(--primary); opacity:0.8;"></i>
-                                </div>
-                                <div style="display:flex; gap:6px;">
-                                    <button class="btn-icon" style="width:28px; height:28px; background:rgba(239, 68, 68,0.1); color:var(--danger); border:none;" onclick="banAndUnlink('${keyId}','${hwid}'); event.stopPropagation();" title="Ban Device"><i class="fas fa-ban" style="font-size:0.7rem;"></i></button>
-                                    <button class="btn-icon" style="width:28px; height:28px; background:rgba(245, 158, 11,0.1); color:var(--warning); border:none;" onclick="unbindHWID('${keyId}', '${hwid}'); event.stopPropagation();" title="Unlink"><i class="fas fa-unlink" style="font-size:0.7rem;"></i></button>
+                            <div style="display:flex; flex-direction:column; gap:6px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                    <div style="display:flex; flex-direction:column; gap: 4px;">
+                                        <div style="font-size: 0.85rem; font-weight: 600; color: #fff;">${dName}</div>
+                                        <div class="interactive-text device-hwid" style="font-size:0.75rem;" onclick="copyToClipboard('${hwid}', 'HWID', event)">
+                                            ${hwid} <i class="fas fa-copy" style="font-size:0.7rem; color:var(--primary); opacity:0.8;"></i>
+                                        </div>
+                                    </div>
+                                    <div style="display:flex; gap:6px;">
+                                        <button class="badge" style="background:rgba(239, 68, 68,0.1); color:var(--danger); border:1px solid rgba(239, 68, 68, 0.3); padding: 4px 8px; cursor: pointer;" onclick="banAndUnlink('${keyId}','${hwid}'); event.stopPropagation();" title="Ban Device">BAN</button>
+                                        <button class="badge" style="background:rgba(245, 158, 11,0.1); color:var(--warning); border:1px solid rgba(245, 158, 11, 0.3); padding: 4px 8px; cursor: pointer;" onclick="unbindHWID('${keyId}', '${hwid}'); event.stopPropagation();" title="Unlink">UNLINK</button>
+                                    </div>
                                 </div>
                             </div>
                         `;
@@ -1527,9 +1536,9 @@
                     <div class="${wrapClass} animated-card" id="list-card-${keyId}" style="animation-delay: ${Math.min(count * 0.05, 0.5)}s">
                         <div class="card-header-main" onclick="toggleCard('${keyId}')">
                             <div class="card-header-left">
-                                <div class="card-title interactive-text" onclick="copyToClipboard('${keyId}', 'License Key', event)">
+                                <div class="card-title">
                                     <i class="fas fa-key" style="color:var(--primary); margin-right:4px;"></i> 
-                                    ${keyId} <button class="badge" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); margin-left: 8px; padding: 2px 8px; cursor: pointer;">COPY</button>
+                                    ${keyId}
                                 </div>
                                 <div class="card-subtitle">
                                     <span><i class="far fa-calendar-alt"></i> ${(data.expiry_date || "").replace('T', ' ')}</span>
@@ -1545,12 +1554,13 @@
                         <div class="card-details">
                             ${data.notes ? `<div style="font-size:0.75rem; color:#d8b4fe; padding:6px 10px; background:rgba(168,85,247,0.1); border-radius:8px; border-left:2px solid var(--primary);"><i class="fas fa-comment-alt"></i> ${data.notes}</div>` : ''}
                             ${deviceHtml}
-                            <div class="card-actions">
-                                <button class="btn-xs edit" onclick="openEditKeyModal('${keyId}'); event.stopPropagation();"><i class="fas fa-pen"></i></button>
-                                <button class="btn-xs ban" onclick="toggleKeyBan('${keyId}', ${!isBanned}); event.stopPropagation();">
-                                    <i class="fas ${isBanned ? 'fa-check' : 'fa-ban'}"></i>
+                            <div class="card-actions" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                <button class="btn-xs" style="background: rgba(255,255,255,0.1); color: #fff; flex: 1; min-width: 45%;" onclick="copyToClipboard('${keyId}', 'License Key', event); event.stopPropagation();"><i class="fas fa-copy"></i> COPY KEY</button>
+                                <button class="btn-xs edit" style="flex: 1; min-width: 45%;" onclick="openEditKeyModal('${keyId}'); event.stopPropagation();"><i class="fas fa-pen"></i> EDIT</button>
+                                <button class="btn-xs ban" style="flex: 1; min-width: 45%;" onclick="toggleKeyBan('${keyId}', ${!isBanned}); event.stopPropagation();">
+                                    <i class="fas ${isBanned ? 'fa-check' : 'fa-ban'}"></i> ${isBanned ? 'UNBAN' : 'BAN'}
                                 </button>
-                                <button class="btn-xs del" onclick="deleteKey('${keyId}'); event.stopPropagation();"><i class="fas fa-trash"></i></button>
+                                <button class="btn-xs del" style="flex: 1; min-width: 45%;" onclick="deleteKey('${keyId}'); event.stopPropagation();"><i class="fas fa-trash"></i> DELETE</button>
                             </div>
                         </div>
                     </div>
