@@ -851,7 +851,39 @@
         };
         let currentEditKey = null;
 
-        window.onload = () => {
+        const IdbCache = {
+            db: null,
+            init() {
+                return new Promise((resolve, reject) => {
+                    const req = indexedDB.open('PanelDataDB', 1);
+                    req.onupgradeneeded = e => {
+                        if (!e.target.result.objectStoreNames.contains('data')) {
+                            e.target.result.createObjectStore('data');
+                        }
+                    };
+                    req.onsuccess = e => { this.db = e.target.result; resolve(); };
+                    req.onerror = e => reject(e);
+                });
+            },
+            async set(key, val) {
+                if (!this.db) await this.init();
+                return new Promise(res => {
+                    const tx = this.db.transaction('data', 'readwrite');
+                    tx.objectStore('data').put(val, key).onsuccess = res;
+                });
+            },
+            async get(key) {
+                if (!this.db) await this.init();
+                return new Promise(res => {
+                    const tx = this.db.transaction('data', 'readonly');
+                    const req = tx.objectStore('data').get(key);
+                    req.onsuccess = e => res(e.target.result);
+                    req.onerror = () => res(null);
+                });
+            }
+        };
+
+        window.onload = async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const uiPref = localStorage.getItem('dp_preferred_ui');
             
@@ -881,6 +913,33 @@
             if (savedUrl && savedSecret) {
                 document.getElementById('auth-url').value = savedUrl;
                 document.getElementById('auth-secret').value = savedSecret;
+                
+                try {
+                    const cachedDB = await IdbCache.get('DB_CACHE');
+                    if (cachedDB) {
+                        DB = cachedDB;
+                        DB_URL = savedUrl.endsWith('/dp_dialog_controller') ? savedUrl : savedUrl + '/dp_dialog_controller';
+                        DB_SECRET = savedSecret;
+                        
+                        document.getElementById('login-screen').style.display = 'none';
+                        document.getElementById('main-app').style.display = 'flex'; 
+                        document.getElementById('bottom-nav').style.display = 'flex';
+                        loadSystem(); renderKeys(); renderDevices(); renderLogs();
+                        showIsland("Loaded from Cache", "success", "fa-bolt");
+                        
+                        if(window.syncInterval) clearInterval(window.syncInterval);
+                        window.syncInterval = setInterval(silentBackgroundSync, 10000);
+                        
+                        const autoFetchLogsCheckbox = document.getElementById('auto-fetch-logs');
+                        if (localStorage.getItem('autoFetchLogsEnabled') === 'true') {
+                            autoFetchLogsCheckbox.checked = true;
+                            if (window.toggleAutoFetchLogs) window.toggleAutoFetchLogs(autoFetchLogsCheckbox, true);
+                        }
+                        fetchDatabase();
+                        return;
+                    }
+                } catch(e) { console.error("Cache read error", e); }
+                
                 login();
             }
         };
@@ -926,6 +985,7 @@
                     if(!DB.system) DB.system = {};
                     if(!DB.security) DB.security = {};
                     if(!DB.logs) DB.logs = {};
+                    IdbCache.set('DB_CACHE', DB);
                 }
                 
                 localStorage.setItem('dp_dialog_url', DB_URL.replace('/dp_dialog_controller', ''));
@@ -950,6 +1010,12 @@
 
                 if(window.syncInterval) clearInterval(window.syncInterval);
                 window.syncInterval = setInterval(silentBackgroundSync, 10000);
+
+                const autoFetchLogsCheckbox = document.getElementById('auto-fetch-logs');
+                if (localStorage.getItem('autoFetchLogsEnabled') === 'true') {
+                    autoFetchLogsCheckbox.checked = true;
+                    if (window.toggleAutoFetchLogs) window.toggleAutoFetchLogs(autoFetchLogsCheckbox, true);
+                }
             } catch (error) { 
                 showIsland("Authentication Failed", "error"); 
                 btn.innerHTML = `AUTHORIZE`;
@@ -969,6 +1035,7 @@
                         if(data.system) DB.system = data.system;
                         if(data.security) DB.security = data.security;
                         if(data.logs) DB.logs = data.logs;
+                        IdbCache.set('DB_CACHE', DB);
                         loadSystem(); renderKeys(); renderDevices(); renderLogs();
                         showIsland("Database Synced", "success", "fa-sync-alt");
                     }
@@ -992,6 +1059,7 @@
                         if(data.logs) {
                             DB.logs = data.logs;
                         }
+                        IdbCache.set('DB_CACHE', DB);
                         renderKeys(); renderDevices(); renderLogs();
                     }
                 }
@@ -1852,13 +1920,14 @@
             }
         };
         let autoFetchInterval = null;
-        window.toggleAutoFetchLogs = function(checkbox) {
+        window.toggleAutoFetchLogs = function(checkbox, hideToast = false) {
+            localStorage.setItem('autoFetchLogsEnabled', checkbox.checked);
             if (checkbox.checked) {
                 autoFetchInterval = setInterval(fetchAndRenderLogs, 3000);
-                showIsland("Auto Fetch Enabled", "success", "fa-sync-alt");
+                if (!hideToast) showIsland("Auto Fetch Enabled", "success", "fa-sync-alt");
             } else {
                 clearInterval(autoFetchInterval);
-                showIsland("Auto Fetch Disabled", "info", "fa-stop-circle");
+                if (!hideToast) showIsland("Auto Fetch Disabled", "info", "fa-stop-circle");
             }
         };
 
