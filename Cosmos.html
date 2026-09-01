@@ -530,9 +530,10 @@
                         <button class="cyber-button flex-1 justify-center rounded-[20px] py-3 font-bold" onclick="showBulkAddKeyModal()">BULK GEN</button>
                     </div>
                     
-                    <div class="flex gap-2 mb-4">
-                        <button class="cyber-button flex-1 justify-center rounded-[20px] py-3 font-bold bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700" onclick="selectAllKeys()"><span class="material-symbols-rounded mr-2">check_box</span> SELECT ALL</button>
-                        <button class="cyber-button flex-1 justify-center rounded-[20px] py-3 font-bold bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20" id="btn-del-keys" onclick="deleteSelectedKeys()"><span class="material-symbols-rounded mr-2">delete</span> DELETE SELECTED</button>
+                    <div class="flex gap-2 mb-4 flex-wrap" id="keys-bulk-actions">
+                        <button class="cyber-button flex-1 justify-center rounded-[20px] py-3 font-bold bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700" onclick="toggleSelectMode()"><span class="material-symbols-rounded mr-2">list</span> SELECT</button>
+                        <button class="cyber-button flex-1 justify-center rounded-[20px] py-3 font-bold bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700" id="btn-select-all" style="display:none;" onclick="selectAllKeys()"><span class="material-symbols-rounded mr-2">check_box</span> SELECT ALL</button>
+                        <button class="cyber-button flex-1 justify-center rounded-[20px] py-3 font-bold bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20" id="btn-del-keys" style="display:none;" onclick="deleteSelectedKeys()"><span class="material-symbols-rounded mr-2">delete</span> DELETE</button>
                     </div>
 
                     <div class="mobile-table" id="keys-table-container">
@@ -1834,7 +1835,7 @@
                 <div class="mobile-row">
                     <div class="row-header">
                         <span class="font-mono text-white text-lg cursor-pointer hover:text-accent active:scale-95 transition-all flex items-center gap-2" onclick="copyText('${k.id}')" title="Tap to copy">
-                            <input type="checkbox" class="key-selector w-5 h-5 accent-accent" data-key-id="${k.id}" onclick="event.stopPropagation()">
+                            <input type="checkbox" class="key-selector w-5 h-5 accent-accent" data-key-id="${k.id}" style="display: ${typeof isSelectMode !== 'undefined' && isSelectMode ? 'inline-block' : 'none'};" onclick="event.stopPropagation()">
                             ${k.id}
                             <span class="material-symbols-rounded text-sm text-zinc-500">content_copy</span>
                         </span>
@@ -2275,6 +2276,22 @@
                 if (typeof renderDashboard === 'function') renderDashboard();
                 showToast('Key deleted');
             }
+        };
+
+        let isSelectMode = false;
+        window.toggleSelectMode = function() {
+            isSelectMode = !isSelectMode;
+            document.querySelectorAll('.key-selector').forEach(cb => {
+                cb.style.display = isSelectMode ? 'inline-block' : 'none';
+                if (!isSelectMode) cb.checked = false;
+            });
+            const btnSelectAll = document.getElementById('btn-select-all');
+            const btnDeleteSelected = document.getElementById('btn-del-keys');
+            if(btnSelectAll) btnSelectAll.style.display = isSelectMode ? 'flex' : 'none';
+            if(btnDeleteSelected) btnDeleteSelected.style.display = isSelectMode ? 'flex' : 'none';
+            
+            const selectBtn = document.querySelector('#keys-bulk-actions button:first-child');
+            if(selectBtn) selectBtn.innerHTML = isSelectMode ? '<span class="material-symbols-rounded mr-2">close</span> CANCEL' : '<span class="material-symbols-rounded mr-2">list</span> SELECT';
         };
 
         window.selectAllKeys = function() {

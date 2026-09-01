@@ -169,7 +169,7 @@
         .interactive-text:active { opacity: 0.5; transform: scale(0.98); }
         .device-hwid { font-family: var(--font-code); color: #a1a1aa; font-weight: 500; word-break: break-all;}
 
-        .card-actions { display: flex; gap: 10px; margin-top: 6px;}
+        .card-actions { display: flex; gap: 10px; margin-top: 6px; flex-wrap: wrap;}
         .btn-xs { flex: 1; padding: 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 800; cursor: pointer; color: #fff; background: rgba(255,255,255,0.05); border: none; display: flex; justify-content: center; align-items: center; gap: 6px; text-transform: uppercase; transition: 0.2s; }
         .btn-xs:active { transform: scale(0.95); }
         .btn-xs.edit { color: var(--primary); background: rgba(168, 85, 247, 0.1); }
@@ -412,9 +412,10 @@
                 <button class="btn btn-primary" onclick="openBulkKeyModal()" style="flex: 1;">BULK GEN</button>
             </div>
             <!-- Bulk actions for keys -->
-            <div id="keys-bulk-actions" style="display: flex; gap: 10px; margin: 0 20px 15px 20px; align-items: center; justify-content: space-between;">
-                <button class="btn-xs" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff;" onclick="selectAllKeys()"><i class="fas fa-check-square"></i> Select All</button>
-                <button class="btn-xs del" style="flex: 1;" onclick="deleteSelectedKeys()"><i class="fas fa-trash"></i> Delete Selected</button>
+            <div id="keys-bulk-actions" style="display: flex; gap: 10px; margin: 0 20px 15px 20px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                <button class="btn-xs" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff;" onclick="toggleSelectMode()"><i class="fas fa-list-ul"></i> Select</button>
+                <button class="btn-xs" id="btn-select-all" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; display: none;" onclick="selectAllKeys()"><i class="fas fa-check-square"></i> Select All</button>
+                <button class="btn-xs del" id="btn-delete-selected" style="flex: 1; display: none;" onclick="deleteSelectedKeys()"><i class="fas fa-trash"></i> Delete Selected</button>
             </div>
             <div id="keys-list"></div>
         </div>
@@ -649,10 +650,10 @@
                 <input type="text" id="mod-bulk-key-notes" placeholder="e.g. Client Name">
             </div>
 
-            <div style="display: flex; gap: 12px; margin-top: 25px;">
-                <button class="btn" style="background: rgba(255,255,255,0.1);" onclick="closeModals()">Cancel</button>
-                <button class="btn btn-primary" id="btn-bulk-copy" style="background: linear-gradient(135deg, #10b981, #059669);" onclick="generateBulkKeys(true)">Gen & Copy</button>
-                <button class="btn btn-primary" id="btn-bulk-gen" onclick="generateBulkKeys(false)">Generate</button>
+            <div style="display: flex; gap: 12px; margin-top: 25px; flex-wrap: wrap;">
+                <button class="btn" style="background: rgba(255,255,255,0.1); flex: 1;" onclick="closeModals()">Cancel</button>
+                <button class="btn btn-primary" id="btn-bulk-copy" style="background: linear-gradient(135deg, #10b981, #059669); flex: 1;" onclick="generateBulkKeys(true)">Gen & Copy</button>
+                <button class="btn btn-primary" id="btn-bulk-gen" style="flex: 1;" onclick="generateBulkKeys(false)">Generate</button>
             </div>
         </div>
     </div>
@@ -701,9 +702,9 @@
                 </div>
             </div>
 
-            <div style="display: flex; gap: 12px; margin-top: 25px;">
-                <button class="btn" style="background: rgba(255,255,255,0.1);" onclick="closeModals()">Cancel</button>
-                <button class="btn btn-primary" onclick="saveKey()"><span id="modal-key-btn-text">Save Key</span></button>
+            <div style="display: flex; gap: 12px; margin-top: 25px; flex-wrap: wrap;">
+                <button class="btn" style="background: rgba(255,255,255,0.1); flex: 1;" onclick="closeModals()">Cancel</button>
+                <button class="btn btn-primary" style="flex: 1;" onclick="saveKey()"><span id="modal-key-btn-text">Save Key</span></button>
             </div>
         </div>
     </div>
@@ -719,9 +720,9 @@
                 <input type="text" id="mod-ban-id" placeholder="e.g. HWID_TO_BLOCK" style="font-family: var(--font-code);">
             </div>
 
-            <div style="display: flex; gap: 12px; margin-top: 25px;">
-                <button class="btn" style="background: rgba(255,255,255,0.1);" onclick="closeModals()">Cancel</button>
-                <button class="btn" style="background: var(--danger); box-shadow: 0 4px 15px rgba(239,68,68,0.4);" onclick="saveBan()">Block Device</button>
+            <div style="display: flex; gap: 12px; margin-top: 25px; flex-wrap: wrap;">
+                <button class="btn" style="background: rgba(255,255,255,0.1); flex: 1;" onclick="closeModals()">Cancel</button>
+                <button class="btn" style="background: var(--danger); box-shadow: 0 4px 15px rgba(239,68,68,0.4); flex: 1;" onclick="saveBan()">Block Device</button>
             </div>
         </div>
     </div>
@@ -1535,7 +1536,7 @@
                         <div class="card-header-main" onclick="toggleCard('${keyId}')">
                             <div class="card-header-left">
                                 <div class="card-title">
-                                    <input type="checkbox" class="key-selector" data-key-id="${keyId}" style="margin-right:8px; width: 16px; height: 16px;" onclick="event.stopPropagation()">
+                                    <input type="checkbox" class="key-selector" data-key-id="${keyId}" style="margin-right:8px; width: 16px; height: 16px; display: ${typeof isSelectMode !== 'undefined' && isSelectMode ? 'inline-block' : 'none'};" onclick="event.stopPropagation()">
                                     <i class="fas fa-key" style="color:var(--primary); margin-right:4px;"></i> 
                                     ${keyId}
                                 </div>
@@ -1579,6 +1580,22 @@
                 console.error("Failed to copy:", err);
                 showIsland("Copy failed", "error");
             });
+        }
+
+        let isSelectMode = false;
+        function toggleSelectMode() {
+            isSelectMode = !isSelectMode;
+            document.querySelectorAll('.key-selector').forEach(cb => {
+                cb.style.display = isSelectMode ? 'inline-block' : 'none';
+                if (!isSelectMode) cb.checked = false;
+            });
+            const btnSelectAll = document.getElementById('btn-select-all');
+            const btnDeleteSelected = document.getElementById('btn-delete-selected');
+            if(btnSelectAll) btnSelectAll.style.display = isSelectMode ? 'flex' : 'none';
+            if(btnDeleteSelected) btnDeleteSelected.style.display = isSelectMode ? 'flex' : 'none';
+            
+            const selectBtn = document.querySelector('#keys-bulk-actions button:first-child');
+            if(selectBtn) selectBtn.innerHTML = isSelectMode ? '<i class="fas fa-times"></i> Cancel' : '<i class="fas fa-list-ul"></i> Select';
         }
 
         function selectAllKeys() {
