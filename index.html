@@ -411,6 +411,11 @@
                 <button class="btn btn-primary" onclick="openKeyModal()" style="flex: 1;"><i class="fas fa-plus"></i> NEW KEY</button>
                 <button class="btn btn-primary" onclick="openBulkKeyModal()" style="flex: 1;">BULK GEN</button>
             </div>
+            <!-- Bulk actions for keys -->
+            <div id="keys-bulk-actions" style="display: flex; gap: 10px; margin: 0 20px 15px 20px; align-items: center; justify-content: space-between;">
+                <button class="btn-xs" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff;" onclick="selectAllKeys()"><i class="fas fa-check-square"></i> Select All</button>
+                <button class="btn-xs del" style="flex: 1;" onclick="deleteSelectedKeys()"><i class="fas fa-trash"></i> Delete Selected</button>
+            </div>
             <div id="keys-list"></div>
         </div>
 
@@ -646,7 +651,8 @@
 
             <div style="display: flex; gap: 12px; margin-top: 25px;">
                 <button class="btn" style="background: rgba(255,255,255,0.1);" onclick="closeModals()">Cancel</button>
-                <button class="btn btn-primary" onclick="saveBulkKeys()">Generate Keys</button>
+                <button class="btn btn-primary" id="btn-bulk-copy" style="background: linear-gradient(135deg, #10b981, #059669);" onclick="generateBulkKeys(true)">Gen & Copy</button>
+                <button class="btn btn-primary" id="btn-bulk-gen" onclick="generateBulkKeys(false)">Generate</button>
             </div>
         </div>
     </div>
@@ -1290,7 +1296,7 @@
             dateInput.value = `${y}-${m}-${d}`;
         }
 
-        async function saveBulkKeys() {
+        async function generateBulkKeys(copyOnly) {
             const qty = parseInt(document.getElementById('mod-bulk-key-qty').value) || 0;
             const prefix = document.getElementById('mod-bulk-key-prefix').value.trim();
             const maxDevices = parseInt(document.getElementById('mod-bulk-key-max').value) || 3;
@@ -1301,12 +1307,22 @@
             if(qty < 1 || qty > 100) return showIsland("Quantity must be between 1 and 100", "error");
             if(!expDate) return showIsland("Enter Expiry Date", "error");
 
+            const genBtn = document.getElementById('btn-bulk-gen');
+            const copyBtn = document.getElementById('btn-bulk-copy');
+            const activeBtn = copyOnly ? copyBtn : genBtn;
+            const originalHTML = activeBtn.innerHTML;
+            activeBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
+
             let generated = 0;
+            let generatedKeysList = [];
+            const patchData = {};
+            if (!DB.keys) DB.keys = {};
+
             for(let i=0; i<qty; i++) {
                 const randomStr = Math.random().toString(36).substr(2, 8).toUpperCase();
                 const keyId = (prefix || '') + randomStr;
                 
-                if(DB.keys && DB.keys[keyId]) continue; // skip if collision (rare)
+                if(DB.keys[keyId]) continue; // skip if collision (rare)
                 
                 const newKey = { 
                     banned: false, 
@@ -1318,13 +1334,29 @@
                     notes: notes,
                     used: false
                 };
-                if (!DB.keys) DB.keys = {};
                 DB.keys[keyId] = newKey;
-                await syncNode(`keys/${keyId}`, newKey);
+                patchData[keyId] = newKey;
+                generatedKeysList.push(keyId);
                 generated++;
             }
             
-            showIsland(`Generated ${generated} Keys`, "success", "fa-layer-group");
+            try {
+                await fetch(`${DB_URL}/keys.json?auth=${DB_SECRET}`, { method: 'PATCH', body: JSON.stringify(patchData) });
+                if (copyOnly && generatedKeysList.length > 0) {
+                    const keysString = generatedKeysList.join('\n');
+                    navigator.clipboard.writeText(keysString).then(() => {
+                        showIsland(`Generated & Copied ${generated} Keys`, "success", "fa-copy");
+                    }).catch(err => {
+                        showIsland(`Generated ${generated} Keys (Copy failed)`, "success", "fa-layer-group");
+                    });
+                } else {
+                    showIsland(`Generated ${generated} Keys`, "success", "fa-layer-group");
+                }
+            } catch(e) {
+                showIsland("Error generating keys", "error");
+            }
+            
+            activeBtn.innerHTML = originalHTML;
             closeModals(); 
             renderKeys();
         }
@@ -1503,6 +1535,7 @@
                         <div class="card-header-main" onclick="toggleCard('${keyId}')">
                             <div class="card-header-left">
                                 <div class="card-title">
+                                    <input type="checkbox" class="key-selector" data-key-id="${keyId}" style="margin-right:8px; width: 16px; height: 16px;" onclick="event.stopPropagation()">
                                     <i class="fas fa-key" style="color:var(--primary); margin-right:4px;"></i> 
                                     ${keyId}
                                 </div>
@@ -1546,6 +1579,39 @@
                 console.error("Failed to copy:", err);
                 showIsland("Copy failed", "error");
             });
+        }
+
+        function selectAllKeys() {
+            const checkboxes = document.querySelectorAll('.key-selector');
+            let allChecked = true;
+            checkboxes.forEach(cb => { if(!cb.checked) allChecked = false; });
+            checkboxes.forEach(cb => { cb.checked = !allChecked; });
+        }
+
+        async function deleteSelectedKeys() {
+            const checkboxes = document.querySelectorAll('.key-selector:checked');
+            if(checkboxes.length === 0) return showIsland("No keys selected", "error");
+            if(confirm(`Delete ${checkboxes.length} selected keys?`)) {
+                const btn = document.querySelector('#keys-bulk-actions .del');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
+                
+                const patchData = {};
+                for(let cb of checkboxes) {
+                    const keyId = cb.getAttribute('data-key-id');
+                    delete DB.keys[keyId];
+                    patchData[keyId] = null;
+                }
+                
+                try {
+                    await fetch(`${DB_URL}/keys.json?auth=${DB_SECRET}`, { method: 'PATCH', body: JSON.stringify(patchData) });
+                    showIsland(`Deleted ${checkboxes.length} Keys`, "success", "fa-trash");
+                } catch(e) {
+                    showIsland("Error deleting keys", "error");
+                }
+                btn.innerHTML = originalText;
+                renderKeys();
+            }
         }
 
         /* --- DEVICES & BANS LOGIC --- */

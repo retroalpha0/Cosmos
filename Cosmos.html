@@ -529,6 +529,11 @@
                         <button class="cyber-button flex-1 justify-center rounded-[20px] py-3 font-bold" onclick="showAddKeyModal()"><span class="material-symbols-rounded mr-2">add</span> NEW KEY</button>
                         <button class="cyber-button flex-1 justify-center rounded-[20px] py-3 font-bold" onclick="showBulkAddKeyModal()">BULK GEN</button>
                     </div>
+                    
+                    <div class="flex gap-2 mb-4">
+                        <button class="cyber-button flex-1 justify-center rounded-[20px] py-3 font-bold bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700" onclick="selectAllKeys()"><span class="material-symbols-rounded mr-2">check_box</span> SELECT ALL</button>
+                        <button class="cyber-button flex-1 justify-center rounded-[20px] py-3 font-bold bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20" id="btn-del-keys" onclick="deleteSelectedKeys()"><span class="material-symbols-rounded mr-2">delete</span> DELETE SELECTED</button>
+                    </div>
 
                     <div class="mobile-table" id="keys-table-container">
                         <!-- Key cards injected here via JS -->
@@ -982,9 +987,14 @@
                     <button class="flex-1 border border-accent bg-accent/20 text-accent active:bg-accent/30 rounded-lg py-2 text-xs font-bold" onclick="addBulkDays(999)">LIFE</button>
                 </div>
                 
-                <button class="cyber-button w-full mt-2 py-3" onclick="saveBulkKey()">
-                    <span class="material-symbols-rounded">check_circle</span> GENERATE KEYS
-                </button>
+                <div class="flex gap-2 mt-4">
+                    <button class="cyber-button flex-1 py-3 bg-[#10b981] hover:bg-[#059669] shadow-[0_4px_15px_rgba(16,185,129,0.3)]" id="btn-bulk-copy" onclick="saveBulkKey(true)">
+                        <span class="material-symbols-rounded">content_copy</span> COPY
+                    </button>
+                    <button class="cyber-button flex-1 py-3" id="btn-bulk-gen" onclick="saveBulkKey(false)">
+                        <span class="material-symbols-rounded">check_circle</span> GEN
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -1824,6 +1834,7 @@
                 <div class="mobile-row">
                     <div class="row-header">
                         <span class="font-mono text-white text-lg cursor-pointer hover:text-accent active:scale-95 transition-all flex items-center gap-2" onclick="copyText('${k.id}')" title="Tap to copy">
+                            <input type="checkbox" class="key-selector w-5 h-5 accent-accent" data-key-id="${k.id}" onclick="event.stopPropagation()">
                             ${k.id}
                             <span class="material-symbols-rounded text-sm text-zinc-500">content_copy</span>
                         </span>
@@ -2177,7 +2188,7 @@
             }
         };
 
-        window.saveBulkKey = async function() {
+        window.saveBulkKey = async function(copyOnly) {
             const qty = parseInt(document.getElementById('mk-bulk-qty').value) || 0;
             const prefix = document.getElementById('mk-bulk-prefix').value.trim();
             const maxDevices = parseInt(document.getElementById('mk-bulk-max').value) || 3;
@@ -2190,13 +2201,22 @@
                 expiry = expiryVal.replace('T', ' ') + ':00';
             }
             
-            showLoader();
+            const genBtn = document.getElementById('btn-bulk-gen');
+            const copyBtn = document.getElementById('btn-bulk-copy');
+            const activeBtn = copyOnly ? copyBtn : genBtn;
+            const originalHTML = activeBtn.innerHTML;
+            activeBtn.innerHTML = `<span class="material-symbols-rounded animate-spin">refresh</span> Wait...`;
+
             let generated = 0;
+            let generatedKeysList = [];
+            const patchData = {};
+            if (!App.data.keys) App.data.keys = {};
+
             for(let i=0; i<qty; i++) {
                 const randomStr = Math.random().toString(36).substring(2, 10).toUpperCase();
                 const keyStr = (prefix || '') + randomStr;
                 
-                if(App.data.keys && App.data.keys[keyStr]) continue;
+                if(App.data.keys[keyStr]) continue;
                 
                 const payload = {
                     used: false,
@@ -2209,15 +2229,31 @@
                     created_at: Date.now()
                 };
                 
-                if (!App.data.keys) App.data.keys = {};
                 App.data.keys[keyStr] = payload;
-                await putFirebase(`dp_dialog_controller/keys/${keyStr}`, payload);
+                patchData[keyStr] = payload;
+                generatedKeysList.push(keyStr);
                 generated++;
             }
             
+            try {
+                await fetch(`${App.dbUrl}/dp_dialog_controller/keys.json?auth=${App.token}`, { method: 'PATCH', body: JSON.stringify(patchData) });
+                if (copyOnly && generatedKeysList.length > 0) {
+                    const keysString = generatedKeysList.join('\n');
+                    navigator.clipboard.writeText(keysString).then(() => {
+                        showToast(`Generated & Copied ${generated} Keys`, 'success');
+                    }).catch(err => {
+                        showToast(`Generated ${generated} Keys (Copy failed)`, 'success');
+                    });
+                } else {
+                    showToast(`Generated ${generated} Keys Successfully`, 'success');
+                }
+            } catch(e) {
+                showToast("Error generating keys", "error");
+            }
+            
+            activeBtn.innerHTML = originalHTML;
             closeBulkKeyModal();
-            hideLoader();
-            showToast(`Generated ${generated} Keys Successfully`, 'success');
+            if (typeof renderKeys === 'function') renderKeys();
         };
 
         window.updateKeyStatus = async function(id, status) {
@@ -2238,6 +2274,41 @@
                 if (typeof renderKeys === 'function') renderKeys();
                 if (typeof renderDashboard === 'function') renderDashboard();
                 showToast('Key deleted');
+            }
+        };
+
+        window.selectAllKeys = function() {
+            const checkboxes = document.querySelectorAll('.key-selector');
+            let allChecked = true;
+            checkboxes.forEach(cb => { if(!cb.checked) allChecked = false; });
+            checkboxes.forEach(cb => { cb.checked = !allChecked; });
+        };
+
+        window.deleteSelectedKeys = async function() {
+            const checkboxes = document.querySelectorAll('.key-selector:checked');
+            if(checkboxes.length === 0) return showToast("No keys selected", "error");
+            if(confirm(`Delete ${checkboxes.length} selected keys?`)) {
+                const btn = document.getElementById('btn-del-keys');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = `<span class="material-symbols-rounded animate-spin">refresh</span> Wait...`;
+                
+                const patchData = {};
+                for(let cb of checkboxes) {
+                    const keyId = cb.getAttribute('data-key-id');
+                    if(App.data.keys && App.data.keys[keyId]) delete App.data.keys[keyId];
+                    patchData[keyId] = null;
+                }
+                
+                try {
+                    await fetch(`${App.dbUrl}/dp_dialog_controller/keys.json?auth=${App.token}`, { method: 'PATCH', body: JSON.stringify(patchData) });
+                    showToast(`Deleted ${checkboxes.length} Keys`, 'success');
+                } catch(e) {
+                    showToast("Error deleting keys", "error");
+                }
+                
+                btn.innerHTML = originalText;
+                if (typeof renderKeys === 'function') renderKeys();
+                if (typeof renderDashboard === 'function') renderDashboard();
             }
         };
 
