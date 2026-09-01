@@ -213,33 +213,36 @@
             overflow-y: auto; padding: 24px 0;
             transform: translateZ(0); will-change: opacity; backface-visibility: hidden;
         }
+        /* Cosmos Spinning Loader */
         .cyber-loader {
             position: relative; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center;
         }
         .cyber-loader .ring {
-            position: absolute; width: 100%; height: 100%; border-radius: 50%;
+            position: absolute; border-radius: 50%;
             border: 2px solid transparent; border-top-color: var(--accent-color); border-bottom-color: var(--accent-color);
-            animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
             filter: drop-shadow(0 0 10px var(--accent-color));
+        }
+        .cyber-loader .ring:nth-child(1) {
+            width: 100%; height: 100%;
+            animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
         }
         .cyber-loader .ring:nth-child(2) {
             width: 70%; height: 70%;
-        /* Sleek Pulse Loader */
-        .cyber-loader { position: relative; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; }
-        .cyber-loader .core { display: none; }
-        .cyber-loader .ring {
-            position: absolute; width: 100%; height: 100%; border-radius: 50%;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top-color: var(--accent-color);
-            animation: spin 0.8s linear infinite;
-            filter: drop-shadow(0 0 8px var(--accent-color));
+            border-top-color: #00d0ff; border-bottom-color: #00d0ff;
+            animation: spinReverse 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            filter: drop-shadow(0 0 10px #00d0ff);
+        }
+        .cyber-loader .core {
+            width: 30%; height: 30%; border-radius: 50%;
+            background: var(--accent-color);
+            box-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--accent-color);
+            animation: pulse-core 2s ease-in-out infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        }
-        @keyframes pulse-core { 0% { transform: scale(0.8); opacity: 0.5; } 100% { transform: scale(1.2); opacity: 1; } }
-        @keyframes pulse-ring {
-            0% { transform: scale(0.5); opacity: 1; }
-            100% { transform: scale(1.5); opacity: 0; }
+        @keyframes spinReverse { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
+        @keyframes pulse-core { 
+            0%, 100% { transform: scale(0.8); opacity: 0.8; } 
+            50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 30px var(--accent-color), 0 0 60px var(--accent-color); } 
         }
         
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
@@ -611,7 +614,6 @@
                                     <label class="text-xs text-zinc-400 ml-2">Admin Telegram Link</label>
                                     <input type="url" id="ui-admin-url" class="cyber-input py-3" placeholder="https://t.me/...">
                                 </div>
-                                </div>
                             </div>
 
                             <h3 class="font-semibold mb-3 px-1 mt-6">System Messages</h3>
@@ -643,7 +645,6 @@
                                 <div>
                                     <label class="text-xs text-zinc-400 ml-2">Maintenance</label>
                                     <input type="text" id="msg-maintenance" class="cyber-input py-3" placeholder="Server Under Maintenance">
-                                </div>
                                 </div>
                             </div>
 
