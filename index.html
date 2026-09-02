@@ -1603,10 +1603,11 @@
                     <div class="${wrapClass} animated-card" id="list-card-${keyId}" style="animation-delay: ${Math.min(count * 0.05, 0.5)}s">
                         <div class="card-header-main" onclick="toggleCard('${keyId}')">
                             <div class="card-header-left">
-                                <div class="card-title">
+                                <div class="card-title" style="display:flex; align-items:center;">
                                     <input type="checkbox" class="key-selector" data-key-id="${keyId}" style="margin-right:8px; width: 16px; height: 16px; display: ${typeof isSelectMode !== 'undefined' && isSelectMode ? 'inline-block' : 'none'};" onclick="event.stopPropagation()">
                                     <i class="fas fa-key" style="color:var(--primary); margin-right:4px;"></i> 
-                                    ${keyId}
+                                    <span style="user-select: text;" onclick="event.stopPropagation()">${keyId}</span>
+                                    <i class="fas fa-copy" style="color:var(--text-dim); margin-left:8px; cursor:pointer; font-size: 0.9rem;" onclick="copyToClipboard('${keyId}', 'Key', event)" title="Copy Key"></i>
                                 </div>
                                 <div class="card-subtitle">
                                     <span><i class="far fa-calendar-alt"></i> ${(data.expiry_date || "").replace('T', ' ')}</span>
