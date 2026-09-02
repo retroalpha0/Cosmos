@@ -1030,11 +1030,12 @@
                 if (res.ok) {
                     let data = await res.json();
                     if(data && typeof data === 'object') {
-                        DB.keys = data.keys || {};
-                        DB.blacklisted_hwids = data.blacklisted_hwids || {};
-                        if(data.system) DB.system = data.system;
-                        if(data.security) DB.security = data.security;
-                        if(data.logs) DB.logs = data.logs;
+                        let root = data.dp_dialog_controller || data;
+                        DB.keys = root.keys || {};
+                        DB.blacklisted_hwids = root.blacklisted_hwids || {};
+                        if(root.system) DB.system = root.system;
+                        if(root.security) DB.security = root.security;
+                        if(root.logs) DB.logs = root.logs;
                         IdbCache.set('DB_CACHE', DB);
                         loadSystem(); renderKeys(); renderDevices(); renderLogs();
                         showIsland("Database Synced", "success", "fa-sync-alt");
@@ -1050,14 +1051,15 @@
                 if (res.ok) {
                     let data = await res.json();
                     if(data && typeof data === 'object') {
-                        if(data.keys) {
-                            DB.keys = data.keys;
+                        let root = data.dp_dialog_controller || data;
+                        if(root.keys) {
+                            DB.keys = root.keys;
                         }
-                        if(data.blacklisted_hwids) {
-                            DB.blacklisted_hwids = data.blacklisted_hwids;
+                        if(root.blacklisted_hwids) {
+                            DB.blacklisted_hwids = root.blacklisted_hwids;
                         }
-                        if(data.logs) {
-                            DB.logs = data.logs;
+                        if(root.logs) {
+                            DB.logs = root.logs;
                         }
                         IdbCache.set('DB_CACHE', DB);
                         renderKeys(); renderDevices(); renderLogs();
@@ -1073,7 +1075,7 @@
                     options.headers['Content-Type'] = 'application/json';
                     options.body = JSON.stringify(dataObj);
                 }
-                const res = await fetch(`${DB_URL}/${nodePath}.json?auth=${DB_SECRET}`, options);
+                const res = await fetch(`${DB_URL}/dp_dialog_controller/${nodePath}.json?auth=${DB_SECRET}`, options);
                 if (!res.ok) throw new Error("Sync failed on server");
             } catch(e) { showIsland("Sync Error", "error"); }
         }
@@ -1300,14 +1302,8 @@
             };
             
             DB.system = newSys;
-            DB.security = { 
-                random_crash_chance: crashChance,
-                signature_verification: getToggle('tog-sig'),
-                valid_signatures: arrSigs
-            };
             
             await syncNode('system', newSys);
-            await syncNode('security', DB.security);
             
             showIsland("Global System Saved", "success", "fa-cogs");
         }
@@ -1607,7 +1603,7 @@
                                     <input type="checkbox" class="key-selector" data-key-id="${keyId}" style="margin-right:8px; width: 16px; height: 16px; display: ${typeof isSelectMode !== 'undefined' && isSelectMode ? 'inline-block' : 'none'};" onclick="event.stopPropagation()">
                                     <i class="fas fa-key" style="color:var(--primary); margin-right:4px;"></i> 
                                     <span style="user-select: text;" onclick="event.stopPropagation()">${keyId}</span>
-                                    <i class="fas fa-copy" style="color:var(--text-dim); margin-left:8px; cursor:pointer; font-size: 0.9rem;" onclick="copyToClipboard('${keyId}', 'Key', event)" title="Copy Key"></i>
+                                    <i class="fas fa-copy copy-icon-hover" style="color:var(--text-dim); margin-left:10px; cursor:pointer; font-size: 1.3rem; transition: 0.2s;" onmouseover="this.style.color='var(--primary)'; this.style.transform='scale(1.1)';" onmouseout="this.style.color='var(--text-dim)'; this.style.transform='scale(1)';" onclick="copyToClipboard('${keyId}', 'Key', event)" title="Copy Key"></i>
                                 </div>
                                 <div class="card-subtitle">
                                     <span><i class="far fa-calendar-alt"></i> ${(data.expiry_date || "").replace('T', ' ')}</span>
