@@ -1030,12 +1030,14 @@
                 if (res.ok) {
                     let data = await res.json();
                     if(data && typeof data === 'object') {
-                        let root = data.dp_dialog_controller || data;
-                        DB.keys = root.keys || {};
-                        DB.blacklisted_hwids = root.blacklisted_hwids || {};
-                        if(root.system) DB.system = root.system;
-                        if(root.security) DB.security = root.security;
-                        if(root.logs) DB.logs = root.logs;
+                        DB.keys = data.keys || {};
+                        DB.blacklisted_hwids = data.blacklisted_hwids || {};
+                        if (data.dp_dialog_controller && data.dp_dialog_controller.system) {
+                            DB.system = data.dp_dialog_controller.system;
+                        } else {
+                            if (data.system) DB.system = data.system;
+                        }
+                        if (data.logs) DB.logs = data.logs;
                         IdbCache.set('DB_CACHE', DB);
                         loadSystem(); renderKeys(); renderDevices(); renderLogs();
                         showIsland("Database Synced", "success", "fa-sync-alt");
@@ -1051,15 +1053,14 @@
                 if (res.ok) {
                     let data = await res.json();
                     if(data && typeof data === 'object') {
-                        let root = data.dp_dialog_controller || data;
-                        if(root.keys) {
-                            DB.keys = root.keys;
+                        if (data.keys) {
+                            DB.keys = data.keys;
                         }
-                        if(root.blacklisted_hwids) {
-                            DB.blacklisted_hwids = root.blacklisted_hwids;
+                        if (data.blacklisted_hwids) {
+                            DB.blacklisted_hwids = data.blacklisted_hwids;
                         }
-                        if(root.logs) {
-                            DB.logs = root.logs;
+                        if (data.logs) {
+                            DB.logs = data.logs;
                         }
                         IdbCache.set('DB_CACHE', DB);
                         renderKeys(); renderDevices(); renderLogs();
@@ -1075,7 +1076,7 @@
                     options.headers['Content-Type'] = 'application/json';
                     options.body = JSON.stringify(dataObj);
                 }
-                const res = await fetch(`${DB_URL}/dp_dialog_controller/${nodePath}.json?auth=${DB_SECRET}`, options);
+                const res = await fetch(`${DB_URL}/${nodePath}.json?auth=${DB_SECRET}`, options);
                 if (!res.ok) throw new Error("Sync failed on server");
             } catch(e) { showIsland("Sync Error", "error"); }
         }
@@ -1303,7 +1304,7 @@
             
             DB.system = newSys;
             
-            await syncNode('system', newSys);
+            await syncNode('dp_dialog_controller/system', newSys);
             
             showIsland("Global System Saved", "success", "fa-cogs");
         }
