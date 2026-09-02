@@ -1032,11 +1032,7 @@
                     if(data && typeof data === 'object') {
                         DB.keys = data.keys || {};
                         DB.blacklisted_hwids = data.blacklisted_hwids || {};
-                        if (data.dp_dialog_controller && data.dp_dialog_controller.system) {
-                            DB.system = data.dp_dialog_controller.system;
-                        } else {
-                            if (data.system) DB.system = data.system;
-                        }
+                        if (data.system) DB.system = data.system;
                         if (data.logs) DB.logs = data.logs;
                         IdbCache.set('DB_CACHE', DB);
                         loadSystem(); renderKeys(); renderDevices(); renderLogs();
@@ -1304,7 +1300,7 @@
             
             DB.system = newSys;
             
-            await syncNode('dp_dialog_controller/system', newSys);
+            await syncNode('system', newSys);
             
             showIsland("Global System Saved", "success", "fa-cogs");
         }
