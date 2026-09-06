@@ -680,7 +680,7 @@
 
             <div class="input-group">
                 <label>Max Devices</label>
-                <input type="number" id="mod-key-max" value="3" min="1">
+                <input type="number" id="mod-key-max" value="1" min="1">
             </div>
 
             <div class="input-group">
@@ -912,8 +912,9 @@
             
             const now = new Date();
             const y = now.getFullYear(); const m = String(now.getMonth()+1).padStart(2,'0'); const d = String(now.getDate()).padStart(2,'0');
-            const defaultDateStr = `${y+1}-${m}-${d}`;
+            const defaultDateStr = `${y}-${m}-${d}`;
             document.getElementById('mod-key-date').value = defaultDateStr;
+            if(document.getElementById('mod-bulk-key-date')) document.getElementById('mod-bulk-key-date').value = defaultDateStr;
 
             if (savedUrl && savedSecret) {
                 document.getElementById('auth-url').value = savedUrl;
@@ -1347,6 +1348,12 @@
             document.getElementById('mod-key-id').value = "";
             document.getElementById('mod-key-id').readOnly = false;
             document.getElementById('mod-key-notes').value = "";
+            document.getElementById('mod-key-max').value = "1";
+            
+            const now = new Date();
+            const y = now.getFullYear(); const m = String(now.getMonth()+1).padStart(2,'0'); const d = String(now.getDate()).padStart(2,'0');
+            document.getElementById('mod-key-date').value = `${y}-${m}-${d}`;
+            
             setToggle('mod-tog-used', false);
             setToggle('mod-tog-crash', false);
             document.getElementById('modal-key-btn-text').innerText = "Generate Key";
@@ -1373,7 +1380,12 @@
             document.getElementById('bulk-key-modal').classList.add('active');
             document.getElementById('mod-bulk-key-qty').value = 10;
             document.getElementById('mod-bulk-key-prefix').value = 'DP-';
-            document.getElementById('mod-bulk-key-date').value = '';
+            document.getElementById('mod-bulk-key-max').value = "1";
+            
+            const now = new Date();
+            const y = now.getFullYear(); const m = String(now.getMonth()+1).padStart(2,'0'); const d = String(now.getDate()).padStart(2,'0');
+            document.getElementById('mod-bulk-key-date').value = `${y}-${m}-${d}`;
+            
             document.getElementById('mod-bulk-key-notes').value = '';
             document.querySelectorAll('.time-tab-bulk').forEach(t => t.classList.remove('active'));
         }
@@ -1395,7 +1407,7 @@
         async function generateBulkKeys(copyOnly) {
             const qty = parseInt(document.getElementById('mod-bulk-key-qty').value) || 0;
             const prefix = document.getElementById('mod-bulk-key-prefix').value.trim();
-            const maxDevices = parseInt(document.getElementById('mod-bulk-key-max').value) || 3;
+            const maxDevices = parseInt(document.getElementById('mod-bulk-key-max').value) || 1;
             const rawDate = document.getElementById('mod-bulk-key-date').value;
             const expDate = rawDate ? rawDate + "T23:59:59" : "";
             const notes = document.getElementById('mod-bulk-key-notes').value.trim();
@@ -1461,7 +1473,7 @@
 
         async function saveKey() {
             const keyId = document.getElementById('mod-key-id').value.trim();
-            const maxDevices = parseInt(document.getElementById('mod-key-max').value) || 3;
+            const maxDevices = parseInt(document.getElementById('mod-key-max').value) || 1;
             const rawDate = document.getElementById('mod-key-date').value;
             const expDate = rawDate ? rawDate + "T23:59:59" : "";
             const notes = document.getElementById('mod-key-notes').value.trim();
