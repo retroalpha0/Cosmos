@@ -413,11 +413,11 @@
             </div>
             <!-- Bulk actions for keys -->
             <div id="keys-bulk-actions" style="display: flex; gap: 8px; margin: 0 20px 15px 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">
-                <button class="btn-xs" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 12px; font-size: 0.7rem;" onclick="toggleSelectMode()"><i class="fas fa-list-ul"></i> Select</button>
-                <button class="btn-xs" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 12px; font-size: 0.7rem;" onclick="deleteExpiredKeys()"><i class="fas fa-calendar-times"></i> Del Expired</button>
-                <button class="btn-xs" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 12px; font-size: 0.7rem;" onclick="deleteUnusedKeys()"><i class="fas fa-ghost"></i> Del Unused</button>
-                <button class="btn-xs" id="btn-select-all" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; display: none; padding: 6px 12px; font-size: 0.7rem;" onclick="selectAllKeys()"><i class="fas fa-check-square"></i> Select All</button>
-                <button class="btn-xs del" id="btn-delete-selected" style="flex: 1; display: none; padding: 6px 12px; font-size: 0.7rem;" onclick="deleteSelectedKeys()"><i class="fas fa-trash"></i> Delete</button>
+                <button class="btn-xs" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px; font-size: 0.65rem;" onclick="toggleSelectMode()"><i class="fas fa-list-ul"></i> Select</button>
+                <button class="btn-xs" id="btn-del-expired" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px; font-size: 0.65rem;" onclick="deleteExpiredKeys()"><i class="fas fa-calendar-times"></i> Del Expired</button>
+                <button class="btn-xs" id="btn-del-unused" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px; font-size: 0.65rem;" onclick="deleteUnusedKeys()"><i class="fas fa-ghost"></i> Del Unused</button>
+                <button class="btn-xs" id="btn-select-all" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; display: none; padding: 6px 10px; font-size: 0.65rem;" onclick="selectAllKeys()"><i class="fas fa-check-square"></i> Select All</button>
+                <button class="btn-xs del" id="btn-delete-selected" style="flex: 1; display: none; padding: 6px 10px; font-size: 0.65rem;" onclick="deleteSelectedKeys()"><i class="fas fa-trash"></i> Delete</button>
             </div>
             <div id="keys-list"></div>
         </div>
@@ -1761,11 +1761,19 @@
             });
             const btnSelectAll = document.getElementById('btn-select-all');
             const btnDeleteSelected = document.getElementById('btn-delete-selected');
+            const btnDelExpired = document.getElementById('btn-del-expired');
+            const btnDelUnused = document.getElementById('btn-del-unused');
+            
             if(btnSelectAll) btnSelectAll.style.display = isSelectMode ? 'flex' : 'none';
             if(btnDeleteSelected) btnDeleteSelected.style.display = isSelectMode ? 'flex' : 'none';
-            
+            if(btnDelExpired) btnDelExpired.style.display = isSelectMode ? 'none' : 'flex';
+            if(btnDelUnused) btnDelUnused.style.display = isSelectMode ? 'none' : 'flex';
+
             const selectBtn = document.querySelector('#keys-bulk-actions button:first-child');
-            if(selectBtn) selectBtn.innerHTML = isSelectMode ? '<i class="fas fa-times"></i> Cancel' : '<i class="fas fa-list-ul"></i> Select';
+            if(selectBtn) {
+                selectBtn.style.fontSize = "0.75rem";
+                selectBtn.innerHTML = isSelectMode ? '<i class="fas fa-times"></i> Cancel' : '<i class="fas fa-list-ul"></i> Select';
+            }
         }
 
         function selectAllKeys() {
