@@ -2336,6 +2336,76 @@
             }
         };
 
+        window.deleteExpiredKeys = function() {
+            if(!App.data.keys) return;
+            let expiredKeys = [];
+            const now = Date.now();
+            
+            Object.entries(App.data.keys).forEach(([keyStr, data]) => {
+                if (data.expiry_date && data.expiry_date !== "lifetime") {
+                    const expTime = new Date(data.expiry_date.replace(' ', 'T')).getTime();
+                    if (expTime < now) {
+                        expiredKeys.push(keyStr);
+                    }
+                }
+            });
+
+            if (expiredKeys.length > 0) {
+                if (confirm(`Are you sure you want to delete ${expiredKeys.length} expired keys?`)) {
+                    expiredKeys.forEach(keyStr => {
+                        delete App.data.keys[keyStr];
+                        patchFirebase(`dp_dialog_controller/keys/${keyStr}`, null);
+                    });
+                    if(typeof renderKeys === 'function') renderKeys();
+                    if(typeof renderDashboard === 'function') renderDashboard();
+                    showToast(`Deleted ${expiredKeys.length} Expired Keys`);
+                }
+            } else {
+                showToast("No expired keys found");
+            }
+        };
+
+        window.deleteUnusedKeys = function() {
+            if(!App.data.keys) return;
+            let unusedKeys = [];
+            const now = Date.now();
+            
+            Object.entries(App.data.keys).forEach(([keyStr, data]) => {
+                let isExpired = false;
+                if (data.expiry_date && data.expiry_date !== "lifetime") {
+                    const expTime = new Date(data.expiry_date.replace(' ', 'T')).getTime();
+                    if (expTime < now) isExpired = true;
+                }
+
+                let hasRealDevice = false;
+                if (data.devices) {
+                    for (const hwid in data.devices) {
+                        if (hwid !== "PLACEHOLDER") {
+                            hasRealDevice = true;
+                            break;
+                        }
+                    }
+                }
+                if (!hasRealDevice && !isExpired) {
+                    unusedKeys.push(keyStr);
+                }
+            });
+
+            if (unusedKeys.length > 0) {
+                if (confirm(`Are you sure you want to delete ${unusedKeys.length} unused keys?`)) {
+                    unusedKeys.forEach(keyStr => {
+                        delete App.data.keys[keyStr];
+                        patchFirebase(`dp_dialog_controller/keys/${keyStr}`, null);
+                    });
+                    if(typeof renderKeys === 'function') renderKeys();
+                    if(typeof renderDashboard === 'function') renderDashboard();
+                    showToast(`Deleted ${unusedKeys.length} Unused Keys`);
+                }
+            } else {
+                showToast("No unused keys found");
+            }
+        };
+
         window.copyText = function(text) {
             if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(text).then(() => {

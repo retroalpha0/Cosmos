@@ -1556,8 +1556,15 @@
         function deleteUnusedKeys() {
             if(!DB.keys) return;
             let unusedKeys = [];
+            const now = Date.now();
             
             Object.entries(DB.keys).forEach(([keyStr, data]) => {
+                let isExpired = false;
+                if (data.expiry_date && data.expiry_date !== "lifetime") {
+                    const expTime = new Date(data.expiry_date.replace(' ', 'T')).getTime();
+                    if (expTime < now) isExpired = true;
+                }
+
                 let hasRealDevice = false;
                 if (data.devices) {
                     for (const hwid in data.devices) {
@@ -1567,7 +1574,7 @@
                         }
                     }
                 }
-                if (!hasRealDevice) {
+                if (!hasRealDevice && !isExpired) {
                     unusedKeys.push(keyStr);
                 }
             });
