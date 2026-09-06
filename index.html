@@ -577,9 +577,12 @@
                         <div style="font-weight:800; font-size:0.85rem;">Enable Signature Verification</div><div class="toggle-switch"></div>
                     </div>
                     <div class="input-group">
-                        <label>Valid App Signatures (One signature per line or comma separated)</label>
-                        <textarea id="sys-sigs" rows="6" placeholder="28A4B67...9F2B&#10;7B1C4D2...3E4A" style="font-family:var(--font-code); font-size:0.75rem; line-height:1.5; letter-spacing:0.5px;"></textarea>
-                        <div style="font-size:0.7rem; color:var(--text-dim); margin-top:4px;"><i class="fas fa-shield-alt"></i> Enter SHA-256 or MD5 hashes for signature anti-tamper validation.</div>
+                        <div class="row" style="margin-bottom: 5px;">
+                            <label>Valid App Signatures</label>
+                            <button class="btn-xs" style="padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; background: var(--primary); color: #fff;" onclick="addSignatureInput()">+ ADD</button>
+                        </div>
+                        <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:10px;"><i class="fas fa-shield-alt"></i> Enter SHA-256 or MD5 hashes for signature anti-tamper validation.</div>
+                        <div id="signatures-list-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
                     </div>
                 </div>
 
@@ -1257,14 +1260,38 @@
             setToggle('tog-kill', sys.remote_kill === true);
             setToggle('tog-telemetry', sys.telemetry === true);
             setToggle('tog-sig', sys.signature_verification === true);
-            document.getElementById('sys-sigs').value = (sys.valid_signatures || []).join(",\n");
+            window.currentSignatures = sys.valid_signatures || [];
+            if(window.currentSignatures.length === 0) window.currentSignatures = [""];
+            renderSignatures();
             
             setToggle('tog-crash', sys.random_crash_mode === true);
             document.getElementById('sys-crash-chance').value = sys.random_crash_chance || sec.random_crash_chance || 0;
         }
 
+        window.renderSignatures = function() {
+            const container = document.getElementById('signatures-list-container');
+            if(!container) return;
+            container.innerHTML = window.currentSignatures.map((sig, idx) => `
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="text" class="interactive-text" style="flex: 1; font-family: monospace; font-size: 0.8rem; padding: 10px; background:var(--bg-input);" placeholder="e.g. A1:B2:C3..." value="${sig}" oninput="window.currentSignatures[${idx}] = this.value">
+                    <button class="btn" style="background: var(--danger); width: 35px; height: 35px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 8px;" onclick="removeSignatureInput(${idx})"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        window.addSignatureInput = function() {
+            window.currentSignatures.push("");
+            renderSignatures();
+        }
+
+        window.removeSignatureInput = function(idx) {
+            window.currentSignatures.splice(idx, 1);
+            if(window.currentSignatures.length === 0) window.currentSignatures.push("");
+            renderSignatures();
+        }
+
         async function saveSystem() {
-            const arrSigs = document.getElementById('sys-sigs').value.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
+            const arrSigs = window.currentSignatures.map(s => s.trim()).filter(s => s);
             const arrBg = document.getElementById('sys-ui-bgurls').value.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
             const crashChance = parseInt(document.getElementById('sys-crash-chance').value) || 0;
 
@@ -1464,7 +1491,8 @@
                 };
                 DB.keys[keyId] = newKey;
                 await syncNode(`keys/${keyId}`, newKey);
-                showIsland("License Generated", "success", "fa-key");
+                copyToClipboard(keyId, 'Key', null);
+                showIsland("License Generated & Copied", "success", "fa-copy");
             }
             closeModals(); renderKeys();
         }
