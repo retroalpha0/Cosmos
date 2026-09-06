@@ -131,7 +131,7 @@
         .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark), #9333ea, var(--primary)); background-size: 300% 300%; animation: gradientFlow 5s ease infinite; box-shadow: 0 8px 25px var(--purple-shine); }
         .btn-primary:active { transform: scale(0.97); box-shadow: 0 4px 15px var(--purple-shine);}
         
-        .fab-btn { position: fixed; bottom: calc(var(--nav-height) + 20px); right: 20px; width: 60px; height: 60px; border-radius: 30px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; border: none; font-size: 1.5rem; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 25px var(--purple-shine); cursor: pointer; z-index: 90; transition: 0.3s; }
+        .fab-btn { position: fixed; bottom: calc(var(--nav-height) + 20px); right: 20px; width: 48px; height: 48px; border-radius: 24px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; border: none; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; box-shadow: 0 8px 20px var(--purple-shine); cursor: pointer; z-index: 90; transition: 0.3s; }
         .fab-btn.fab-left { left: 20px; right: auto; }
         .fab-btn:active { transform: scale(0.9); }
 
@@ -412,10 +412,12 @@
                 <button class="btn btn-primary" onclick="openBulkKeyModal()" style="flex: 1;">BULK GEN</button>
             </div>
             <!-- Bulk actions for keys -->
-            <div id="keys-bulk-actions" style="display: flex; gap: 10px; margin: 0 20px 15px 20px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                <button class="btn-xs" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff;" onclick="toggleSelectMode()"><i class="fas fa-list-ul"></i> Select</button>
-                <button class="btn-xs" id="btn-select-all" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; display: none;" onclick="selectAllKeys()"><i class="fas fa-check-square"></i> Select All</button>
-                <button class="btn-xs del" id="btn-delete-selected" style="flex: 1; display: none;" onclick="deleteSelectedKeys()"><i class="fas fa-trash"></i> Delete Selected</button>
+            <div id="keys-bulk-actions" style="display: flex; gap: 8px; margin: 0 20px 15px 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">
+                <button class="btn-xs" style="background: rgba(255,255,255,0.1); color: #fff; padding: 6px 12px; font-size: 0.7rem;" onclick="toggleSelectMode()"><i class="fas fa-list-ul"></i> Select</button>
+                <button class="btn-xs" style="background: rgba(255,255,255,0.1); color: #fff; padding: 6px 12px; font-size: 0.7rem;" onclick="deleteExpiredKeys()"><i class="fas fa-calendar-times"></i> Del Expired</button>
+                <button class="btn-xs" style="background: rgba(255,255,255,0.1); color: #fff; padding: 6px 12px; font-size: 0.7rem;" onclick="deleteUnusedKeys()"><i class="fas fa-ghost"></i> Del Unused</button>
+                <button class="btn-xs" id="btn-select-all" style="background: rgba(255,255,255,0.1); color: #fff; display: none; padding: 6px 12px; font-size: 0.7rem;" onclick="selectAllKeys()"><i class="fas fa-check-square"></i> Select All</button>
+                <button class="btn-xs del" id="btn-delete-selected" style="display: none; padding: 6px 12px; font-size: 0.7rem;" onclick="deleteSelectedKeys()"><i class="fas fa-trash"></i> Delete</button>
             </div>
             <div id="keys-list"></div>
         </div>
@@ -609,10 +611,10 @@
         </div>
         
         <!-- Global FABs -->
-        <button id="fab-bulk-keys" class="fab-btn" onclick="openBulkKeyModal()" style="display: none; bottom: calc(var(--nav-height) + 90px);"><i class="fas fa-layer-group"></i></button>
+        <button id="fab-bulk-keys" class="fab-btn" onclick="openBulkKeyModal()" style="display: none; bottom: calc(var(--nav-height) + 75px);"><i class="fas fa-layer-group"></i></button>
         <button id="fab-keys" class="fab-btn" onclick="openKeyModal()" style="display: none;"><i class="fas fa-plus"></i></button>
-        <button id="fab-copy-keys" class="fab-btn fab-left" onclick="copyAllKeys()" style="display: none; bottom: calc(var(--nav-height) + 90px); background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);" title="Copy All Keys"><i class="fas fa-copy"></i></button>
-        <button id="fab-devices" class="fab-btn fab-left" onclick="openBanModal()" style="background:var(--danger); box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4); display: none;" title="Block HWID"><i class="fas fa-ban"></i></button>
+        <button id="fab-copy-keys" class="fab-btn fab-left" onclick="copyAllKeys()" style="display: none; bottom: calc(var(--nav-height) + 75px); background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);" title="Copy All Keys"><i class="fas fa-copy"></i></button>
+        <button id="fab-devices" class="fab-btn fab-left" onclick="openBanModal()" style="background:var(--danger); box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4); display: none;" title="Block HWID"><i class="fas fa-ban"></i></button>
     </div>
 
     <!-- MODALS -->
@@ -1508,6 +1510,67 @@
             if(confirm(`Permanently delete license ${keyId}?`)) {
                 delete DB.keys[keyId]; syncNode(`keys/${keyId}`, null);
                 renderKeys(); showIsland("License Deleted", "success", "fa-trash");
+            }
+        }
+
+        function deleteExpiredKeys() {
+            if(!DB.keys) return;
+            let expiredKeys = [];
+            const now = Date.now();
+            
+            Object.entries(DB.keys).forEach(([keyStr, data]) => {
+                if (data.expiry_date && data.expiry_date !== "lifetime") {
+                    const expTime = new Date(data.expiry_date.replace(' ', 'T')).getTime();
+                    if (expTime < now) {
+                        expiredKeys.push(keyStr);
+                    }
+                }
+            });
+
+            if (expiredKeys.length > 0) {
+                if (confirm(`Are you sure you want to delete ${expiredKeys.length} expired keys?`)) {
+                    expiredKeys.forEach(keyStr => {
+                        delete DB.keys[keyStr];
+                        syncNode(`keys/${keyStr}`, null);
+                    });
+                    renderKeys();
+                    showIsland(`Deleted ${expiredKeys.length} Expired Keys`, "success", "fa-trash");
+                }
+            } else {
+                showIsland("No expired keys found", "error", "fa-info-circle");
+            }
+        }
+
+        function deleteUnusedKeys() {
+            if(!DB.keys) return;
+            let unusedKeys = [];
+            
+            Object.entries(DB.keys).forEach(([keyStr, data]) => {
+                let hasRealDevice = false;
+                if (data.devices) {
+                    for (const hwid in data.devices) {
+                        if (hwid !== "PLACEHOLDER") {
+                            hasRealDevice = true;
+                            break;
+                        }
+                    }
+                }
+                if (!hasRealDevice) {
+                    unusedKeys.push(keyStr);
+                }
+            });
+
+            if (unusedKeys.length > 0) {
+                if (confirm(`Are you sure you want to delete ${unusedKeys.length} unused keys?`)) {
+                    unusedKeys.forEach(keyStr => {
+                        delete DB.keys[keyStr];
+                        syncNode(`keys/${keyStr}`, null);
+                    });
+                    renderKeys();
+                    showIsland(`Deleted ${unusedKeys.length} Unused Keys`, "success", "fa-trash");
+                }
+            } else {
+                showIsland("No unused keys found", "error", "fa-info-circle");
             }
         }
 
