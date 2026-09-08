@@ -2137,6 +2137,7 @@
             }
             
             // Preserve existing created_at if editing, otherwise use current time
+            if (!App.data.keys) App.data.keys = {};
             const existingData = App.data.keys[keyStr] || {};
             const createdAt = existingData.created_at || Date.now();
 
