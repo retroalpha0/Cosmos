@@ -2144,9 +2144,11 @@
             const payload = {
                 used: status === 'Active',
                 banned: status === 'Banned',
+                daysbind: existingData.daysbind || false,
+                available_days: existingData.available_days || 0,
                 crash: status === 'Crash',
                 max_devices: parseInt(document.getElementById('mk-max').value) || 3,
-                devices: existingData.devices || { "PLACEHOLDER": true },
+                devices: existingData.devices || {},
                 expiry_date: expiry,
                 notes: "",
                 created_at: createdAt
@@ -2225,9 +2227,11 @@
                 const payload = {
                     used: false,
                     banned: false,
+                    daysbind: false,
+                    available_days: 0,
                     crash: false,
                     max_devices: maxDevices,
-                    devices: { "PLACEHOLDER": true },
+                    devices: {},
                     expiry_date: expiry,
                     notes: "",
                     created_at: Date.now()

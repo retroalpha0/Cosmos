@@ -1430,8 +1430,10 @@
                 
                 const newKey = { 
                     banned: false, 
+                    daysbind: false,
+                    available_days: 0,
                     max_devices: maxDevices,
-                    devices: { "PLACEHOLDER": true },
+                    devices: {},
                     crash: false,
                     created_at: Date.now(),
                     expiry_date: expDate,
@@ -1491,6 +1493,8 @@
                 if(DB.keys[keyId]) return showIsland("Key already exists!", "error");
                 const newKey = { 
                     banned: false, 
+                    daysbind: false,
+                    available_days: 0,
                     max_devices: maxDevices,
                     devices: {},
                     crash: isCrash,
