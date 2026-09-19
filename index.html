@@ -794,32 +794,27 @@
         let DB_SECRET = "";
         let DB = {
             system: {
-                version: "1.0",
+                remote_kill: false,
+                crash: false,
+                random_crash: false,
                 signature_verification: false,
                 valid_signatures: [
                     "PASTE_YOUR_SHA256_HASH_HERE"
                 ],
-                maintenance: false,
-                maintenance_url: "https://t.me/retroalpha",
                 update_required: false,
                 update_url: "https://t.me/retroalpha",
-                admin_url: "tg://resolve?domain=retroalpha",
-                remote_kill: false,
-                random_crash_mode: false,
-                random_crash_chance: 5,
-                broadcast_enabled: false,
-                broadcast_title: "ANNOUNCEMENT",
-                broadcast_msg: "System operational",
+                maintenance: false,
+                maintenance_url: "https://t.me/retroalpha",
+                admin_url: "https://t.me/retroalpha",
                 ui: {
                     title: "Welcome Back",
-                    subtitle: "Premium Key",
+                    subtitle: "Premium License Key",
                     btn_text: "SIGN IN",
-                    hint: "Enter Premium Key",
+                    hint: "Enter License Key",
                     bg_urls: [
-                        "https://example.com/bg1.jpg",
-                        "https://example.com/bg2.jpg"
+                        "https://example.com/bg1.jpg"
                     ],
-                    bg_url: "https://example.com/wallpaper.jpg"
+                    bg_url: ""
                 },
                 messages: {
                     success: "Access Granted",
@@ -828,22 +823,27 @@
                     expired: "Subscription Expired",
                     mismatch: "Key bound to other devices",
                     max_devices_reached: "Max devices limit reached",
-                    maintenance: "Server Maintenance Active"
+                    maintenance: "Server Maintenance Active",
+                    offline: "Connection Failed"
                 }
             },
             keys: {
-                "SAMPLE-VIP-KEY-1001": {
-                    banned: false,
-                    expiry_date: "lifetime",
+                "NEW-30-DAY-KEY": {
                     used: false,
+                    banned: false,
+                    daysbind: true,
+                    available_days: 30,
+                    expiry_date: "",
                     max_devices: 1,
                     crash: false,
                     devices: {}
                 },
-                "SAMPLE-TRIAL-KEY-2002": {
-                    banned: false,
-                    expiry_date: "2026-12-31 23:59:59",
+                "STATIC-VIP-KEY": {
                     used: false,
+                    banned: false,
+                    daysbind: false,
+                    available_days: 0,
+                    expiry_date: "2028-12-31 23:59:59",
                     max_devices: 2,
                     crash: false,
                     devices: {}
@@ -1267,7 +1267,7 @@
             if(window.currentSignatures.length === 0) window.currentSignatures = [""];
             renderSignatures();
             
-            setToggle('tog-crash', sys.random_crash_mode === true);
+            setToggle('tog-crash', sys.random_crash === true);
             document.getElementById('sys-crash-chance').value = sys.random_crash_chance || sec.random_crash_chance || 0;
         }
 
@@ -1299,37 +1299,33 @@
             const crashChance = parseInt(document.getElementById('sys-crash-chance').value) || 0;
 
             const newSys = {
-                admin_url: document.getElementById('sys-admin-url').value,
-                broadcast_enabled: getToggle('tog-broadcast'),
-                broadcast_msg: document.getElementById('sys-bc-msg').value,
-                broadcast_title: document.getElementById('sys-bc-title').value,
-                maintenance: getToggle('tog-maint'),
-                maintenance_url: document.getElementById('sys-maint-url').value,
-                random_crash_chance: crashChance,
-                random_crash_mode: getToggle('tog-crash'),
                 remote_kill: getToggle('tog-kill'),
+                crash: false,
+                random_crash: getToggle('tog-crash'),
                 signature_verification: getToggle('tog-sig'),
-                telemetry: getToggle('tog-telemetry'),
+                valid_signatures: arrSigs,
                 update_required: getToggle('tog-update'),
                 update_url: document.getElementById('sys-update-url').value,
-                valid_signatures: arrSigs,
-                version: document.getElementById('sys-version').value,
+                maintenance: getToggle('tog-maint'),
+                maintenance_url: document.getElementById('sys-maint-url').value,
+                admin_url: document.getElementById('sys-admin-url').value,
                 ui: {
-                    bg_url: document.getElementById('sys-ui-bg').value,
-                    bg_urls: arrBg,
+                    title: document.getElementById('sys-ui-title').value,
+                    subtitle: document.getElementById('sys-ui-subtitle').value,
                     btn_text: document.getElementById('sys-ui-btn').value,
                     hint: document.getElementById('sys-ui-hint').value,
-                    subtitle: document.getElementById('sys-ui-subtitle').value,
-                    title: document.getElementById('sys-ui-title').value
+                    bg_url: document.getElementById('sys-ui-bg').value,
+                    bg_urls: arrBg
                 },
                 messages: {
+                    success: document.getElementById('sys-msg-success').value,
+                    fail: document.getElementById('sys-msg-fail').value,
                     banned: document.getElementById('sys-msg-banned').value,
                     expired: document.getElementById('sys-msg-expired').value,
-                    fail: document.getElementById('sys-msg-fail').value,
-                    maintenance: document.getElementById('sys-msg-maint').value,
                     mismatch: document.getElementById('sys-msg-mismatch').value,
                     max_devices_reached: document.getElementById('sys-msg-max-devices').value,
-                    success: document.getElementById('sys-msg-success').value
+                    maintenance: document.getElementById('sys-msg-maint').value,
+                    offline: "Connection Failed"
                 }
             };
             

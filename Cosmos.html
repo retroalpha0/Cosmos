@@ -1203,7 +1203,7 @@
             
             document.getElementById('sec-telemetry').addEventListener('change', e => patchFirebase('dp_dialog_controller/system', { telemetry: e.target.checked }));
             
-            document.getElementById('sys-random-crash').addEventListener('change', e => patchFirebase('dp_dialog_controller/system', { random_crash_mode: e.target.checked }));
+            document.getElementById('sys-random-crash').addEventListener('change', e => patchFirebase('dp_dialog_controller/system', { random_crash: e.target.checked }));
             
                         ['sys-crash-chance'].forEach(f => {
                 const el = document.getElementById(f);
@@ -1403,32 +1403,27 @@
             if(!sys.ui) {
                 // Seed default data
                 const defSys = {
-                    version: "1.0",
+                    remote_kill: false,
+                    crash: false,
+                    random_crash: false,
                     signature_verification: false,
                     valid_signatures: [
                         "PASTE_YOUR_SHA256_HASH_HERE"
                     ],
-                    maintenance: false,
-                    maintenance_url: "https://t.me/retroalpha",
                     update_required: false,
                     update_url: "https://t.me/retroalpha",
-                    admin_url: "tg://resolve?domain=retroalpha",
-                    remote_kill: false,
-                    random_crash_mode: false,
-                    random_crash_chance: 5,
-                    broadcast_enabled: false,
-                    broadcast_title: "ANNOUNCEMENT",
-                    broadcast_msg: "System operational",
+                    maintenance: false,
+                    maintenance_url: "https://t.me/retroalpha",
+                    admin_url: "https://t.me/retroalpha",
                     ui: {
                         title: "Welcome Back",
-                        subtitle: "Premium Key",
+                        subtitle: "Premium License Key",
                         btn_text: "SIGN IN",
-                        hint: "Enter Premium Key",
+                        hint: "Enter License Key",
                         bg_urls: [
-                            "https://example.com/bg1.jpg",
-                            "https://example.com/bg2.jpg"
+                            "https://example.com/bg1.jpg"
                         ],
-                        bg_url: "https://example.com/wallpaper.jpg"
+                        bg_url: ""
                     },
                     messages: {
                         success: "Access Granted",
@@ -1437,7 +1432,8 @@
                         expired: "Subscription Expired",
                         mismatch: "Key bound to other devices",
                         max_devices_reached: "Max devices limit reached",
-                        maintenance: "Server Maintenance Active"
+                        maintenance: "Server Maintenance Active",
+                        offline: "Connection Failed"
                     }
                 };
                 await putFirebase('dp_dialog_controller/system', defSys); App.data.system = defSys;
@@ -1449,18 +1445,22 @@
             let keys = await fetchFirebase('dp_dialog_controller/keys');
             if(!keys) {
                 keys = {
-                    "SAMPLE-VIP-KEY-1001": {
+                    "NEW-30-DAY-KEY": {
                         "used": false,
                         "banned": false,
-                        "expiry_date": "lifetime",
+                        "daysbind": true,
+                        "available_days": 30,
+                        "expiry_date": "",
                         "max_devices": 1,
                         "crash": false,
                         "devices": {}
                     },
-                    "SAMPLE-TRIAL-KEY-2002": {
+                    "STATIC-VIP-KEY": {
                         "used": false,
                         "banned": false,
-                        "expiry_date": "2026-12-31 23:59:59",
+                        "daysbind": false,
+                        "available_days": 0,
+                        "expiry_date": "2028-12-31 23:59:59",
                         "max_devices": 2,
                         "crash": false,
                         "devices": {}
@@ -1639,7 +1639,7 @@
             setInput('sys-broadcast-title', App.data.system.broadcast_title || '');
             setInput('sys-broadcast-msg', App.data.system.broadcast_msg || '');
 
-            document.getElementById('sys-random-crash').checked = App.data.system.random_crash_mode || false;
+            document.getElementById('sys-random-crash').checked = App.data.system.random_crash || false;
             setInput('sys-crash-chance', App.data.system.random_crash_chance || 5);
             
             renderSignatures();
