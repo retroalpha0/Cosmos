@@ -640,7 +640,23 @@
                 <input type="text" id="mod-bulk-key-prefix" placeholder="e.g. DP-" value="DP-">
             </div>
 
-            <div class="input-group">
+            <div class="input-row" style="margin-bottom: 12px;">
+                <div class="toggle-wrapper" id="mod-bulk-tog-daysbind" onclick="toggleDaysBind(this, 'bulk')" style="flex:1; padding: 10px; margin-bottom:0;">
+                    <div style="font-size:0.75rem; font-weight:800;">Days Bind</div><div class="toggle-switch" style="transform:scale(0.8);"></div>
+                </div>
+            </div>
+
+            <div class="input-group" id="bulk-daysbind-group" style="display: none;">
+                <label>Available Days</label>
+                <select id="mod-bulk-key-days" style="width: 100%; padding: 10px; background: var(--bg-input); color: white; border: 1px solid var(--border-soft); border-radius: 8px; outline: none;">
+                    <option value="10">10 Days</option>
+                    <option value="15">15 Days</option>
+                    <option value="20">20 Days</option>
+                    <option value="30">30 Days</option>
+                </select>
+            </div>
+
+            <div class="input-group" id="bulk-expiry-group">
                 <label>Expiry Date</label>
                 <input type="date" id="mod-bulk-key-date" placeholder="2026-12-31">
                 <div class="sys-tabs" style="margin: 12px 0 0 0; padding: 6px; gap: 4px;">
@@ -683,7 +699,23 @@
                 <input type="number" id="mod-key-max" value="1" min="1">
             </div>
 
-            <div class="input-group">
+            <div class="input-row" style="margin-bottom: 12px;">
+                <div class="toggle-wrapper" id="mod-key-tog-daysbind" onclick="toggleDaysBind(this, 'single')" style="flex:1; padding: 10px; margin-bottom:0;">
+                    <div style="font-size:0.75rem; font-weight:800;">Days Bind</div><div class="toggle-switch" style="transform:scale(0.8);"></div>
+                </div>
+            </div>
+
+            <div class="input-group" id="single-daysbind-group" style="display: none;">
+                <label>Available Days</label>
+                <select id="mod-key-days" style="width: 100%; padding: 10px; background: var(--bg-input); color: white; border: 1px solid var(--border-soft); border-radius: 8px; outline: none;">
+                    <option value="10">10 Days</option>
+                    <option value="15">15 Days</option>
+                    <option value="20">20 Days</option>
+                    <option value="30">30 Days</option>
+                </select>
+            </div>
+
+            <div class="input-group" id="single-expiry-group">
                 <label>Expiry Date</label>
                 <input type="date" id="mod-key-date" placeholder="2026-12-31">
                 <div class="sys-tabs" style="margin: 12px 0 0 0; padding: 6px; gap: 4px;">
@@ -1209,6 +1241,12 @@
         }
 
         function toggleSwitch(element) { element.classList.toggle('active'); }
+        function toggleDaysBind(el, prefix) {
+            el.classList.toggle('active');
+            const isActive = el.classList.contains('active');
+            document.getElementById(prefix + '-daysbind-group').style.display = isActive ? 'block' : 'none';
+            document.getElementById(prefix + '-expiry-group').style.display = isActive ? 'none' : 'block';
+        }
         function setToggle(id, state) { const el = document.getElementById(id); if(state) el.classList.add('active'); else el.classList.remove('active'); }
         function getToggle(id) { return document.getElementById(id).classList.contains('active'); }
 
@@ -1352,6 +1390,8 @@
             
             setToggle('mod-tog-used', false);
             setToggle('mod-tog-crash', false);
+            const daysBindToggle = document.getElementById('mod-key-tog-daysbind');
+            if (daysBindToggle.classList.contains('active')) toggleDaysBind(daysBindToggle, 'single');
             document.getElementById('modal-key-btn-text').innerText = "Generate Key";
             document.getElementById('key-modal').classList.add('active');
         }
@@ -1368,6 +1408,16 @@
             document.getElementById('mod-key-notes').value = data.notes || "";
             setToggle('mod-tog-used', data.used === true);
             setToggle('mod-tog-crash', data.crash === true);
+            
+            const daysBindToggle = document.getElementById('mod-key-tog-daysbind');
+            const isDaysBindActive = daysBindToggle.classList.contains('active');
+            if (data.daysbind && !isDaysBindActive) {
+                toggleDaysBind(daysBindToggle, 'single');
+                document.getElementById('mod-key-days').value = data.available_days || 10;
+            } else if (!data.daysbind && isDaysBindActive) {
+                toggleDaysBind(daysBindToggle, 'single');
+            }
+
             document.getElementById('modal-key-btn-text').innerText = "Update Key";
             document.getElementById('key-modal').classList.add('active');
         }
@@ -1381,6 +1431,9 @@
             const now = new Date();
             const y = now.getFullYear(); const m = String(now.getMonth()+1).padStart(2,'0'); const d = String(now.getDate()).padStart(2,'0');
             document.getElementById('mod-bulk-key-date').value = `${y}-${m}-${d}`;
+            
+            const bulkDaysBindToggle = document.getElementById('mod-bulk-tog-daysbind');
+            if (bulkDaysBindToggle.classList.contains('active')) toggleDaysBind(bulkDaysBindToggle, 'bulk');
             
             document.getElementById('mod-bulk-key-notes').value = '';
             document.querySelectorAll('.time-tab-bulk').forEach(t => t.classList.remove('active'));
@@ -1404,12 +1457,21 @@
             const qty = parseInt(document.getElementById('mod-bulk-key-qty').value) || 0;
             const prefix = document.getElementById('mod-bulk-key-prefix').value.trim();
             const maxDevices = parseInt(document.getElementById('mod-bulk-key-max').value) || 1;
-            const rawDate = document.getElementById('mod-bulk-key-date').value;
-            const expDate = rawDate ? rawDate + "T23:59:59" : "";
+            const isDaysBind = document.getElementById('mod-bulk-tog-daysbind').classList.contains('active');
+            
+            let expDate = "";
+            let availableDays = 0;
+            if (isDaysBind) {
+                availableDays = parseInt(document.getElementById('mod-bulk-key-days').value) || 10;
+            } else {
+                const rawDate = document.getElementById('mod-bulk-key-date').value;
+                expDate = rawDate ? rawDate + "T23:59:59" : "";
+                if(!expDate) return showIsland("Enter Expiry Date", "error");
+            }
+            
             const notes = document.getElementById('mod-bulk-key-notes').value.trim();
 
             if(qty < 1 || qty > 100) return showIsland("Quantity must be between 1 and 100", "error");
-            if(!expDate) return showIsland("Enter Expiry Date", "error");
 
             const genBtn = document.getElementById('btn-bulk-gen');
             const copyBtn = document.getElementById('btn-bulk-copy');
@@ -1430,8 +1492,8 @@
                 
                 const newKey = { 
                     banned: false, 
-                    daysbind: false,
-                    available_days: 0,
+                    daysbind: isDaysBind,
+                    available_days: availableDays,
                     max_devices: maxDevices,
                     devices: {},
                     crash: false,
@@ -1472,15 +1534,25 @@
         async function saveKey() {
             const keyId = document.getElementById('mod-key-id').value.trim();
             const maxDevices = parseInt(document.getElementById('mod-key-max').value) || 1;
-            const rawDate = document.getElementById('mod-key-date').value;
-            const expDate = rawDate ? rawDate + "T23:59:59" : "";
+            const isDaysBind = document.getElementById('mod-key-tog-daysbind').classList.contains('active');
+            let expDate = "";
+            let availableDays = 0;
+            if (isDaysBind) {
+                availableDays = parseInt(document.getElementById('mod-key-days').value) || 10;
+            } else {
+                const rawDate = document.getElementById('mod-key-date').value;
+                expDate = rawDate ? rawDate + "T23:59:59" : "";
+                if(!keyId || !expDate) return showIsland("Enter Key & Expiry", "error");
+            }
+            if (!keyId) return showIsland("Enter Key", "error");
+
             const notes = document.getElementById('mod-key-notes').value.trim();
             const isUsed = getToggle('mod-tog-used');
             const isCrash = getToggle('mod-tog-crash');
 
-            if(!keyId || !expDate) return showIsland("Enter Key & Expiry", "error");
-
             if(currentEditKey && DB.keys[currentEditKey]) {
+                DB.keys[currentEditKey].daysbind = isDaysBind;
+                DB.keys[currentEditKey].available_days = availableDays;
                 DB.keys[currentEditKey].expiry_date = expDate;
                 DB.keys[currentEditKey].notes = notes;
                 DB.keys[currentEditKey].used = isUsed;
@@ -1493,8 +1565,8 @@
                 if(DB.keys[keyId]) return showIsland("Key already exists!", "error");
                 const newKey = { 
                     banned: false, 
-                    daysbind: false,
-                    available_days: 0,
+                    daysbind: isDaysBind,
+                    available_days: availableDays,
                     max_devices: maxDevices,
                     devices: {},
                     crash: isCrash,

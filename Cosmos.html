@@ -914,14 +914,27 @@
                     <span class="material-symbols-rounded text-sm">casino</span> GENERATE RANDOM
                 </button>
                 
+                <label class="flex items-center gap-2 text-sm text-zinc-300 mt-2 mb-1">
+                    <input type="checkbox" id="mk-daysbind" class="w-4 h-4 rounded bg-zinc-800 border-zinc-700 text-accent" onchange="toggleCosmosDaysBind('mk')">
+                    <span class="font-bold">Days Bind</span>
+                </label>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="text-xs text-zinc-400 ml-2 font-bold uppercase tracking-wider">Max Devices</label>
                         <input type="number" id="mk-max" class="cyber-input py-2.5 mt-1" value="3" min="1">
                     </div>
-                    <div>
+                    <div id="mk-expiry-group">
                         <label class="text-xs text-zinc-400 ml-2 font-bold uppercase tracking-wider">Expiry Time</label>
                         <input type="datetime-local" id="mk-expiry" class="cyber-input py-2.5 mt-1">
+                    </div>
+                    <div id="mk-daysbind-group" class="hidden">
+                        <label class="text-xs text-zinc-400 ml-2 font-bold uppercase tracking-wider">Available Days</label>
+                        <select id="mk-days" class="cyber-input py-2.5 mt-1 appearance-none bg-zinc-900 border-zinc-700 text-white rounded-lg">
+                            <option value="10">10 Days</option>
+                            <option value="15">15 Days</option>
+                            <option value="20">20 Days</option>
+                            <option value="30">30 Days</option>
+                        </select>
                     </div>
                 </div>
                 
@@ -937,7 +950,7 @@
                 
 
                 
-                <div class="flex gap-2">
+                <div class="flex gap-2" id="mk-time-tabs">
                     <button class="flex-1 border border-zinc-700 bg-black/40 active:bg-zinc-800 rounded-lg py-2 text-xs font-bold" onclick="addDays(8)">+8D</button>
                     <button class="flex-1 border border-zinc-700 bg-black/40 active:bg-zinc-800 rounded-lg py-2 text-xs font-bold" onclick="addDays(16)">+16D</button>
                     <button class="flex-1 border border-zinc-700 bg-black/40 active:bg-zinc-800 rounded-lg py-2 text-xs font-bold" onclick="addDays(30)">+30D</button>
@@ -976,14 +989,30 @@
                         <label class="text-xs text-zinc-400 ml-2 font-bold uppercase tracking-wider">Prefix</label>
                         <input type="text" id="mk-bulk-prefix" class="cyber-input py-2.5 mt-1 text-sm" value="DP-">
                     </div>
+                    <div class="col-span-2">
+                        <label class="flex items-center gap-2 text-sm text-zinc-300 mt-2 mb-1">
+                            <input type="checkbox" id="mk-bulk-daysbind" class="w-4 h-4 rounded bg-zinc-800 border-zinc-700 text-accent" onchange="toggleCosmosDaysBind('mk-bulk')">
+                            <span class="font-bold">Days Bind</span>
+                        </label>
+                    </div>
                 </div>
                 
-                <div>
+                <div id="mk-bulk-expiry-group">
                     <label class="text-xs text-zinc-400 ml-2 font-bold uppercase tracking-wider">Expiry Time</label>
                     <input type="datetime-local" id="mk-bulk-expiry" class="cyber-input py-2.5 mt-1">
                 </div>
+
+                <div id="mk-bulk-daysbind-group" class="hidden">
+                    <label class="text-xs text-zinc-400 ml-2 font-bold uppercase tracking-wider">Available Days</label>
+                    <select id="mk-bulk-days" class="cyber-input py-2.5 mt-1 appearance-none bg-zinc-900 border-zinc-700 text-white rounded-lg">
+                        <option value="10">10 Days</option>
+                        <option value="15">15 Days</option>
+                        <option value="20">20 Days</option>
+                        <option value="30">30 Days</option>
+                    </select>
+                </div>
                 
-                <div class="flex gap-2">
+                <div class="flex gap-2" id="mk-bulk-time-tabs">
                     <button class="flex-1 border border-zinc-700 bg-black/40 active:bg-zinc-800 rounded-lg py-2 text-xs font-bold" onclick="addBulkDays(8)">+8D</button>
                     <button class="flex-1 border border-zinc-700 bg-black/40 active:bg-zinc-800 rounded-lg py-2 text-xs font-bold" onclick="addBulkDays(16)">+16D</button>
                     <button class="flex-1 border border-zinc-700 bg-black/40 active:bg-zinc-800 rounded-lg py-2 text-xs font-bold" onclick="addBulkDays(30)">+30D</button>
@@ -2101,11 +2130,33 @@
             document.getElementById('mk-status').value = stat;
             document.getElementById('mk-max').value = data.max_devices || 3;
             
+            const dbindCheck = document.getElementById('mk-daysbind');
+            dbindCheck.checked = !!data.daysbind;
+            document.getElementById('mk-days').value = data.available_days || 10;
+            window.toggleCosmosDaysBind('mk');
+            
             const modal = document.getElementById('m-key');
             modal.classList.remove('section-hidden');
             setTimeout(() => {
                 document.getElementById('m-key-box').style.transform = 'scale(1)';
             }, 10);
+        };
+
+        window.toggleCosmosDaysBind = function(prefix) {
+            const isDaysBind = document.getElementById(prefix + '-daysbind').checked;
+            const daysGroup = document.getElementById(prefix + '-daysbind-group');
+            const expiryGroup = document.getElementById(prefix + '-expiry-group');
+            const timeTabs = document.getElementById(prefix + '-time-tabs');
+            
+            if (isDaysBind) {
+                daysGroup.classList.remove('hidden');
+                expiryGroup.classList.add('hidden');
+                if (timeTabs) timeTabs.classList.add('hidden');
+            } else {
+                daysGroup.classList.add('hidden');
+                expiryGroup.classList.remove('hidden');
+                if (timeTabs) timeTabs.classList.remove('hidden');
+            }
         };
 
         window.genRandomKey = function() {
@@ -2129,11 +2180,18 @@
             if(!keyStr) return showToast('Key string required', 'error');
             
             const status = document.getElementById('mk-status').value;
-            const expiryVal = document.getElementById('mk-expiry').value;
-            
+            const isDaysBind = document.getElementById('mk-daysbind').checked;
+            let availableDays = 0;
             let expiry = "lifetime";
-            if(expiryVal) {
-                expiry = expiryVal.replace('T', ' ') + ':00';
+            
+            if (isDaysBind) {
+                availableDays = parseInt(document.getElementById('mk-days').value) || 10;
+                expiry = "";
+            } else {
+                const expiryVal = document.getElementById('mk-expiry').value;
+                if(expiryVal) {
+                    expiry = expiryVal.replace('T', ' ') + ':00';
+                }
             }
             
             // Preserve existing created_at if editing, otherwise use current time
@@ -2144,8 +2202,8 @@
             const payload = {
                 used: status === 'Active',
                 banned: status === 'Banned',
-                daysbind: existingData.daysbind || false,
-                available_days: existingData.available_days || 0,
+                daysbind: isDaysBind,
+                available_days: availableDays,
                 crash: status === 'Crash',
                 max_devices: parseInt(document.getElementById('mk-max').value) || 3,
                 devices: existingData.devices || {},
@@ -2175,6 +2233,11 @@
             const localISOTime = (new Date(d - tzOffset)).toISOString().slice(0,16);
             document.getElementById('mk-bulk-expiry').value = localISOTime;
             
+            const dbindCheck = document.getElementById('mk-bulk-daysbind');
+            dbindCheck.checked = false;
+            document.getElementById('mk-bulk-days').value = "10";
+            window.toggleCosmosDaysBind('mk-bulk');
+            
             const modal = document.getElementById('m-bulk-key');
             modal.classList.remove('section-hidden');
             setTimeout(() => {
@@ -2202,9 +2265,18 @@
             
             if(qty < 1 || qty > 100) return showToast("Quantity must be between 1 and 100", "error");
             
+            const isDaysBind = document.getElementById('mk-bulk-daysbind').checked;
+            let availableDays = 0;
             let expiry = "lifetime";
-            if(expiryVal) {
-                expiry = expiryVal.replace('T', ' ') + ':00';
+            
+            if (isDaysBind) {
+                availableDays = parseInt(document.getElementById('mk-bulk-days').value) || 10;
+                expiry = "";
+            } else {
+                const expiryVal = document.getElementById('mk-bulk-expiry').value;
+                if(expiryVal) {
+                    expiry = expiryVal.replace('T', ' ') + ':00';
+                }
             }
             
             const genBtn = document.getElementById('btn-bulk-gen');
@@ -2227,8 +2299,8 @@
                 const payload = {
                     used: false,
                     banned: false,
-                    daysbind: false,
-                    available_days: 0,
+                    daysbind: isDaysBind,
+                    available_days: availableDays,
                     crash: false,
                     max_devices: maxDevices,
                     devices: {},
