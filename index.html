@@ -1338,15 +1338,21 @@
 
             const newSys = {
                 remote_kill: getToggle('tog-kill'),
+                telemetry: getToggle('tog-telemetry'),
                 crash: false,
                 random_crash: getToggle('tog-crash'),
+                random_crash_chance: crashChance,
                 signature_verification: getToggle('tog-sig'),
                 valid_signatures: arrSigs,
                 update_required: getToggle('tog-update'),
+                version: document.getElementById('sys-version').value,
                 update_url: document.getElementById('sys-update-url').value,
                 maintenance: getToggle('tog-maint'),
                 maintenance_url: document.getElementById('sys-maint-url').value,
                 admin_url: document.getElementById('sys-admin-url').value,
+                broadcast_enabled: getToggle('tog-broadcast'),
+                broadcast_title: document.getElementById('sys-bc-title').value,
+                broadcast_msg: document.getElementById('sys-bc-msg').value,
                 ui: {
                     title: document.getElementById('sys-ui-title').value,
                     subtitle: document.getElementById('sys-ui-subtitle').value,
