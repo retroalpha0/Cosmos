@@ -190,6 +190,42 @@
         .stat-value { font-size: 1.6rem; font-weight: 900; color: #fff; font-family: var(--font-code); text-shadow: 0 0 10px rgba(255,255,255,0.3); }
         .stat-label { font-size: 0.65rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; text-align: center;}
 
+        /* BULK KEY SECTION */
+        .bulk-section-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px 10px; }
+        .bulk-section-title { font-size: 0.8rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 1.5px; text-shadow: 0 0 10px var(--purple-shine); display: flex; align-items: center; gap: 8px; }
+        .bulk-section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(168,85,247,0.4), transparent); margin: 0 20px 14px; }
+
+        .bulk-cards-grid { display: flex; gap: 12px; padding: 0 20px 4px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+        .bulk-cards-grid::-webkit-scrollbar { display: none; }
+
+        .bulk-session-card { flex: 0 0 calc(50% - 6px); scroll-snap-align: start; background: rgba(168,85,247,0.06); border: 1px solid rgba(168,85,247,0.25); border-radius: 18px; padding: 16px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 0 var(--purple-shine); }
+        .bulk-session-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg, var(--primary), var(--primary-dark)); border-radius: 18px 18px 0 0; }
+        .bulk-session-card:active { transform: scale(0.96); }
+        @media (hover: hover) { .bulk-session-card:hover { transform: translateY(-4px); border-color: var(--primary); box-shadow: 0 10px 30px rgba(168,85,247,0.2); } }
+        .bulk-card-name { font-size: 0.9rem; font-weight: 800; color: #fff; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .bulk-card-count { font-family: var(--font-code); font-size: 1.7rem; font-weight: 900; color: var(--primary); text-shadow: 0 0 12px var(--purple-shine); line-height: 1; }
+        .bulk-card-sub { font-size: 0.62rem; color: var(--text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+        .bulk-card-date { font-size: 0.6rem; color: rgba(255,255,255,0.3); margin-top: 8px; }
+
+        /* Bulk card expanded panel */
+        .bulk-card-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 500; display: none; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 0; }
+        .bulk-card-overlay.active { display: flex; animation: liquidFade 0.3s ease; }
+        .bulk-card-panel { width: 100%; max-width: 600px; background: rgba(12,12,18,0.95); border-radius: 28px 28px 0 0; border-top: 1px solid rgba(168,85,247,0.4); box-shadow: 0 -15px 50px rgba(0,0,0,0.8), 0 0 40px rgba(168,85,247,0.1); max-height: 88vh; overflow-y: auto; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1); }
+        .bulk-card-overlay.active .bulk-card-panel { transform: translateY(0); }
+        .bulk-panel-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: 16px auto 0; }
+        .bulk-panel-header { padding: 16px 20px 0; display: flex; justify-content: space-between; align-items: center; }
+        .bulk-panel-title { font-size: 1.2rem; font-weight: 800; color: #fff; text-shadow: 0 0 10px var(--purple-shine); }
+
+        /* Mini stat grid inside bulk card */
+        .bulk-mini-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 14px 20px; }
+        .bulk-mini-stat { background: rgba(18,18,22,0.7); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .bulk-mini-val { font-size: 1.4rem; font-weight: 900; font-family: var(--font-code); color: #fff; }
+        .bulk-mini-lbl { font-size: 0.55rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; text-align: center; }
+
+        /* Keys section label in keys view */
+        .keys-list-header { padding: 10px 20px 8px; display: flex; align-items: center; justify-content: space-between; }
+        .keys-list-title { font-size: 0.8rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; display: flex; align-items: center; gap: 8px; }
+
         /* ANIMATIONS */
         @keyframes pulse-danger {
             0% { box-shadow: 0 4px 15px rgba(0,0,0,0.5), 0 0 0 0 rgba(239, 68, 68, 0.4); }
@@ -404,15 +440,36 @@
 
         <!-- KEYS VIEW -->
         <div id="view-keys" class="view">
-            <div class="search-bar-container">
+
+            <!-- ══════════ BULK KEY SECTION (TOP HALF) ══════════ -->
+            <div id="bulk-section">
+                <div class="bulk-section-header">
+                    <div class="bulk-section-title"><i class="fas fa-layer-group"></i> Bulk Sessions</div>
+                    <button onclick="openBulkCardNameModal()" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none; color: #fff; font-size: 0.75rem; font-weight: 800; padding: 8px 14px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px var(--purple-shine); transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform=''" ontouchend="this.style.transform=''"><i class="fas fa-plus"></i> New</button>
+                </div>
+
+                <!-- Bulk session cards horizontal scroll -->
+                <div class="bulk-cards-grid" id="bulk-cards-grid">
+                    <!-- injected by renderBulkCards() -->
+                    <div id="bulk-cards-empty" style="width:100%; text-align:center; padding: 20px; color:rgba(255,255,255,0.25); font-size:0.8rem; font-weight:600;"><i class="fas fa-layer-group" style="display:block; font-size:2rem; margin-bottom:8px; opacity:0.3;"></i>No bulk sessions yet</div>
+                </div>
+
+                <div class="bulk-section-divider"></div>
+            </div>
+
+            <!-- ══════════ INDIVIDUAL KEYS (BOTTOM HALF) ══════════ -->
+            <div class="keys-list-header">
+                <div class="keys-list-title"><i class="fas fa-key"></i> All Keys <span id="keys-count-badge" style="background:rgba(168,85,247,0.15); color:var(--primary); border:1px solid rgba(168,85,247,0.3); font-size:0.6rem; padding:2px 8px; border-radius:20px;">0</span></div>
+                <div style="display:flex; gap:6px;">
+                    <button class="btn-icon" onclick="openKeyModal()" title="New Key" style="background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border:none; box-shadow:0 4px 12px var(--purple-shine);"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+
+            <div class="search-bar-container" style="top: 52px;">
                 <input type="text" class="search-bar" id="search-keys" placeholder="Search Keys or HWID..." oninput="debouncedRenderKeys()">
             </div>
-            <div style="display: flex; gap: 10px; margin: 0 20px 15px 20px;">
-                <button class="btn btn-primary" onclick="openKeyModal()" style="flex: 1;"><i class="fas fa-plus"></i> NEW KEY</button>
-                <button class="btn btn-primary" onclick="openBulkKeyModal()" style="flex: 1;">BULK GEN</button>
-            </div>
             <!-- Bulk actions for keys -->
-            <div id="keys-bulk-actions" style="display: flex; gap: 8px; margin: 0 20px 15px 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">
+            <div id="keys-bulk-actions" style="display: flex; gap: 8px; margin: 8px 20px 10px 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">
                 <button class="btn-xs" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px; font-size: 0.65rem;" onclick="toggleSelectMode()"><i class="fas fa-list-ul"></i> Select</button>
                 <button class="btn-xs" id="btn-del-expired" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px; font-size: 0.65rem;" onclick="deleteExpiredKeys()"><i class="fas fa-calendar-times"></i> Del Expired</button>
                 <button class="btn-xs" id="btn-del-unused" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px; font-size: 0.65rem;" onclick="deleteUnusedKeys()"><i class="fas fa-ghost"></i> Del Unused</button>
@@ -611,7 +668,7 @@
         </div>
         
         <!-- Global FABs -->
-        <button id="fab-bulk-keys" class="fab-btn" onclick="openBulkKeyModal()" style="display: none; bottom: calc(var(--nav-height) + 75px);"><i class="fas fa-layer-group"></i></button>
+        <button id="fab-bulk-keys" class="fab-btn" onclick="openBulkCardNameModal()" style="display: none; bottom: calc(var(--nav-height) + 75px);"><i class="fas fa-layer-group"></i></button>
         <button id="fab-keys" class="fab-btn" onclick="openKeyModal()" style="display: none;"><i class="fas fa-plus"></i></button>
         <button id="fab-copy-keys" class="fab-btn fab-left" onclick="copyAllKeys()" style="display: none; bottom: calc(var(--nav-height) + 75px); background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);" title="Copy All Keys"><i class="fas fa-copy"></i></button>
         <button id="fab-devices" class="fab-btn fab-left" onclick="openBanModal()" style="background:var(--danger); box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4); display: none;" title="Block HWID"><i class="fas fa-ban"></i></button>
@@ -619,15 +676,33 @@
 
     <!-- MODALS -->
 
+    <!-- Bulk Card Name Prompt Modal -->
+    <div class="modal-overlay" id="bulk-card-name-modal">
+        <div class="modal-card">
+            <div class="modal-handle"></div>
+            <div class="modal-title" style="color: var(--primary); text-shadow: 0 0 15px var(--purple-shine);"><i class="fas fa-layer-group" style="margin-right:8px;"></i>Name This Bulk Session</div>
+            <div style="font-size:0.8rem; color:var(--text-dim); text-align:center; margin: -10px 0 20px; line-height:1.5;">Give this batch a name so you can track it easily<br>(e.g. &quot;VIP Clients&quot;, &quot;Beta Testers&quot;)</div>
+            <div class="input-group">
+                <label>Card / Session Name</label>
+                <input type="text" id="bulk-card-name-input" placeholder="e.g. VIP Clients" maxlength="32" style="font-size:1rem; font-weight:700; text-align:center; letter-spacing:0.5px;">
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button class="btn" style="background: rgba(255,255,255,0.08); flex:1;" onclick="closeModals()">Cancel</button>
+                <button class="btn btn-primary" style="flex:2;" onclick="confirmBulkCardName()"><i class="fas fa-arrow-right"></i> Next: Configure Keys</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Add Bulk Key Modal -->
     <div class="modal-overlay" id="bulk-key-modal">
         <div class="modal-card">
             <div class="modal-handle"></div>
             <div class="modal-title" id="modal-bulk-key-title">Bulk Generate Keys</div>
-            
+            <div id="bulk-modal-card-tag" style="text-align:center; margin:-12px 0 16px; font-size:0.75rem; color:var(--primary); font-weight:800; background:rgba(168,85,247,0.1); padding:6px 14px; border-radius:20px; display:inline-block; width:100%; letter-spacing:0.5px;"></div>
+
             <div class="input-group">
                 <label>Quantity</label>
-                <input type="number" id="mod-bulk-key-qty" value="10" min="1" max="100">
+                <input type="number" id="mod-bulk-key-qty" value="10" min="1" max="500">
             </div>
 
             <div class="input-group">
@@ -673,9 +748,25 @@
 
             <div style="display: flex; gap: 12px; margin-top: 25px; flex-wrap: wrap;">
                 <button class="btn" style="background: rgba(255,255,255,0.1); flex: 1;" onclick="closeModals()">Cancel</button>
-                <button class="btn btn-primary" id="btn-bulk-copy" style="background: linear-gradient(135deg, #10b981, #059669); flex: 1;" onclick="generateBulkKeys(true)">Gen & Copy</button>
-                <button class="btn btn-primary" id="btn-bulk-gen" style="flex: 1;" onclick="generateBulkKeys(false)">Generate</button>
+                <button class="btn btn-primary" id="btn-bulk-gen" style="flex: 2;" onclick="generateBulkKeys()"><i class="fas fa-bolt"></i> Generate &amp; Copy All</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Bulk Card Detail Panel (overlay) -->
+    <div class="bulk-card-overlay" id="bulk-card-overlay" onclick="closeBulkCardPanel(event)">
+        <div class="bulk-card-panel" id="bulk-card-panel">
+            <div class="bulk-panel-handle"></div>
+            <div class="bulk-panel-header">
+                <div class="bulk-panel-title" id="bulk-panel-name"></div>
+                <button onclick="deleteBulkSession(); event.stopPropagation();" style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); color:var(--danger); width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:0.9rem; transition:0.2s;"><i class="fas fa-trash"></i></button>
+            </div>
+            <div class="bulk-mini-stats" id="bulk-panel-stats"></div>
+            <div style="padding: 0 20px 8px; display:flex; gap:10px;">
+                <button onclick="copyBulkSessionKeys(); event.stopPropagation();" style="flex:1; background:linear-gradient(135deg,#10b981,#059669); border:none; color:#fff; font-size:0.8rem; font-weight:800; padding:12px; border-radius:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; text-transform:uppercase; letter-spacing:0.5px; box-shadow:0 4px 15px rgba(16,185,129,0.3); transition:0.2s;"><i class="fas fa-copy"></i> Copy All Keys</button>
+                <button onclick="addMoreToBulkSession(); event.stopPropagation();" style="flex:1; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border:none; color:#fff; font-size:0.8rem; font-weight:800; padding:12px; border-radius:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; text-transform:uppercase; letter-spacing:0.5px; box-shadow:0 4px 15px var(--purple-shine); transition:0.2s;"><i class="fas fa-plus"></i> Add More</button>
+            </div>
+            <div id="bulk-panel-keys-list" style="padding: 6px 20px 30px; display:flex; flex-direction:column; gap:8px; max-height:45vh; overflow-y:auto;"></div>
         </div>
     </div>
 
@@ -962,7 +1053,7 @@
                         document.getElementById('login-screen').style.display = 'none';
                         document.getElementById('main-app').style.display = 'flex'; 
                         document.getElementById('bottom-nav').style.display = 'flex';
-                        loadSystem(); renderKeys(); renderDevices(); renderLogs();
+                        loadSystem(); renderKeys(); renderBulkCards(); renderDevices(); renderLogs();
                         showIsland("Loaded from Cache", "success", "fa-bolt");
                         
                         if(window.syncInterval) clearInterval(window.syncInterval);
@@ -1035,14 +1126,14 @@
                         document.getElementById('main-app').style.display = 'flex'; 
                         document.getElementById('bottom-nav').style.display = 'flex';
                         document.getElementById('main-app').style.animation = 'fadeIn 0.8s ease';
-                        loadSystem(); renderKeys(); renderDevices();
+                        loadSystem(); renderKeys(); renderBulkCards(); renderDevices();
                         showIsland("Authentication Success", "success", "fa-unlock-alt");
                     });
                 } else {
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('main-app').style.display = 'flex'; 
                     document.getElementById('bottom-nav').style.display = 'flex';
-                    loadSystem(); renderKeys(); renderDevices();
+                    loadSystem(); renderKeys(); renderBulkCards(); renderDevices();
                     showIsland("Authentication Success", "success", "fa-unlock-alt");
                 }
 
@@ -1428,11 +1519,44 @@
             document.getElementById('key-modal').classList.add('active');
         }
 
-        function openBulkKeyModal() {
+        /* ══════════════════════════════════════════
+           BULK KEY SESSION LOGIC
+        ══════════════════════════════════════════ */
+
+        let _pendingBulkCardName = '';
+        let _activeBulkSessionIdx = -1;
+
+        function getBulkSessions() {
+            try { return JSON.parse(localStorage.getItem('dp_bulk_sessions') || '[]'); }
+            catch(e) { return []; }
+        }
+        function saveBulkSessions(sessions) {
+            localStorage.setItem('dp_bulk_sessions', JSON.stringify(sessions));
+        }
+
+        function openBulkCardNameModal() {
+            document.getElementById('bulk-card-name-input').value = '';
+            document.getElementById('bulk-card-name-modal').classList.add('active');
+            setTimeout(() => document.getElementById('bulk-card-name-input').focus(), 350);
+        }
+
+        function confirmBulkCardName() {
+            const name = document.getElementById('bulk-card-name-input').value.trim();
+            if (!name) { showIsland('Enter a session name', 'error'); return; }
+            _pendingBulkCardName = name;
+            closeModals();
+            setTimeout(() => openBulkKeyModal(name), 50);
+        }
+
+        function openBulkKeyModal(cardName) {
+            if (cardName) {
+                document.getElementById('modal-bulk-key-title').innerText = 'Bulk Generate Keys';
+                document.getElementById('bulk-modal-card-tag').innerText = '🗂 ' + cardName;
+            }
             document.getElementById('bulk-key-modal').classList.add('active');
             document.getElementById('mod-bulk-key-qty').value = 10;
             document.getElementById('mod-bulk-key-prefix').value = 'DP-';
-            document.getElementById('mod-bulk-key-max').value = "1";
+            document.getElementById('mod-bulk-key-max').value = '1';
             
             const now = new Date();
             const y = now.getFullYear(); const m = String(now.getMonth()+1).padStart(2,'0'); const d = String(now.getDate()).padStart(2,'0');
@@ -1459,7 +1583,7 @@
             dateInput.value = `${y}-${m}-${d}`;
         }
 
-        async function generateBulkKeys(copyOnly) {
+        async function generateBulkKeys() {
             const qty = parseInt(document.getElementById('mod-bulk-key-qty').value) || 0;
             const prefix = document.getElementById('mod-bulk-key-prefix').value.trim();
             const maxDevices = parseInt(document.getElementById('mod-bulk-key-max').value) || 1;
@@ -1477,13 +1601,12 @@
             
             const notes = document.getElementById('mod-bulk-key-notes').value.trim();
 
-            if(qty < 1 || qty > 100) return showIsland("Quantity must be between 1 and 100", "error");
+            if(qty < 1 || qty > 500) return showIsland("Quantity must be between 1 and 500", "error");
 
             const genBtn = document.getElementById('btn-bulk-gen');
-            const copyBtn = document.getElementById('btn-bulk-copy');
-            const activeBtn = copyOnly ? copyBtn : genBtn;
-            const originalHTML = activeBtn.innerHTML;
-            activeBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
+            const originalHTML = genBtn.innerHTML;
+            genBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Generating...`;
+            genBtn.disabled = true;
 
             let generated = 0;
             let generatedKeysList = [];
@@ -1493,9 +1616,7 @@
             for(let i=0; i<qty; i++) {
                 const randomStr = Math.random().toString(36).substr(2, 8).toUpperCase();
                 const keyId = (prefix || '') + randomStr;
-                
-                if(DB.keys[keyId]) continue; // skip if collision (rare)
-                
+                if(DB.keys[keyId]) continue;
                 const newKey = { 
                     banned: false, 
                     daysbind: isDaysBind,
@@ -1516,23 +1637,197 @@
             
             try {
                 await fetch(`${DB_URL}/keys.json?auth=${DB_SECRET}`, { method: 'PATCH', body: JSON.stringify(patchData) });
-                if (copyOnly && generatedKeysList.length > 0) {
-                    const keysString = generatedKeysList.join('\n');
-                    navigator.clipboard.writeText(keysString).then(() => {
-                        showIsland(`Generated & Copied ${generated} Keys`, "success", "fa-copy");
-                    }).catch(err => {
-                        showIsland(`Generated ${generated} Keys (Copy failed)`, "success", "fa-layer-group");
-                    });
+
+                // Save to bulk session
+                const sessionName = _pendingBulkCardName || 'Bulk Session';
+                const sessions = getBulkSessions();
+
+                // Check if we're adding to an existing session ("Add More" flow)
+                if (_activeBulkSessionIdx >= 0 && sessions[_activeBulkSessionIdx]) {
+                    sessions[_activeBulkSessionIdx].keys = (sessions[_activeBulkSessionIdx].keys || []).concat(generatedKeysList);
+                    sessions[_activeBulkSessionIdx].updatedAt = Date.now();
                 } else {
-                    showIsland(`Generated ${generated} Keys`, "success", "fa-layer-group");
+                    // New session
+                    sessions.unshift({
+                        name: sessionName,
+                        keys: generatedKeysList,
+                        createdAt: Date.now(),
+                        updatedAt: Date.now()
+                    });
+                }
+                saveBulkSessions(sessions);
+                _pendingBulkCardName = '';
+                _activeBulkSessionIdx = -1;
+
+                // Auto-copy all generated keys
+                if (generatedKeysList.length > 0) {
+                    const keysString = generatedKeysList.join('\n');
+                    navigator.clipboard.writeText(keysString)
+                        .then(() => showIsland(`Generated & Copied ${generated} Keys!`, 'success', 'fa-copy'))
+                        .catch(() => showIsland(`Generated ${generated} Keys (Copy failed)`, 'success', 'fa-layer-group'));
                 }
             } catch(e) {
                 showIsland("Error generating keys", "error");
             }
             
-            activeBtn.innerHTML = originalHTML;
-            closeModals(); 
+            genBtn.innerHTML = originalHTML;
+            genBtn.disabled = false;
+            closeModals();
             renderKeys();
+            renderBulkCards();
+        }
+
+        /* ── Bulk Cards Rendering ── */
+        function renderBulkCards() {
+            const grid = document.getElementById('bulk-cards-grid');
+            const emptyEl = document.getElementById('bulk-cards-empty');
+            const sessions = getBulkSessions();
+
+            if (!grid) return;
+
+            // Remove old cards (keep empty placeholder)
+            [...grid.children].forEach(c => { if (c.id !== 'bulk-cards-empty') c.remove(); });
+
+            if (sessions.length === 0) {
+                if (emptyEl) emptyEl.style.display = 'block';
+                return;
+            }
+            if (emptyEl) emptyEl.style.display = 'none';
+
+            sessions.forEach((session, idx) => {
+                const totalKeys = (session.keys || []).length;
+                const card = document.createElement('div');
+                card.className = 'bulk-session-card animated-card';
+                card.style.animationDelay = Math.min(idx * 0.06, 0.4) + 's';
+                card.innerHTML = `
+                    <div class="bulk-card-name"><i class="fas fa-layer-group" style="color:var(--primary);margin-right:6px;font-size:0.75rem;"></i>${escHtml(session.name)}</div>
+                    <div class="bulk-card-count">${totalKeys}</div>
+                    <div class="bulk-card-sub">Total Keys</div>
+                    <div class="bulk-card-date"><i class="far fa-clock"></i> ${new Date(session.createdAt).toLocaleDateString()}</div>
+                `;
+                card.onclick = () => openBulkCardPanel(idx);
+                grid.insertBefore(card, emptyEl || null);
+            });
+        }
+
+        function escHtml(str) {
+            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        /* ── Bulk Card Panel (detail overlay) ── */
+        function openBulkCardPanel(idx) {
+            const sessions = getBulkSessions();
+            const session = sessions[idx];
+            if (!session) return;
+            _activeBulkSessionIdx = idx;
+
+            document.getElementById('bulk-panel-name').textContent = session.name;
+
+            // Compute stats from DB.keys
+            const keyIds = session.keys || [];
+            const now = Date.now();
+            let total = keyIds.length;
+            let used = 0, expired = 0, active = 0, remaining = 0;
+
+            keyIds.forEach(kid => {
+                const k = (DB.keys || {})[kid];
+                if (!k) { expired++; return; } // deleted = treat as gone
+                let isExpired = false;
+                if (k.expiry_date && k.expiry_date !== 'lifetime') {
+                    if (new Date(k.expiry_date.replace(' ', 'T')).getTime() < now) isExpired = true;
+                }
+                let isUsed = k.used === true || (k.devices && Object.keys(k.devices).some(d => d !== 'PLACEHOLDER'));
+                if (isExpired) expired++;
+                else if (isUsed) { used++; }
+                else { active++; remaining++; }
+            });
+
+            const statColors = ['var(--primary)', 'var(--success)', 'var(--warning)', 'var(--danger)', '#06b6d4'];
+            const stats = [
+                { val: total,     lbl: 'Total',     color: statColors[0] },
+                { val: active,    lbl: 'Active',     color: statColors[1] },
+                { val: used,      lbl: 'Used',       color: statColors[2] },
+                { val: expired,   lbl: 'Expired',    color: statColors[3] },
+                { val: remaining, lbl: 'Remaining',  color: statColors[4] },
+            ];
+
+            document.getElementById('bulk-panel-stats').innerHTML = stats.map(s => `
+                <div class="bulk-mini-stat" style="border-bottom:2px solid ${s.color};">
+                    <div class="bulk-mini-val" style="color:${s.color}; text-shadow:0 0 10px ${s.color}40;">${s.val}</div>
+                    <div class="bulk-mini-lbl">${s.lbl}</div>
+                </div>
+            `).join('');
+
+            // Keys list inside panel
+            const keysList = document.getElementById('bulk-panel-keys-list');
+            keysList.innerHTML = '';
+            if (keyIds.length === 0) {
+                keysList.innerHTML = `<div style="text-align:center;color:var(--text-dim);padding:20px;font-size:0.85rem;">No keys in this session.</div>`;
+            } else {
+                keyIds.forEach(kid => {
+                    const k = (DB.keys || {})[kid];
+                    let statusColor = 'var(--success)';
+                    let statusText = 'ACTIVE';
+                    if (!k) { statusColor = 'var(--text-dim)'; statusText = 'DELETED'; }
+                    else {
+                        let isExpired = false;
+                        if (k.expiry_date && k.expiry_date !== 'lifetime') {
+                            if (new Date(k.expiry_date.replace(' ', 'T')).getTime() < now) isExpired = true;
+                        }
+                        let isUsed = k.used === true || (k.devices && Object.keys(k.devices).some(d => d !== 'PLACEHOLDER'));
+                        if (isExpired) { statusColor = 'var(--danger)'; statusText = 'EXPIRED'; }
+                        else if (isUsed) { statusColor = 'var(--warning)'; statusText = 'USED'; }
+                    }
+                    const row = document.createElement('div');
+                    row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;gap:8px;';
+                    row.innerHTML = `
+                        <span style="font-family:var(--font-code);font-size:0.8rem;color:#fff;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(kid)}</span>
+                        <span style="font-size:0.55rem;font-weight:800;color:${statusColor};text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;">${statusText}</span>
+                        <button onclick="copyToClipboard('${kid}','Key',event); event.stopPropagation();" style="background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.2);color:var(--primary);width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.75rem;flex-shrink:0;"><i class="fas fa-copy"></i></button>
+                    `;
+                    keysList.appendChild(row);
+                });
+            }
+
+            document.getElementById('bulk-card-overlay').classList.add('active');
+        }
+
+        function closeBulkCardPanel(event) {
+            if (event && event.target !== document.getElementById('bulk-card-overlay')) return;
+            document.getElementById('bulk-card-overlay').classList.remove('active');
+            _activeBulkSessionIdx = -1;
+        }
+
+        function copyBulkSessionKeys() {
+            const sessions = getBulkSessions();
+            if (_activeBulkSessionIdx < 0 || !sessions[_activeBulkSessionIdx]) return;
+            const keys = sessions[_activeBulkSessionIdx].keys || [];
+            if (keys.length === 0) return showIsland('No keys in session', 'error');
+            navigator.clipboard.writeText(keys.join('\n'))
+                .then(() => showIsland(`Copied ${keys.length} keys!`, 'success', 'fa-copy'))
+                .catch(() => showIsland('Copy failed', 'error'));
+        }
+
+        function addMoreToBulkSession() {
+            // Keep _activeBulkSessionIdx so generateBulkKeys appends to it
+            document.getElementById('bulk-card-overlay').classList.remove('active');
+            const sessions = getBulkSessions();
+            const session = sessions[_activeBulkSessionIdx];
+            if (session) _pendingBulkCardName = session.name;
+            setTimeout(() => openBulkKeyModal(session ? session.name : ''), 50);
+        }
+
+        function deleteBulkSession() {
+            if (_activeBulkSessionIdx < 0) return;
+            const sessions = getBulkSessions();
+            const name = sessions[_activeBulkSessionIdx] ? sessions[_activeBulkSessionIdx].name : 'session';
+            if (!confirm(`Delete bulk session "${name}"? The generated keys will NOT be deleted from Firebase.`)) return;
+            sessions.splice(_activeBulkSessionIdx, 1);
+            saveBulkSessions(sessions);
+            _activeBulkSessionIdx = -1;
+            document.getElementById('bulk-card-overlay').classList.remove('active');
+            renderBulkCards();
+            showIsland('Session deleted', 'success', 'fa-trash');
         }
 
         function randomKey() { document.getElementById('mod-key-id').value = 'DP-' + Math.random().toString(36).substr(2, 8).toUpperCase(); }
@@ -1710,6 +2005,7 @@
         }
 
         function renderKeys() {
+            renderBulkCards();
             const list = document.getElementById('keys-list');
             const search = document.getElementById('search-keys').value.toLowerCase();
             list.innerHTML = ""; let count = 0;
@@ -1821,6 +2117,8 @@
                     </div>
                 `);
             });
+            const countBadge = document.getElementById('keys-count-badge');
+            if (countBadge) countBadge.textContent = count;
             if(count === 0) list.innerHTML = `<div class="empty-state">No Licenses Found</div>`;
             else list.innerHTML = htmlBuffer.join('');
         }
