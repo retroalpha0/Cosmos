@@ -177,12 +177,23 @@
         .btn-xs.del { color: var(--danger); background: rgba(239, 68, 68, 0.1); }
 
         /* --- ANDROID BOTTOM SHEET MODALS --- */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); display: none; justify-content: center; align-items: flex-end; z-index: 1000; opacity: 0; transition: 0.3s ease; transform: translateZ(0); will-change: opacity; backface-visibility: hidden; }
+        /* --- ANDROID BOTTOM SHEET MODALS --- */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: none; justify-content: center; align-items: flex-end; z-index: 1000; opacity: 0; transition: opacity 0.3s ease; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
         .modal-overlay.active { display: flex; opacity: 1; }
-        .modal-card { background: rgba(18, 18, 22, 0.6); width: 100%; max-width: 600px; border-radius: 28px 28px 0 0; padding: 24px 24px 40px; transform: translateY(100%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); border-top: 1px solid var(--border-primary); box-shadow: 0 -10px 40px rgba(0,0,0,0.8), 0 0 30px rgba(168,85,247,0.1); max-height: 90vh; overflow-y: auto; backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); will-change: transform; backface-visibility: hidden; transform-style: preserve-3d; }
-        .modal-overlay.active .modal-card { transform: translateY(0) translateZ(0); }
-        .modal-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: -10px auto 20px; }
-        .modal-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-main); text-shadow: 0 0 10px var(--purple-shine);}
+        .modal-card { position: relative; background: rgba(14, 14, 18, 0.95); width: 100%; max-width: 580px; border-radius: 28px 28px 0 0; padding: 22px 20px 35px; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1); border-top: 1px solid var(--border-primary); box-shadow: 0 -15px 50px rgba(0,0,0,0.85), 0 0 35px rgba(168,85,247,0.15); max-height: 88dvh; max-height: 88vh; overflow-y: auto; -webkit-overflow-scrolling: touch; backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); will-change: transform; }
+        .modal-overlay.active .modal-card { transform: translateY(0); }
+        .modal-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: -10px auto 18px; }
+        .modal-title { font-size: 1.25rem; font-weight: 800; margin-bottom: 18px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-main); text-shadow: 0 0 10px var(--purple-shine); padding: 0 30px; }
+
+        .modal-close-btn { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: var(--text-dim); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.85rem; transition: 0.2s; z-index: 10; }
+        .modal-close-btn:hover, .modal-close-btn:active { background: rgba(239, 68, 68, 0.2); color: var(--danger); border-color: rgba(239, 68, 68, 0.35); transform: scale(1.05); }
+
+        /* Keyboard-Safe Centered Modal for Mobile */
+        @media (max-width: 600px) {
+            .modal-overlay { align-items: center; padding: 14px 10px; }
+            .modal-card { border-radius: 24px; border: 1px solid var(--border-primary); max-height: calc(100dvh - 28px); max-height: calc(100vh - 28px); padding: 20px 16px 24px; transform: translateY(20px) scale(0.96); box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 30px rgba(168,85,247,0.15); margin: auto; }
+            .modal-overlay.active .modal-card { transform: translateY(0) scale(1); }
+        }
 
         /* DASHBOARD STATS */
         .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 20px; margin-top: 15px; margin-bottom: 5px; }
@@ -191,21 +202,28 @@
         .stat-label { font-size: 0.65rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; text-align: center;}
 
         /* BULK KEY SECTION */
-        .bulk-section-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px 10px; }
-        .bulk-section-title { font-size: 0.8rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 1.5px; text-shadow: 0 0 10px var(--purple-shine); display: flex; align-items: center; gap: 8px; }
+        .bulk-section-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px 14px; }
+        .bulk-section-title { font-size: 0.95rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 1.2px; text-shadow: 0 0 10px var(--purple-shine); display: flex; align-items: center; gap: 8px; }
         .bulk-section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(168,85,247,0.4), transparent); margin: 0 20px 14px; }
 
-        .bulk-cards-grid { display: flex; gap: 12px; padding: 0 20px 4px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
-        .bulk-cards-grid::-webkit-scrollbar { display: none; }
-
-        .bulk-session-card { flex: 0 0 calc(50% - 6px); scroll-snap-align: start; background: rgba(168,85,247,0.06); border: 1px solid rgba(168,85,247,0.25); border-radius: 18px; padding: 16px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 0 var(--purple-shine); }
-        .bulk-session-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg, var(--primary), var(--primary-dark)); border-radius: 18px 18px 0 0; }
-        .bulk-session-card:active { transform: scale(0.96); }
-        @media (hover: hover) { .bulk-session-card:hover { transform: translateY(-4px); border-color: var(--primary); box-shadow: 0 10px 30px rgba(168,85,247,0.2); } }
-        .bulk-card-name { font-size: 0.9rem; font-weight: 800; color: #fff; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .bulk-card-count { font-family: var(--font-code); font-size: 1.7rem; font-weight: 900; color: var(--primary); text-shadow: 0 0 12px var(--purple-shine); line-height: 1; }
-        .bulk-card-sub { font-size: 0.62rem; color: var(--text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
-        .bulk-card-date { font-size: 0.6rem; color: rgba(255,255,255,0.3); margin-top: 8px; }
+        .bulk-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; padding: 0 20px 20px; }
+        @media (max-width: 480px) { .bulk-cards-grid { grid-template-columns: 1fr; } }
+        
+        .bulk-session-card { background: rgba(18,18,24,0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(168,85,247,0.25); border-radius: 20px; padding: 18px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.4); display: flex; flex-direction: column; justify-content: space-between; gap: 12px; }
+        .bulk-session-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg, var(--primary), #06b6d4); border-radius: 20px 20px 0 0; }
+        .bulk-session-card:active { transform: scale(0.97); }
+        @media (hover: hover) { .bulk-session-card:hover { transform: translateY(-4px); border-color: var(--primary); box-shadow: 0 12px 35px rgba(168,85,247,0.25); } }
+        
+        .bulk-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+        .bulk-card-name { font-size: 0.95rem; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px; }
+        .bulk-card-count-box { display: flex; align-items: baseline; gap: 6px; }
+        .bulk-card-count { font-family: var(--font-code); font-size: 1.8rem; font-weight: 900; color: var(--primary); text-shadow: 0 0 12px var(--purple-shine); line-height: 1; }
+        .bulk-card-sub { font-size: 0.65rem; color: var(--text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
+        .bulk-card-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+        .bulk-badge { font-size: 0.6rem; font-weight: 800; padding: 3px 8px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .bulk-card-bottom { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px; margin-top: 2px; }
+        .bulk-card-date { font-size: 0.65rem; color: rgba(255,255,255,0.4); font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .bulk-card-actions { display: flex; gap: 6px; }
 
         /* Bulk card expanded panel */
         .bulk-card-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 500; display: none; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 0; }
@@ -441,42 +459,76 @@
         <!-- KEYS VIEW -->
         <div id="view-keys" class="view">
 
-            <!-- ══════════ BULK KEY SECTION (TOP HALF) ══════════ -->
-            <div id="bulk-section">
-                <div class="bulk-section-header">
-                    <div class="bulk-section-title"><i class="fas fa-layer-group"></i> Bulk Sessions</div>
-                    <button onclick="openBulkCardNameModal()" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none; color: #fff; font-size: 0.75rem; font-weight: 800; padding: 8px 14px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px var(--purple-shine); transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform=''" ontouchend="this.style.transform=''"><i class="fas fa-plus"></i> New</button>
+            <!-- ══════════ KEYS SUB-NAVIGATION (Two Buttons) ══════════ -->
+            <div class="sys-tabs" id="keys-sub-tabs" style="margin: 10px 20px 14px 20px; padding: 4px; gap: 6px;">
+                <button class="sys-tab keys-tab active" id="tab-btn-single-keys" onclick="switchKeysSubTab('single', this)">
+                    <i class="fas fa-key" style="margin-right: 6px;"></i> All Keys
+                </button>
+                <button class="sys-tab keys-tab" id="tab-btn-bulk-keys" onclick="switchKeysSubTab('bulk', this)">
+                    <i class="fas fa-layer-group" style="margin-right: 6px;"></i> Bulk Keys
+                </button>
+            </div>
+
+            <!-- ══════════ 1. INDIVIDUAL KEYS SUB-VIEW ══════════ -->
+            <div id="section-single-keys" class="keys-sub-content">
+                <div class="keys-list-header">
+                    <div class="keys-list-title"><i class="fas fa-key"></i> All Keys <span id="keys-count-badge" style="background:rgba(168,85,247,0.15); color:var(--primary); border:1px solid rgba(168,85,247,0.3); font-size:0.6rem; padding:2px 8px; border-radius:20px;">0</span></div>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn-icon" onclick="openKeyModal()" title="New Key" style="background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border:none; box-shadow:0 4px 12px var(--purple-shine);"><i class="fas fa-plus"></i></button>
+                    </div>
                 </div>
 
-                <!-- Bulk session cards horizontal scroll -->
+                <div class="search-bar-container" style="top: 52px;">
+                    <input type="text" class="search-bar" id="search-keys" placeholder="Search Keys or HWID..." oninput="debouncedRenderKeys()">
+                </div>
+                <!-- Bulk actions for keys -->
+                <div id="keys-bulk-actions" style="display: flex; gap: 8px; margin: 8px 20px 10px 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">
+                    <button class="btn-xs" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px; font-size: 0.65rem;" onclick="toggleSelectMode()"><i class="fas fa-list-ul"></i> Select</button>
+                    <button class="btn-xs" id="btn-del-expired" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px; font-size: 0.65rem;" onclick="deleteExpiredKeys()"><i class="fas fa-calendar-times"></i> Del Expired</button>
+                    <button class="btn-xs" id="btn-del-unused" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px; font-size: 0.65rem;" onclick="deleteUnusedKeys()"><i class="fas fa-ghost"></i> Del Unused</button>
+                    <button class="btn-xs" id="btn-select-all" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; display: none; padding: 6px 10px; font-size: 0.65rem;" onclick="selectAllKeys()"><i class="fas fa-check-square"></i> Select All</button>
+                    <button class="btn-xs del" id="btn-delete-selected" style="flex: 1; display: none; padding: 6px 10px; font-size: 0.65rem;" onclick="deleteSelectedKeys()"><i class="fas fa-trash"></i> Delete</button>
+                </div>
+                <div id="keys-list"></div>
+            </div>
+
+            <!-- ══════════ 2. BULK KEYS SUB-VIEW (SEPARATE SECTION) ══════════ -->
+            <div id="section-bulk-keys" class="keys-sub-content" style="display: none;">
+                <div class="bulk-section-header">
+                    <div>
+                        <div class="bulk-section-title">
+                            <i class="fas fa-layer-group"></i> Bulk Sessions 
+                            <span id="bulk-sessions-count-badge" style="background:rgba(168,85,247,0.15); color:var(--primary); border:1px solid rgba(168,85,247,0.3); font-size:0.65rem; padding:2px 8px; border-radius:20px; margin-left:4px;">0</span>
+                        </div>
+                        <div style="font-size: 0.68rem; color: var(--text-dim); margin-top: 3px; letter-spacing: 0.3px;">Grouped key batches &amp; multi-license management</div>
+                    </div>
+                    <button onclick="openBulkKeyModal()" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none; color: #fff; font-size: 0.75rem; font-weight: 800; padding: 9px 15px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px var(--purple-shine); transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform=''" ontouchend="this.style.transform=''"><i class="fas fa-plus"></i> New Batch</button>
+                </div>
+
+                <div class="dashboard-grid" id="bulk-stats-grid" style="margin-top: 5px; margin-bottom: 15px;">
+                    <div class="stat-box" style="border-bottom: 2px solid var(--primary);">
+                        <div class="stat-value" id="stat-bulk-sessions">0</div>
+                        <div class="stat-label">Total Batches</div>
+                    </div>
+                    <div class="stat-box" style="border-bottom: 2px solid #06b6d4;">
+                        <div class="stat-value" id="stat-bulk-keys">0</div>
+                        <div class="stat-label">Batch Keys</div>
+                    </div>
+                </div>
+
+                <!-- Bulk session cards grid -->
                 <div class="bulk-cards-grid" id="bulk-cards-grid">
                     <!-- injected by renderBulkCards() -->
-                    <div id="bulk-cards-empty" style="width:100%; text-align:center; padding: 20px; color:rgba(255,255,255,0.25); font-size:0.8rem; font-weight:600;"><i class="fas fa-layer-group" style="display:block; font-size:2rem; margin-bottom:8px; opacity:0.3;"></i>No bulk sessions yet</div>
                 </div>
-
-                <div class="bulk-section-divider"></div>
-            </div>
-
-            <!-- ══════════ INDIVIDUAL KEYS (BOTTOM HALF) ══════════ -->
-            <div class="keys-list-header">
-                <div class="keys-list-title"><i class="fas fa-key"></i> All Keys <span id="keys-count-badge" style="background:rgba(168,85,247,0.15); color:var(--primary); border:1px solid rgba(168,85,247,0.3); font-size:0.6rem; padding:2px 8px; border-radius:20px;">0</span></div>
-                <div style="display:flex; gap:6px;">
-                    <button class="btn-icon" onclick="openKeyModal()" title="New Key" style="background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border:none; box-shadow:0 4px 12px var(--purple-shine);"><i class="fas fa-plus"></i></button>
+                <div id="bulk-cards-empty" style="text-align:center; padding: 40px 20px; display: none;">
+                    <div style="width: 64px; height: 64px; margin: 0 auto 14px; border-radius: 50%; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.25); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: var(--primary); box-shadow: 0 0 20px var(--purple-shine);">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <div style="color: #fff; font-size: 1rem; font-weight: 800; margin-bottom: 6px;">No Bulk Sessions Yet</div>
+                    <div style="color: var(--text-dim); font-size: 0.78rem; max-width: 280px; margin: 0 auto 18px; line-height: 1.5;">Generate batch keys in one click with custom prefixes, limits, and expiry dates.</div>
+                    <button onclick="openBulkKeyModal()" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none; color: #fff; font-size: 0.8rem; font-weight: 800; padding: 12px 22px; border-radius: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 20px var(--purple-shine); text-transform: uppercase; letter-spacing: 0.8px;"><i class="fas fa-bolt"></i> Generate Bulk Keys</button>
                 </div>
             </div>
-
-            <div class="search-bar-container" style="top: 52px;">
-                <input type="text" class="search-bar" id="search-keys" placeholder="Search Keys or HWID..." oninput="debouncedRenderKeys()">
-            </div>
-            <!-- Bulk actions for keys -->
-            <div id="keys-bulk-actions" style="display: flex; gap: 8px; margin: 8px 20px 10px 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">
-                <button class="btn-xs" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px; font-size: 0.65rem;" onclick="toggleSelectMode()"><i class="fas fa-list-ul"></i> Select</button>
-                <button class="btn-xs" id="btn-del-expired" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px; font-size: 0.65rem;" onclick="deleteExpiredKeys()"><i class="fas fa-calendar-times"></i> Del Expired</button>
-                <button class="btn-xs" id="btn-del-unused" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px; font-size: 0.65rem;" onclick="deleteUnusedKeys()"><i class="fas fa-ghost"></i> Del Unused</button>
-                <button class="btn-xs" id="btn-select-all" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; display: none; padding: 6px 10px; font-size: 0.65rem;" onclick="selectAllKeys()"><i class="fas fa-check-square"></i> Select All</button>
-                <button class="btn-xs del" id="btn-delete-selected" style="flex: 1; display: none; padding: 6px 10px; font-size: 0.65rem;" onclick="deleteSelectedKeys()"><i class="fas fa-trash"></i> Delete</button>
-            </div>
-            <div id="keys-list"></div>
         </div>
 
         <!-- DEVICES VIEW -->
@@ -668,8 +720,8 @@
         </div>
         
         <!-- Global FABs -->
-        <button id="fab-bulk-keys" class="fab-btn" onclick="openBulkCardNameModal()" style="display: none; bottom: calc(var(--nav-height) + 75px);"><i class="fas fa-layer-group"></i></button>
-        <button id="fab-keys" class="fab-btn" onclick="openKeyModal()" style="display: none;"><i class="fas fa-plus"></i></button>
+        <button id="fab-bulk-keys" class="fab-btn" onclick="openBulkKeyModal()" style="display: none; bottom: calc(var(--nav-height) + 75px);" title="New Bulk Session"><i class="fas fa-layer-group"></i></button>
+        <button id="fab-keys" class="fab-btn" onclick="openKeyModal()" style="display: none;" title="New Key"><i class="fas fa-plus"></i></button>
         <button id="fab-copy-keys" class="fab-btn fab-left" onclick="copyAllKeys()" style="display: none; bottom: calc(var(--nav-height) + 75px); background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);" title="Copy All Keys"><i class="fas fa-copy"></i></button>
         <button id="fab-devices" class="fab-btn fab-left" onclick="openBanModal()" style="background:var(--danger); box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4); display: none;" title="Block HWID"><i class="fas fa-ban"></i></button>
     </div>
@@ -679,6 +731,7 @@
     <!-- Bulk Card Name Prompt Modal -->
     <div class="modal-overlay" id="bulk-card-name-modal">
         <div class="modal-card">
+            <button class="modal-close-btn" onclick="closeModals()" title="Close"><i class="fas fa-times"></i></button>
             <div class="modal-handle"></div>
             <div class="modal-title" style="color: var(--primary); text-shadow: 0 0 15px var(--purple-shine);"><i class="fas fa-layer-group" style="margin-right:8px;"></i>Name This Bulk Session</div>
             <div style="font-size:0.8rem; color:var(--text-dim); text-align:center; margin: -10px 0 20px; line-height:1.5;">Give this batch a name so you can track it easily<br>(e.g. &quot;VIP Clients&quot;, &quot;Beta Testers&quot;)</div>
@@ -696,9 +749,15 @@
     <!-- Add Bulk Key Modal -->
     <div class="modal-overlay" id="bulk-key-modal">
         <div class="modal-card">
+            <button class="modal-close-btn" onclick="closeModals()" title="Close"><i class="fas fa-times"></i></button>
             <div class="modal-handle"></div>
             <div class="modal-title" id="modal-bulk-key-title">Bulk Generate Keys</div>
             <div id="bulk-modal-card-tag" style="text-align:center; margin:-12px 0 16px; font-size:0.75rem; color:var(--primary); font-weight:800; background:rgba(168,85,247,0.1); padding:6px 14px; border-radius:20px; display:inline-block; width:100%; letter-spacing:0.5px;"></div>
+
+            <div class="input-group">
+                <label><i class="fas fa-layer-group" style="color:var(--primary); margin-right:4px;"></i> Session / Batch Name</label>
+                <input type="text" id="mod-bulk-card-name" placeholder="e.g. VIP Clients (or leave empty)">
+            </div>
 
             <div class="input-group">
                 <label>Quantity</label>
@@ -759,7 +818,10 @@
             <div class="bulk-panel-handle"></div>
             <div class="bulk-panel-header">
                 <div class="bulk-panel-title" id="bulk-panel-name"></div>
-                <button onclick="deleteBulkSession(); event.stopPropagation();" style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); color:var(--danger); width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:0.9rem; transition:0.2s;"><i class="fas fa-trash"></i></button>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button onclick="deleteBulkSession(); event.stopPropagation();" title="Delete Session" style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); color:var(--danger); width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:0.9rem; transition:0.2s;"><i class="fas fa-trash"></i></button>
+                    <button onclick="document.getElementById('bulk-card-overlay').classList.remove('active'); _activeBulkSessionIdx = -1; event.stopPropagation();" title="Close" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:var(--text-dim); width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:0.9rem; transition:0.2s;"><i class="fas fa-times"></i></button>
+                </div>
             </div>
             <div class="bulk-mini-stats" id="bulk-panel-stats"></div>
             <div style="padding: 0 20px 8px; display:flex; gap:10px;">
@@ -773,6 +835,7 @@
     <!-- Add/Edit Key Modal -->
     <div class="modal-overlay" id="key-modal">
         <div class="modal-card">
+            <button class="modal-close-btn" onclick="closeModals()" title="Close"><i class="fas fa-times"></i></button>
             <div class="modal-handle"></div>
             <div class="modal-title" id="modal-key-title">Generate Key</div>
             
@@ -840,6 +903,7 @@
     <!-- Add Ban Modal -->
     <div class="modal-overlay" id="ban-modal">
         <div class="modal-card">
+            <button class="modal-close-btn" onclick="closeModals()" title="Close"><i class="fas fa-times"></i></button>
             <div class="modal-handle"></div>
             <div class="modal-title" style="color: var(--danger); text-shadow: 0 0 10px rgba(239,68,68,0.3);">Blacklist Hardware</div>
             
@@ -858,6 +922,7 @@
     <!-- Session Manager Modal -->
     <div class="modal-overlay" id="session-modal">
         <div class="modal-card">
+            <button class="modal-close-btn" onclick="closeModals()" title="Close"><i class="fas fa-times"></i></button>
             <div class="modal-handle"></div>
             <div class="modal-title">Session Manager</div>
             <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 25px; align-items: center;">
@@ -1229,18 +1294,56 @@
             const fabBulkKeys = document.getElementById('fab-bulk-keys');
             const fabCopyKeys = document.getElementById('fab-copy-keys');
             const fabDevices = document.getElementById('fab-devices');
-            if (fabKeys) fabKeys.style.display = viewId === 'keys' ? 'flex' : 'none';
-            if (fabBulkKeys) fabBulkKeys.style.display = viewId === 'keys' ? 'flex' : 'none';
-            if (fabCopyKeys) fabCopyKeys.style.display = viewId === 'keys' ? 'flex' : 'none';
-            if (fabDevices) fabDevices.style.display = (viewId === 'devices' || viewId === 'keys') ? 'flex' : 'none';
+            
+            if (viewId === 'keys') {
+                const isBulkActive = document.getElementById('tab-btn-bulk-keys')?.classList.contains('active');
+                if (fabKeys) fabKeys.style.display = isBulkActive ? 'none' : 'flex';
+                if (fabBulkKeys) fabBulkKeys.style.display = isBulkActive ? 'flex' : 'none';
+                if (fabCopyKeys) fabCopyKeys.style.display = isBulkActive ? 'none' : 'flex';
+            } else {
+                if (fabKeys) fabKeys.style.display = 'none';
+                if (fabBulkKeys) fabBulkKeys.style.display = 'none';
+                if (fabCopyKeys) fabCopyKeys.style.display = 'none';
+            }
+            if (fabDevices) fabDevices.style.display = (viewId === 'devices') ? 'flex' : 'none';
+        }
+
+        function switchKeysSubTab(mode, el) {
+            const singleTab = document.getElementById('tab-btn-single-keys');
+            const bulkTab = document.getElementById('tab-btn-bulk-keys');
+            const singleSec = document.getElementById('section-single-keys');
+            const bulkSec = document.getElementById('section-bulk-keys');
+            const fabKeys = document.getElementById('fab-keys');
+            const fabBulkKeys = document.getElementById('fab-bulk-keys');
+            const fabCopyKeys = document.getElementById('fab-copy-keys');
+
+            if (mode === 'bulk') {
+                if (singleTab) singleTab.classList.remove('active');
+                if (bulkTab) bulkTab.classList.add('active');
+                if (singleSec) singleSec.style.display = 'none';
+                if (bulkSec) bulkSec.style.display = 'block';
+                if (fabKeys) fabKeys.style.display = 'none';
+                if (fabBulkKeys) fabBulkKeys.style.display = 'flex';
+                if (fabCopyKeys) fabCopyKeys.style.display = 'none';
+                renderBulkCards();
+            } else {
+                if (bulkTab) bulkTab.classList.remove('active');
+                if (singleTab) singleTab.classList.add('active');
+                if (bulkSec) bulkSec.style.display = 'none';
+                if (singleSec) singleSec.style.display = 'block';
+                if (fabKeys) fabKeys.style.display = 'flex';
+                if (fabBulkKeys) fabBulkKeys.style.display = 'none';
+                if (fabCopyKeys) fabCopyKeys.style.display = 'flex';
+            }
         }
 
         function switchSysTab(tabId, el) {
-            document.querySelectorAll('.sys-tab').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
+            document.querySelectorAll('#sys-tabs .sys-tab').forEach(t => t.classList.remove('active'));
+            if (el) el.classList.add('active');
             document.querySelectorAll('.sys-tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById('sys-tab-' + tabId).classList.add('active');
-            el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            const target = document.getElementById('sys-tab-' + tabId);
+            if (target) target.classList.add('active');
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
         }
 
         function addDaysToExpiry(days, el) {
@@ -1535,9 +1638,7 @@
         }
 
         function openBulkCardNameModal() {
-            document.getElementById('bulk-card-name-input').value = '';
-            document.getElementById('bulk-card-name-modal').classList.add('active');
-            setTimeout(() => document.getElementById('bulk-card-name-input').focus(), 350);
+            openBulkKeyModal();
         }
 
         function confirmBulkCardName() {
@@ -1549,10 +1650,23 @@
         }
 
         function openBulkKeyModal(cardName) {
+            const titleEl = document.getElementById('modal-bulk-key-title');
+            const tagEl = document.getElementById('bulk-modal-card-tag');
+            const nameInput = document.getElementById('mod-bulk-card-name');
+
             if (cardName) {
-                document.getElementById('modal-bulk-key-title').innerText = 'Bulk Generate Keys';
-                document.getElementById('bulk-modal-card-tag').innerText = '🗂 ' + cardName;
+                if (titleEl) titleEl.innerText = 'Add Keys to Session';
+                if (tagEl) {
+                    tagEl.style.display = 'block';
+                    tagEl.innerText = '🗂 Target Session: ' + cardName;
+                }
+                if (nameInput) nameInput.value = cardName;
+            } else {
+                if (titleEl) titleEl.innerText = 'Bulk Generate Keys';
+                if (tagEl) tagEl.style.display = 'none';
+                if (nameInput) nameInput.value = '';
             }
+
             document.getElementById('bulk-key-modal').classList.add('active');
             document.getElementById('mod-bulk-key-qty').value = 10;
             document.getElementById('mod-bulk-key-prefix').value = 'DP-';
@@ -1563,10 +1677,11 @@
             document.getElementById('mod-bulk-key-date').value = `${y}-${m}-${d}`;
             
             const bulkDaysBindToggle = document.getElementById('mod-bulk-tog-daysbind');
-            if (bulkDaysBindToggle.classList.contains('active')) toggleDaysBind(bulkDaysBindToggle, 'bulk');
+            if (bulkDaysBindToggle && bulkDaysBindToggle.classList.contains('active')) toggleDaysBind(bulkDaysBindToggle, 'bulk');
             
             document.getElementById('mod-bulk-key-notes').value = '';
             document.querySelectorAll('.time-tab-bulk').forEach(t => t.classList.remove('active'));
+            // Note: Programmatic auto-focus is intentionally omitted so virtual keyboards do not obscure the UI on open.
         }
 
         function addDaysToBulkExpiry(days, el) {
@@ -1639,8 +1754,10 @@
                 await fetch(`${DB_URL}/keys.json?auth=${DB_SECRET}`, { method: 'PATCH', body: JSON.stringify(patchData) });
 
                 // Save to bulk session
-                const sessionName = _pendingBulkCardName || 'Bulk Session';
+                const nameInput = document.getElementById('mod-bulk-card-name');
+                const enteredName = nameInput ? nameInput.value.trim() : '';
                 const sessions = getBulkSessions();
+                const sessionName = _pendingBulkCardName || enteredName || ('Batch #' + (sessions.length + 1));
 
                 // Check if we're adding to an existing session ("Add More" flow)
                 if (_activeBulkSessionIdx >= 0 && sessions[_activeBulkSessionIdx]) {
@@ -1664,7 +1781,7 @@
                     const keysString = generatedKeysList.join('\n');
                     navigator.clipboard.writeText(keysString)
                         .then(() => showIsland(`Generated & Copied ${generated} Keys!`, 'success', 'fa-copy'))
-                        .catch(() => showIsland(`Generated ${generated} Keys (Copy failed)`, 'success', 'fa-layer-group'));
+                        .catch(() => showIsland(`Generated ${generated} Keys`, 'success', 'fa-layer-group'));
                 }
             } catch(e) {
                 showIsland("Error generating keys", "error");
@@ -1682,32 +1799,114 @@
             const grid = document.getElementById('bulk-cards-grid');
             const emptyEl = document.getElementById('bulk-cards-empty');
             const sessions = getBulkSessions();
+            const badge = document.getElementById('bulk-sessions-count-badge');
+            const statSessions = document.getElementById('stat-bulk-sessions');
+            const statBulkKeys = document.getElementById('stat-bulk-keys');
+
+            if (badge) badge.innerText = sessions.length;
+            if (statSessions) statSessions.innerText = sessions.length;
 
             if (!grid) return;
 
-            // Remove old cards (keep empty placeholder)
-            [...grid.children].forEach(c => { if (c.id !== 'bulk-cards-empty') c.remove(); });
+            grid.innerHTML = '';
+
+            let totalBulkKeyCount = 0;
 
             if (sessions.length === 0) {
                 if (emptyEl) emptyEl.style.display = 'block';
+                if (statBulkKeys) statBulkKeys.innerText = '0';
                 return;
             }
             if (emptyEl) emptyEl.style.display = 'none';
 
+            const now = Date.now();
+
             sessions.forEach((session, idx) => {
-                const totalKeys = (session.keys || []).length;
+                const keyIds = session.keys || [];
+                const totalKeys = keyIds.length;
+                totalBulkKeyCount += totalKeys;
+
+                let used = 0, expired = 0, active = 0;
+                keyIds.forEach(kid => {
+                    const k = (DB.keys || {})[kid];
+                    if (!k) { expired++; return; }
+                    let isExp = false;
+                    if (k.expiry_date && k.expiry_date !== 'lifetime') {
+                        if (new Date(k.expiry_date.replace(' ', 'T')).getTime() < now) isExp = true;
+                    }
+                    let isU = k.used === true || (k.devices && Object.keys(k.devices).some(d => d !== 'PLACEHOLDER'));
+                    if (isExp) expired++;
+                    else if (isU) used++;
+                    else active++;
+                });
+
                 const card = document.createElement('div');
                 card.className = 'bulk-session-card animated-card';
-                card.style.animationDelay = Math.min(idx * 0.06, 0.4) + 's';
+                card.style.animationDelay = Math.min(idx * 0.05, 0.3) + 's';
                 card.innerHTML = `
-                    <div class="bulk-card-name"><i class="fas fa-layer-group" style="color:var(--primary);margin-right:6px;font-size:0.75rem;"></i>${escHtml(session.name)}</div>
-                    <div class="bulk-card-count">${totalKeys}</div>
-                    <div class="bulk-card-sub">Total Keys</div>
-                    <div class="bulk-card-date"><i class="far fa-clock"></i> ${new Date(session.createdAt).toLocaleDateString()}</div>
+                    <div class="bulk-card-top">
+                        <div class="bulk-card-name" title="${escHtml(session.name)}">
+                            <i class="fas fa-layer-group" style="color:var(--primary); font-size:0.85rem;"></i>
+                            <span>${escHtml(session.name)}</span>
+                        </div>
+                        <button onclick="deleteBulkSessionByIdx(${idx}); event.stopPropagation();" title="Delete Session" style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.25); color:var(--danger); width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:0.75rem; transition:0.2s;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+
+                    <div class="bulk-card-count-box">
+                        <span class="bulk-card-count">${totalKeys}</span>
+                        <span class="bulk-card-sub">Keys in Batch</span>
+                    </div>
+
+                    <div class="bulk-card-badges">
+                        <span class="bulk-badge" style="background:rgba(16,185,129,0.15); color:var(--success); border:1px solid rgba(16,185,129,0.3);"><i class="fas fa-check-circle"></i> ${active} Active</span>
+                        <span class="bulk-badge" style="background:rgba(245,158,11,0.15); color:var(--warning); border:1px solid rgba(245,158,11,0.3);"><i class="fas fa-mobile-alt"></i> ${used} Used</span>
+                        <span class="bulk-badge" style="background:rgba(239,68,68,0.15); color:var(--danger); border:1px solid rgba(239,68,68,0.3);"><i class="fas fa-times-circle"></i> ${expired} Exp</span>
+                    </div>
+
+                    <div class="bulk-card-bottom">
+                        <div class="bulk-card-date"><i class="far fa-clock"></i> ${new Date(session.createdAt).toLocaleDateString()}</div>
+                        <div class="bulk-card-actions">
+                            <button onclick="copyBulkSessionKeysByIdx(${idx}, event); event.stopPropagation();" title="Copy Keys" style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); color:#10b981; padding:6px 10px; border-radius:10px; font-size:0.7rem; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:5px;">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button onclick="openBulkCardPanel(${idx}); event.stopPropagation();" style="background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border:none; color:#fff; padding:6px 12px; border-radius:10px; font-size:0.7rem; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:5px; box-shadow:0 2px 10px var(--purple-shine);">
+                                <span>VIEW</span> <i class="fas fa-arrow-right" style="font-size:0.6rem;"></i>
+                            </button>
+                        </div>
+                    </div>
                 `;
                 card.onclick = () => openBulkCardPanel(idx);
-                grid.insertBefore(card, emptyEl || null);
+                grid.appendChild(card);
             });
+
+            if (statBulkKeys) statBulkKeys.innerText = totalBulkKeyCount;
+        }
+
+        function deleteBulkSessionByIdx(idx) {
+            const sessions = getBulkSessions();
+            if (!sessions[idx]) return;
+            const name = sessions[idx].name || 'session';
+            if (!confirm(`Delete bulk session "${name}"? The generated keys will NOT be deleted from Firebase.`)) return;
+            sessions.splice(idx, 1);
+            saveBulkSessions(sessions);
+            renderBulkCards();
+            showIsland('Session deleted', 'success', 'fa-trash');
+        }
+
+        function copyBulkSessionKeysByIdx(idx, event) {
+            if (event) event.stopPropagation();
+            const sessions = getBulkSessions();
+            const session = sessions[idx];
+            if (!session || !session.keys || session.keys.length === 0) {
+                showIsland('No keys to copy', 'error');
+                return;
+            }
+            const keysString = session.keys.join('\n');
+            navigator.clipboard.writeText(keysString)
+                .then(() => showIsland(`Copied ${session.keys.length} keys from ${session.name}!`, 'success', 'fa-copy'))
+                .catch(() => showIsland('Failed to copy', 'error'));
         }
 
         function escHtml(str) {
