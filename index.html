@@ -160,7 +160,7 @@
         .list-card.expanded .chevron-icon { transform: rotate(180deg); color: var(--primary); text-shadow: 0 0 10px var(--purple-shine);}
 
         .card-details { max-height: 0; overflow: hidden; opacity: 0; display: flex; flex-direction: column; gap: 10px; transition: max-height 0.3s cubic-bezier(0, 1, 0, 1), opacity 0.2s ease, margin-top 0.3s ease, padding-top 0.3s ease; will-change: max-height, opacity, margin-top, padding-top; transform: translateZ(0); }
-        .list-card.expanded .card-details { max-height: 500px; opacity: 1; margin-top: 12px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, margin-top 0.3s ease, padding-top 0.3s ease; }
+        .list-card.expanded .card-details { max-height: 1200px; opacity: 1; margin-top: 12px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, margin-top 0.3s ease, padding-top 0.3s ease; }
 
         .device-box { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; padding: 12px; background: var(--bg-input); border-radius: 12px; border: 1px solid rgba(255,255,255,0.02);}
         
@@ -175,6 +175,8 @@
         .btn-xs.edit { color: var(--primary); background: rgba(168, 85, 247, 0.1); }
         .btn-xs.ban { color: var(--warning); background: rgba(245, 158, 11, 0.1); }
         .btn-xs.del { color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+        .btn-xs.crash { color: var(--warning); background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25); }
+        .btn-xs.crash.active { color: var(--danger); background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.45); }
 
         /* --- ANDROID BOTTOM SHEET MODALS --- */
         /* --- ANDROID BOTTOM SHEET MODALS --- */
@@ -474,6 +476,7 @@
                 <div class="keys-list-header">
                     <div class="keys-list-title"><i class="fas fa-key"></i> All Keys <span id="keys-count-badge" style="background:rgba(168,85,247,0.15); color:var(--primary); border:1px solid rgba(168,85,247,0.3); font-size:0.6rem; padding:2px 8px; border-radius:20px;">0</span></div>
                     <div style="display:flex; gap:6px;">
+                        <button class="btn-icon" onclick="copyAllKeys()" title="Copy All Keys" style="background:rgba(16, 185, 129, 0.15); border:1px solid rgba(16, 185, 129, 0.35); color:#10b981; box-shadow:0 4px 12px rgba(16, 185, 129, 0.2);"><i class="fas fa-copy"></i></button>
                         <button class="btn-icon" onclick="openKeyModal()" title="New Key" style="background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border:none; box-shadow:0 4px 12px var(--purple-shine);"><i class="fas fa-plus"></i></button>
                     </div>
                 </div>
@@ -483,6 +486,7 @@
                 </div>
                 <!-- Bulk actions for keys -->
                 <div id="keys-bulk-actions" style="display: flex; gap: 8px; margin: 8px 20px 10px 20px; align-items: center; justify-content: flex-start; flex-wrap: wrap;">
+                    <button class="btn-xs" style="flex: 1; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.35); padding: 6px 10px; font-size: 0.65rem;" onclick="copyAllKeys()"><i class="fas fa-copy"></i> Copy All</button>
                     <button class="btn-xs" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px; font-size: 0.65rem;" onclick="toggleSelectMode()"><i class="fas fa-list-ul"></i> Select</button>
                     <button class="btn-xs" id="btn-del-expired" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px; font-size: 0.65rem;" onclick="deleteExpiredKeys()"><i class="fas fa-calendar-times"></i> Del Expired</button>
                     <button class="btn-xs" id="btn-del-unused" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px; font-size: 0.65rem;" onclick="deleteUnusedKeys()"><i class="fas fa-ghost"></i> Del Unused</button>
@@ -1446,12 +1450,33 @@
 
         function copyToClipboard(text, label, event) {
             if (event) event.stopPropagation(); 
-            const el = document.createElement('textarea');
-            el.value = text;
-            document.body.appendChild(el); el.select();
-            try { document.execCommand('copy'); showIsland(`${label} Copied!`, "success", "fa-copy"); } 
-            catch (err) { showIsland("Copy failed", "error"); }
-            document.body.removeChild(el);
+            const executeFallback = () => {
+                const el = document.createElement('textarea');
+                el.value = text;
+                el.setAttribute('readonly', '');
+                el.style.position = 'fixed';
+                el.style.left = '-9999px';
+                el.style.top = '0';
+                document.body.appendChild(el);
+                el.select();
+                try {
+                    document.execCommand('copy');
+                    showIsland(`${label} Copied!`, "success", "fa-copy");
+                } catch (err) {
+                    showIsland("Copy failed", "error");
+                }
+                document.body.removeChild(el);
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showIsland(`${label} Copied!`, "success", "fa-copy");
+                }).catch(() => {
+                    executeFallback();
+                });
+            } else {
+                executeFallback();
+            }
         }
 
         /* --- SYSTEM CONFIGURATION --- */
@@ -2253,14 +2278,18 @@
                         const dName = hwidToName[hwid] || data.device || data.model || data.device_name || data.deviceName || data.notes || "Bound Device";
                         deviceHtml += `
                             <div style="display:flex; flex-direction:column; gap:6px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                                    <div style="display:flex; flex-direction:column; gap: 4px;">
+                                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:6px;">
+                                    <div style="display:flex; flex-direction:column; gap: 4px; min-width: 140px; flex: 1;">
                                         <div style="font-size: 0.85rem; font-weight: 600; color: #fff;">${dName}</div>
-                                        <div class="interactive-text device-hwid" style="font-size:0.75rem;" onclick="copyToClipboard('${hwid}', 'HWID', event)">
-                                            ${hwid} <i class="fas fa-copy" style="font-size:0.7rem; color:var(--primary); opacity:0.8;"></i>
+                                        <div class="interactive-text device-hwid" style="font-size:0.75rem; display:flex; align-items:center; gap:6px;" onclick="copyToClipboard('${hwid}', 'HWID', event)">
+                                            <span>${hwid}</span>
+                                            <button class="badge" style="background:rgba(255,255,255,0.08); color:var(--text-dim); border:1px solid rgba(255,255,255,0.12); padding:2px 6px; font-size:0.6rem; cursor:pointer;" title="Copy HWID"><i class="fas fa-copy"></i></button>
                                         </div>
                                     </div>
-                                    <div style="display:flex; gap:6px;">
+                                    <div style="display:flex; gap:6px; align-items:center;">
+                                        <button class="badge" style="background:${hasCrash ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.1)'}; color:${hasCrash ? 'var(--danger)' : 'var(--warning)'}; border:1px solid ${hasCrash ? 'rgba(239, 68, 68, 0.4)' : 'rgba(245, 158, 11, 0.3)'}; padding: 4px 8px; cursor: pointer; display:inline-flex; align-items:center; gap:4px;" onclick="toggleDeviceCrash('${keyId}', ${hasCrash}); event.stopPropagation();" title="${hasCrash ? 'Clear HWID Crash' : 'Crash HWID'}">
+                                            <i class="fas fa-radiation"></i> ${hasCrash ? 'CRASHED' : 'CRASH HWID'}
+                                        </button>
                                         <button class="badge" style="background:rgba(239, 68, 68,0.1); color:var(--danger); border:1px solid rgba(239, 68, 68, 0.3); padding: 4px 8px; cursor: pointer;" onclick="banAndUnlink('${keyId}','${hwid}'); event.stopPropagation();" title="Ban Device">BAN</button>
                                         <button class="badge" style="background:rgba(245, 158, 11,0.1); color:var(--warning); border:1px solid rgba(245, 158, 11, 0.3); padding: 4px 8px; cursor: pointer;" onclick="unbindHWID('${keyId}', '${hwid}'); event.stopPropagation();" title="Unlink">UNLINK</button>
                                     </div>
@@ -2284,18 +2313,22 @@
                     <div class="${wrapClass} animated-card" id="list-card-${keyId}" style="animation-delay: ${Math.min(count * 0.05, 0.5)}s">
                         <div class="card-header-main" onclick="toggleCard('${keyId}')">
                             <div class="card-header-left">
-                                <div class="card-title" style="display:flex; align-items:center;">
-                                    <input type="checkbox" class="key-selector" data-key-id="${keyId}" style="margin-right:8px; width: 16px; height: 16px; display: ${typeof isSelectMode !== 'undefined' && isSelectMode ? 'inline-block' : 'none'};" onclick="event.stopPropagation()">
-                                    <i class="fas fa-key" style="color:var(--primary); margin-right:4px;"></i> 
+                                <div class="card-title" style="display:flex; align-items:center; flex-wrap:wrap; gap:6px;">
+                                    <input type="checkbox" class="key-selector" data-key-id="${keyId}" style="margin-right:4px; width: 16px; height: 16px; display: ${typeof isSelectMode !== 'undefined' && isSelectMode ? 'inline-block' : 'none'};" onclick="event.stopPropagation()">
+                                    <i class="fas fa-key" style="color:var(--primary); margin-right:2px;"></i> 
                                     <span style="user-select: text;" onclick="event.stopPropagation()">${keyId}</span>
-                                    <i class="fas fa-copy copy-icon-hover" style="color:var(--text-dim); margin-left:10px; cursor:pointer; font-size: 1.3rem; transition: 0.2s;" onmouseover="this.style.color='var(--primary)'; this.style.transform='scale(1.1)';" onmouseout="this.style.color='var(--text-dim)'; this.style.transform='scale(1)';" onclick="copyToClipboard('${keyId}', 'Key', event)" title="Copy Key"></i>
+                                    <button class="badge" style="background: rgba(168,85,247,0.15); color: var(--primary); border: 1px solid rgba(168,85,247,0.3); padding: 2px 7px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-size: 0.65rem;" onclick="copyToClipboard('${keyId}', 'Key', event); event.stopPropagation();" title="Copy Key">
+                                        <i class="fas fa-copy"></i> COPY
+                                    </button>
                                 </div>
                                 <div class="card-subtitle">
                                     <span><i class="far fa-calendar-alt"></i> ${(data.expiry_date || "").replace('T', ' ')}</span>
                                 </div>
                             </div>
                             <div class="card-header-right">
-                                ${hasCrash ? `<i class="fas fa-radiation" style="color:var(--danger); text-shadow:0 0 5px rgba(239,68,68,0.5);" title="Crash Enabled"></i>` : ''}
+                                <button class="badge" style="background:${hasCrash ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.06)'}; color:${hasCrash ? 'var(--danger)' : 'var(--text-dim)'}; border:1px solid ${hasCrash ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.1)'}; cursor:pointer; padding:3px 8px; font-size:0.6rem; display:inline-flex; align-items:center; gap:4px;" onclick="toggleDeviceCrash('${keyId}', ${hasCrash}); event.stopPropagation();" title="${hasCrash ? 'Clear HWID Crash' : 'Crash HWID'}">
+                                    <i class="fas fa-radiation" style="${hasCrash ? 'color:var(--danger); text-shadow:0 0 6px rgba(239,68,68,0.8);' : ''}"></i> ${hasCrash ? 'CRASHED' : 'CRASH HWID'}
+                                </button>
                                 <div class="${badgeClass}">${badgeText}</div>
                                 <i class="fas fa-chevron-down chevron-icon"></i>
                             </div>
@@ -2305,7 +2338,8 @@
                             ${data.notes ? `<div style="font-size:0.75rem; color:#d8b4fe; padding:6px 10px; background:rgba(168,85,247,0.1); border-radius:8px; border-left:2px solid var(--primary);"><i class="fas fa-comment-alt"></i> ${data.notes}</div>` : ''}
                             ${deviceHtml}
                             <div class="card-actions" style="display: flex; flex-wrap: wrap; gap: 8px;">
-                                <button class="btn-xs" style="background: rgba(255,255,255,0.1); color: #fff; flex: 1; min-width: 45%;" onclick="copyToClipboard('${keyId}', 'License Key', event); event.stopPropagation();"><i class="fas fa-copy"></i> COPY KEY</button>
+                                <button class="btn-xs" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.15); flex: 1; min-width: 45%;" onclick="copyToClipboard('${keyId}', 'License Key', event); event.stopPropagation();"><i class="fas fa-copy"></i> COPY KEY</button>
+                                <button class="btn-xs crash ${hasCrash ? 'active' : ''}" style="flex: 1; min-width: 45%;" onclick="toggleDeviceCrash('${keyId}', ${hasCrash}); event.stopPropagation();"><i class="fas fa-radiation"></i> ${hasCrash ? 'CLEAR CRASH' : 'CRASH HWID'}</button>
                                 <button class="btn-xs edit" style="flex: 1; min-width: 45%;" onclick="openEditKeyModal('${keyId}'); event.stopPropagation();"><i class="fas fa-pen"></i> EDIT</button>
                                 <button class="btn-xs ban" style="flex: 1; min-width: 45%;" onclick="toggleKeyBan('${keyId}', ${!isBanned}); event.stopPropagation();">
                                     <i class="fas ${isBanned ? 'fa-check' : 'fa-ban'}"></i> ${isBanned ? 'UNBAN' : 'BAN'}
@@ -2326,12 +2360,15 @@
             const keys = Object.keys(DB.keys || {});
             if (keys.length === 0) return showIsland("No keys available", "error");
             const keysString = keys.join('\n');
-            navigator.clipboard.writeText(keysString).then(() => {
-                showIsland("All Keys Copied!", "success");
-            }).catch(err => {
-                console.error("Failed to copy:", err);
-                showIsland("Copy failed", "error");
-            });
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(keysString).then(() => {
+                    showIsland(`Copied ${keys.length} Keys!`, "success", "fa-copy");
+                }).catch(err => {
+                    copyToClipboard(keysString, "All Keys");
+                });
+            } else {
+                copyToClipboard(keysString, "All Keys");
+            }
         }
 
         let isSelectMode = false;
