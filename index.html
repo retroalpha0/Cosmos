@@ -1195,14 +1195,14 @@
                         document.getElementById('main-app').style.display = 'flex'; 
                         document.getElementById('bottom-nav').style.display = 'flex';
                         document.getElementById('main-app').style.animation = 'fadeIn 0.8s ease';
-                        loadSystem(); renderKeys(); renderBulkCards(); renderDevices();
+                        loadSystem(); renderKeys(); renderBulkCards(); renderDevices(); renderLogs();
                         showIsland("Authentication Success", "success", "fa-unlock-alt");
                     });
                 } else {
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('main-app').style.display = 'flex'; 
                     document.getElementById('bottom-nav').style.display = 'flex';
-                    loadSystem(); renderKeys(); renderBulkCards(); renderDevices();
+                    loadSystem(); renderKeys(); renderBulkCards(); renderDevices(); renderLogs();
                     showIsland("Authentication Success", "success", "fa-unlock-alt");
                 }
 
@@ -2665,18 +2665,8 @@
                 const res = await fetch(`${DB_URL}/logs.json?auth=${DB_SECRET}&t=${Date.now()}`, { cache: "no-store" });
                 if (res.ok) {
                     const data = await res.json();
-                    if (data) {
-                        const entries = Object.entries(data);
-                        if (entries.length > 20) {
-                            entries.sort((a, b) => (a[1].timestamp || 0) - (b[1].timestamp || 0));
-                            const kept = entries.slice(-20);
-                            const newLogs = {};
-                            kept.forEach(([k, v]) => newLogs[k] = v);
-                            DB.logs = newLogs;
-                            fetch(`${DB_URL}/logs.json?auth=${DB_SECRET}`, { method: 'PUT', body: JSON.stringify(newLogs) });
-                        } else {
-                            DB.logs = data;
-                        }
+                    if (data && typeof data === 'object') {
+                        DB.logs = data;
                     } else {
                         DB.logs = {};
                     }
@@ -2687,25 +2677,64 @@
             }
         };
 
+        function decodePushIdTimestamp(id) {
+            if (!id || typeof id !== 'string' || id.length < 8) return 0;
+            const PUSH_CHARS = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
+            let time = 0;
+            for (let i = 0; i < 8; i++) {
+                const c = id.charAt(i);
+                const val = PUSH_CHARS.indexOf(c);
+                if (val === -1) return 0;
+                time = time * 64 + val;
+            }
+            return (time > 0 && time < 10000000000000) ? time : 0;
+        }
+
+        function getLogTime(l, logId) {
+            if (l) {
+                const t = l.timestamp ?? l.time ?? l.date;
+                if (typeof t === 'number' && !isNaN(t) && t > 0) return t;
+                if (t) {
+                    const num = Number(t);
+                    if (!isNaN(num) && num > 0) return num;
+                    const parsed = Date.parse(t);
+                    if (!isNaN(parsed) && parsed > 0) return parsed;
+                }
+            }
+            if (logId) {
+                const pushTime = decodePushIdTimestamp(logId);
+                if (pushTime > 0) return pushTime;
+            }
+            return 0;
+        }
+
         function renderLogs() {
             const list = document.getElementById('telemetry-logs-list');
             if(!list) return;
             list.innerHTML = "";
-            const logs = Object.entries(DB.logs || {}).reverse();
+
+            // Sort logs descending by timestamp so newest appear first at the top
+            const logs = Object.entries(DB.logs || {}).sort((a, b) => getLogTime(b[1], b[0]) - getLogTime(a[1], a[0]));
+
             if(logs.length === 0) {
-                list.innerHTML = `<div style="text-align:center; color:var(--text-dim); padding: 20px;">No logs available.</div>`;
+                list.innerHTML = `<div style="text-align:center; color:var(--text-dim); padding: 20px;">No telemetry logs available.</div>`;
                 return;
             }
-            // Auto cleanup: Keep only the latest 20 logs to prevent Firebase storage overload
-            if (logs.length > 20) {
-                const logsToDelete = logs.slice(20);
+
+            // Auto cleanup: Keep latest 30 logs in database to prevent storage bloat
+            if (logs.length > 30) {
+                const logsToDelete = logs.slice(30);
                 const patchData = {};
-                logsToDelete.forEach(([logId]) => { patchData[logId] = null; });
+                logsToDelete.forEach(([logId]) => { 
+                    patchData[logId] = null;
+                    if (DB.logs) delete DB.logs[logId];
+                });
                 fetch(DB_URL + '/logs.json?auth=' + DB_SECRET, { method: 'PATCH', body: JSON.stringify(patchData) }).catch(e => console.error(e));
             }
 
-            logs.slice(0, 20).forEach(([logId, l]) => {
-                const dateStr = l.timestamp ? new Date(l.timestamp).toLocaleString() : 'Unknown Time';
+            logs.slice(0, 30).forEach(([logId, l]) => {
+                const logTime = getLogTime(l, logId);
+                const dateStr = logTime ? new Date(logTime).toLocaleString() : 'Unknown Time';
                 const displayType = l.type ? l.type.replace(/_/g, ' ') : 'EVENT';
                 let typeColor = 'var(--text-dim)';
                 
@@ -2728,6 +2757,7 @@
                         ${l.key ? `<div style="margin-bottom: 2px;"><span style="color:var(--text-dim)">Key:</span> ${l.key}</div>` : ''}
                         ${l.hwid ? `<div style="margin-bottom: 2px;"><span style="color:var(--text-dim)">HWID:</span> ${l.hwid}</div>` : ''}
                         ${l.ip ? `<div style="margin-bottom: 2px;"><span style="color:var(--text-dim)">IP:</span> ${l.ip}</div>` : ''}
+                        ${l.brand ? `<div style="margin-bottom: 2px;"><span style="color:var(--text-dim)">Brand:</span> ${l.brand}</div>` : ''}
                         ${l.model ? `<div style="margin-bottom: 2px;"><span style="color:var(--text-dim)">Model:</span> ${l.model}</div>` : ''}
                         ${l.package ? `<div style="margin-bottom: 2px;"><span style="color:var(--text-dim)">Pkg:</span> ${l.package}</div>` : ''}
                     </div>

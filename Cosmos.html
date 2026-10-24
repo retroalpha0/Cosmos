@@ -1540,11 +1540,42 @@
             });
         }
 
+        function decodePushIdTimestamp(id) {
+            if (!id || typeof id !== 'string' || id.length < 8) return 0;
+            const PUSH_CHARS = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
+            let time = 0;
+            for (let i = 0; i < 8; i++) {
+                const c = id.charAt(i);
+                const val = PUSH_CHARS.indexOf(c);
+                if (val === -1) return 0;
+                time = time * 64 + val;
+            }
+            return (time > 0 && time < 10000000000000) ? time : 0;
+        }
+
+        function getLogTime(l, logId) {
+            if (l) {
+                const t = l.timestamp ?? l.time ?? l.date;
+                if (typeof t === 'number' && !isNaN(t) && t > 0) return t;
+                if (t) {
+                    const num = Number(t);
+                    if (!isNaN(num) && num > 0) return num;
+                    const parsed = Date.parse(t);
+                    if (!isNaN(parsed) && parsed > 0) return parsed;
+                }
+            }
+            if (logId) {
+                const pushTime = decodePushIdTimestamp(logId);
+                if (pushTime > 0) return pushTime;
+            }
+            return 0;
+        }
+
         function renderLogs() {
             const logsObj = App.data.logs || {};
             const logs = Object.entries(logsObj)
                 .map(([id, data]) => ({id, ...data}))
-                .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                .sort((a, b) => getLogTime(b, b.id) - getLogTime(a, a.id));
 
             // Auto-cleanup: Keep only the latest 25 logs to prevent Firebase storage overload
             if (logs.length > 25) {
@@ -1566,7 +1597,8 @@
             }
 
             const generateLogHTML = (l) => {
-                const dateStr = l.timestamp ? new Date(l.timestamp).toLocaleString() : 'Unknown Time';
+                const logTime = getLogTime(l, l.id);
+                const dateStr = logTime ? new Date(logTime).toLocaleString() : 'Unknown Time';
                 let typeColor = 'text-accent';
                 let typeAnim = '';
                 let displayType = l.type ? l.type.replace(/_/g, ' ') : 'EVENT';
